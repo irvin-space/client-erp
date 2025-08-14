@@ -88,7 +88,7 @@ const BusquedaTramitesAduanales = () => {
 
     handleFetch(objetoDeBusqueda);
   };
-
+  // comentario pruebna jgm
   //Estado de TablaColapsable
   //const [selectedRow, setSelectedRow] = React.useState(null);
 
