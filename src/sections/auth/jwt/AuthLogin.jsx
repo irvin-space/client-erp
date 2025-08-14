@@ -2,6 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 
+//Hook permite dar acceso a valores de un contexto proporcionado por el componente Provider
+import { useContext } from 'react';
+//Archivo contexto
+import { MyContext } from '../../../context';
+//Hook para navegacion
+import { useNavigate } from 'react-router-dom';
+//Hook para efectos secundarios al montar,acualizar o desmontar componentes
+import { useEffect } from 'react';
+
+
 // material-ui
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -35,6 +45,31 @@ import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 // ============================|| JWT - LOGIN ||============================ //
 
 export default function AuthLogin({ isDemo = false }) {
+  //Para navegar a otra url despues de iniciar sesion con credenciales correctas
+  const navigate = useNavigate();
+
+  //Contexto de informacion de login
+  const { data, setData } = useContext(MyContext);
+
+  //Cuando el componente se monta o cambia el valor de data, realiza un console.log para conocer el valor de data
+  useEffect(() => {
+    console.log('valor', data);
+  }, [data]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const [checked, setChecked] = React.useState(false);
 
   const { login } = useAuth();
@@ -60,7 +95,7 @@ export default function AuthLogin({ isDemo = false }) {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
+          // email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string()
             .required('Password is required')
             .test('no-leading-trailing-whitespace', 'Password cannot start or end with spaces', (value) => value === value.trim())
@@ -68,6 +103,41 @@ export default function AuthLogin({ isDemo = false }) {
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
           try {
+            //Hace una llamada al servidor para verificar que el usuario exista en la BD
+            // const response = await fetch('http://localhost:3001/user/login', {
+            //   method: 'POST',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify({
+            //     email: values.email,
+            //     password: values.password
+            //   })
+            // });
+
+            // console.log('Esperando respuesta');
+            // const data = await response.json();
+            // console.log('Despues de respuesta');
+            // console.log(JSON.parse(data.resultado).recordset[0]);
+            // console.log('recordset 1');
+            // console.log(typeof JSON.parse(data.resultado).recordsets[1][0]);
+            // console.log(JSON.parse(data.resultado).recordsets[1][0]);
+            // console.log(JSON.parse(Object.values(JSON.parse(data.resultado).recordsets[1][0])[0]).Menu);
+            // setData({
+            //   ...data,
+            //   ...JSON.parse(data.resultado).recordset[0],
+            //   menu: JSON.parse(Object.values(JSON.parse(data.resultado).recordsets[1][0])[0]).Menu
+            // });
+
+            // navigate('/sample-page');
+
+            // if (response.ok && data.success) {
+            //   console.log('✅ Login successful!', data);
+            //   // Optional: save token
+            //   // localStorage.setItem('token', data.token);
+            //   // Redirect: navigate('/dashboard');
+            // } else {
+            //   setErrors({ submit: data.message || 'Login failed' });
+            // }
+
             const trimmedEmail = values.email.trim();
             await login(trimmedEmail, values.password);
             setStatus({ success: true });
@@ -86,8 +156,12 @@ export default function AuthLogin({ isDemo = false }) {
             <Grid container spacing={3}>
               <Grid size={12}>
                 <Stack sx={{ gap: 1 }}>
-                  <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                  <InputLabel sx={{ color: 'white' }} htmlFor="email-login">
+                    Usuario
+                  </InputLabel>
+                  {/* <InputLabel htmlFor="email-login">Email Address</InputLabel> */}
                   <OutlinedInput
+                    sx={{ backgroundColor: 'white' }}
                     id="email-login"
                     type="email"
                     value={values.email}
@@ -107,8 +181,12 @@ export default function AuthLogin({ isDemo = false }) {
               </Grid>
               <Grid size={12}>
                 <Stack sx={{ gap: 1 }}>
-                  <InputLabel htmlFor="password-login">Password</InputLabel>
+                  {/* <InputLabel htmlFor="password-login">Password</InputLabel> */}
+                  <InputLabel sx={{ color: 'white' }} htmlFor="password-login">
+                    Password
+                  </InputLabel>
                   <OutlinedInput
+                    sx={{ backgroundColor: 'white' }}
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
                     id="-password-login"
@@ -130,7 +208,8 @@ export default function AuthLogin({ isDemo = false }) {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    // placeholder="Enter password"
+                    placeholder="Contraseña aquí"
                   />
                 </Stack>
                 {touched.password && errors.password && (
@@ -151,15 +230,18 @@ export default function AuthLogin({ isDemo = false }) {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    // label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Mantenerme conectado</Typography>}
                   />
                   <Link
                     variant="h6"
                     component={RouterLink}
                     to={isDemo ? '/auth/forgot-password' : auth ? `/${auth}/forgot-password?auth=jwt` : '/forgot-password'}
-                    color="text.primary"
+                    // color="text.primary"
+                    color="white"
                   >
-                    Forgot Password?
+                    {/* Forgot Password? */}
+                    Recuperar contraseña
                   </Link>
                 </Stack>
               </Grid>
