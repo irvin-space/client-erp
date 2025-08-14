@@ -8,6 +8,7 @@ import Theme5 from './theme5';
 import Theme6 from './theme6';
 import Theme7 from './theme7';
 import Theme8 from './theme8';
+import Theme9test from './theme9test';   //Tema de space
 
 // ==============================|| PRESET THEME - THEME SELECTOR ||============================== //
 
@@ -29,6 +30,8 @@ export default function Theme(colors, presetColor, mode) {
       return Theme7(colors, mode);
     case 'theme8':
       return Theme8(colors, mode);
+    case 'theme9test':
+      return Theme9test(colors, mode)
     default:
       return Default(colors);
   }

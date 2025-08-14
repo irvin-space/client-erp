@@ -13,27 +13,43 @@ import { ThemeMode } from 'config';
 export default function Palette(mode, presetColor) {
   const colors = mode === ThemeMode.DARK ? presetDarkPalettes : presetPalettes;
 
-  let greyPrimary = [
+//   let greyPrimary = [
+//   '#ffffff',
+//   '#fafafa',
+//   '#f5f5f5',
+//   '#f0f0f0',
+//   '#d9d9d9',
+//   '#bfbfbf',
+//   '#8c8c8c',
+//   '#595959',
+//   '#262626',
+//   '#141414',
+//   '#000000'
+// ];
+
+   let greyPrimary = [
     '#ffffff',
-    '#fafafa',
+    '#f5f5f5',
     '#f5f5f5',
     '#f0f0f0',
     '#d9d9d9',
     '#bfbfbf',
     '#8c8c8c',
     '#595959',
-    '#262626',
+    '#00345D',
     '#141414',
     '#000000'
   ];
   let greyAscent = ['#fafafa', '#bfbfbf', '#434343', '#1f1f1f'];
-  let greyConstant = ['#fafafb', '#e6ebf1'];
+  // let greyConstant = ['#fafafb', '#e6ebf1'];
+  let greyConstant = ['#f9fafc', '#e8edf2'];
 
   if (mode === ThemeMode.DARK) {
     greyPrimary = ['#000000', '#141414', '#1e1e1e', '#595959', '#8c8c8c', '#bfbfbf', '#d9d9d9', '#f0f0f0', '#f5f5f5', '#fafafa', '#ffffff'];
     // greyPrimary.reverse();
     greyAscent = ['#fafafa', '#bfbfbf', '#434343', '#1f1f1f'];
-    greyConstant = ['#121212', '#d3d8db'];
+    // greyConstant = ['#121212', '#d3d8db'];
+    greyConstant = ['#121212', '#caced4'];
   }
   colors.grey = [...greyPrimary, ...greyAscent, ...greyConstant];
 

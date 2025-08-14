@@ -1,5 +1,8 @@
 import { RouterProvider } from 'react-router-dom';
 
+//Provider
+import {  MyProvider } from './context';
+
 // project imports
 import router from 'routes';
 import ThemeCustomization from 'themes';
@@ -22,6 +25,7 @@ import { JWTProvider as AuthProvider } from 'contexts/JWTContext';
 export default function App() {
   return (
     <>
+    <MyProvider>
       <ThemeCustomization>
         <RTLLayout>
           <Locales>
@@ -38,6 +42,7 @@ export default function App() {
           </Locales>
         </RTLLayout>
       </ThemeCustomization>
+      </MyProvider>
     </>
   );
 }

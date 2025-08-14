@@ -76,7 +76,7 @@ export default function AuthWrapper({ children }) {
                 </Box>
               )}
               <AuthCard>{children}</AuthCard>
-              {!isLoggedIn && (
+              {/* {!isLoggedIn && (
                 <Box sx={{ maxWidth: { xs: 400, sm: 475 }, margin: { xs: 2.5, md: 3 }, '& > *': { flexGrow: 1, flexBasis: '50%' } }}>
                   <Grid size={12}>
                     <Divider sx={{ mb: 3 }}>
@@ -87,13 +87,13 @@ export default function AuthWrapper({ children }) {
                     <LoginProvider currentLoginWith={authParam} />
                   </Grid>
                 </Box>
-              )}
+              )} */}
             </Grid>
           </Grid>
         </Grid>
-        <Grid sx={{ p: 3 }} size={12}>
+        {/* <Grid sx={{ p: 3 }} size={12}>
           <AuthFooter />
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );

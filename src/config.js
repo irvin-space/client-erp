@@ -79,7 +79,7 @@ const config = {
   miniDrawer: false,
   container: true,
   mode: ThemeMode.LIGHT,
-  presetColor: 'default',
+  presetColor: 'theme9test',
   themeDirection: ThemeDirection.LTR
 };
 
