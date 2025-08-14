@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 //Ant Design icons
 import { SearchOutlined } from '@ant-design/icons';
 
-//Componentes
+//Componentes.
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import FirstComponent from '../componentesBase/FirstComponent';
 import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
@@ -88,7 +88,7 @@ const BusquedaTramitesAduanales = () => {
 
     handleFetch(objetoDeBusqueda);
   };
-  // comentario pruebna jgm
+  // comentario prueba jgm
   //Estado de TablaColapsable
   //const [selectedRow, setSelectedRow] = React.useState(null);
 
