@@ -8,6 +8,10 @@ import SimpleLayout from 'layout/Simple';
 
 import { SimpleLayoutType } from 'config';
 
+
+//Componentes
+import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tramites-aduanales'
+
 // pages routing
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
 const MaintenanceError500 = Loadable(lazy(() => import('pages/maintenance/500')));
@@ -31,6 +35,10 @@ const MainRoutes = {
         {
           path: 'sample-page',
           element: <SamplePage />
+        },
+        {
+          path: 'user-page',
+          element: <EstCambiosTramitesAduanales/>
         }
       ]
     },

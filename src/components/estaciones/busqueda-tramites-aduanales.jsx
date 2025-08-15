@@ -15,12 +15,13 @@ import { SearchOutlined } from '@ant-design/icons';
 //Componentes.
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import FirstComponent from '../componentesBase/FirstComponent';
-import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
+// import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
+import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import TablaColapsable from '../componentesBase/TablaColapsable';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { borderRadius, maxHeight } from '@mui/system';
-import ComponenteLista from '../componentesBase/ComponenteLista';
+// import ComponenteLista from '../componentesBase/ComponenteLista';
 
 const style = {
   position: 'absolute',

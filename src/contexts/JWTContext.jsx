@@ -18,7 +18,8 @@ const chance = new Chance();
 const initialState = {
   isLoggedIn: false,
   isInitialized: false,
-  user: null
+  user: null,
+  menu: []
 };
 
 const verifyToken = (serviceToken) => {
@@ -55,13 +56,15 @@ export const JWTProvider = ({ children }) => {
         const serviceToken = window.localStorage.getItem('serviceToken');
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
-          const response = await axios.get('/api/account/me');
-          const { user } = response.data;
+          const response = await axios.post('http://localhost:3001/user/cuenta/yo');
+          console.log(response)
+          const { user, menu } = response.data;
           dispatch({
             type: LOGIN,
             payload: {
               isLoggedIn: true,
-              user
+              user,
+              menu
             }
           });
         } else {
@@ -81,14 +84,17 @@ export const JWTProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await axios.post('/api/account/login', { email, password });
-    const { serviceToken, user } = response.data;
+    const response = await axios.post('http://localhost:3001/user/login', { email, password });
+    
+    const { serviceToken, user, menu } = response.data;
+    console.log(menu)
     setSession(serviceToken);
     dispatch({
       type: LOGIN,
       payload: {
         isLoggedIn: true,
-        user
+        user,
+        menu
       }
     });
   };

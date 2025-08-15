@@ -229,17 +229,17 @@ const TablaColapsable = ({ datos }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* {rows.map((row) => (
+          {rows.map((row) => (
             <Row key={row.name} row={row} isSelected={selectedRow === row.name} onSelect={handleSelect(row.name)} />
-          ))} */}
-          {newRowsArray.map((row) => (
+          ))}
+          {/* {newRowsArray.map((row) => (
             <Row
               key={row.tramite_aduana}
               row={row}
               isSelected={selectedRow === row.tramite_aduana}
               onSelect={handleSelect(row.tramite_aduana)}
             />
-          ))}
+          ))} */}
         </TableBody>
       </Table>
     </TableContainer>

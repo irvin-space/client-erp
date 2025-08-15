@@ -61,7 +61,6 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
         label={label}
         onChange={handleChange}
         displayEmpty
-        style={{backgroundColor:"white"}}
       >
         {loading ? (
           <MenuItem disabled>

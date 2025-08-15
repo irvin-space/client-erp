@@ -23,12 +23,13 @@ import Grid from '@mui/material/Grid';
 
 //Componentes
 import FirstComponent from '../componentesBase/FirstComponent';
-import ComponenteLista from '../componentesBase/ComponenteLista';
-import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
-import DataTable from '../componentesBase/DataTable';
-import DataTable2 from '../componentesBase/DataTable2';
+// import ComponenteLista from '../componentesBase/ComponenteLista';
+// import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
+import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
+import DataTable from '../componentesBase/DataTable.jsx';
+import DataTable2 from '../componentesBase/DataTable2.jsx';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.jsx';
-import Mensajes from '../componentesBase/Mensajes.jsx';
+// import Mensajes from '../componentesBase/Mensajes.jsx';
 
 //Modals
 import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
@@ -159,9 +160,7 @@ const EstCambiosTramitesAduanales = () => {
                       <Grid size={6}>
                         <RowRadioButtonsGroup titulo="Tipo" valor1="Importación" valor2="Exportación" />
                       </Grid>
-                      <Grid size={6}>
-                        <ComponenteLista titulo="Clave" />
-                      </Grid>
+                      <Grid size={6}>{/* <ComponenteLista titulo="Clave" /> */}</Grid>
                     </Grid>
                   </Grid>
                   <Grid size={12}>
@@ -295,9 +294,7 @@ const EstCambiosTramitesAduanales = () => {
                   <Grid size={12}>
                     {/* Chequera*/}
                     <Grid container spacing={2}>
-                      <Grid size={12}>
-                        <ComponenteLista titulo="Chequera" />
-                      </Grid>
+                      <Grid size={12}>{/* <ComponenteLista titulo="Chequera" /> */}</Grid>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -315,7 +312,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Ingresos Agencia Aduanal</Typography>
         <br />
-        <DataTable></DataTable>
+        {/* <DataTable></DataTable> */}
       </Box>
 
       <br />
@@ -323,7 +320,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
-        <DataTable></DataTable>
+        {/* <DataTable></DataTable> */}
       </Box>
 
       <Divider sx={{ my: 2 }} />
