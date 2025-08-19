@@ -36,11 +36,11 @@ const MainRoutes = {
       path: '/',
       element: <DashboardLayout />,
       children: [
-        {
-          path: 'sample-page',
-          element: <SamplePage />
-          // element: <EstCambiosTramitesAduanales/>
-        },
+        // {
+        //   path: 'sample-page',
+        //   element: <SamplePage />
+        //   // element: <EstCambiosTramitesAduanales/>
+        // },
         {
           path: 'user-page',
           element: <EstCambiosTramitesAduanales/>

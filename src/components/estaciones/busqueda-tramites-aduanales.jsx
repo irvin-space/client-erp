@@ -41,21 +41,21 @@ const style = {
   overflow: 'hidden'
 };
 
-const BusquedaTramitesAduanales = () => {
-  const [open, setOpen] = useState(false);
+const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
+  // const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Cargando
-  const handleOpen = () => {
-    setOpen(true);
-    setSucursal('')
-    setDesdeFecha(null)
-    setHastaFecha(null)
-    setTipo(null)
-  }
-  const handleClose = () => {
-    setOpen(false);
-    setArreglo([])
-    setSegundoArreglo([])
-  }
+  // const handleOpen = () => {
+  //   setOpen(true);
+  //   setSucursal('')
+  //   setDesdeFecha(null)
+  //   setHastaFecha(null)
+  //   setTipo(null)
+  // }
+  // const handleClose = () => {
+  //   setOpen(false);
+  //   setArreglo([])
+  //   setSegundoArreglo([])
+  // }
 
   const [sucursal, setSucursal] = useState('');
   const [desdeFecha, setDesdeFecha] = useState(null);
@@ -64,6 +64,17 @@ const BusquedaTramitesAduanales = () => {
 
   const [arreglo, setArreglo] = useState([])
   const [segundoArreglo, setSegundoArreglo] = useState([])
+
+
+     // ✅ Close modal and pass data up
+  const handleRowSelect = (row) => {
+    if (onSelectRow) {
+      onSelectRow(row); // ✅ Send data to parent
+    }
+    if (onClose) {
+      onClose(); // ✅ Close modal
+    }
+  };
 
   const handleFetch = async (parametros) => {
     try {
@@ -118,10 +129,10 @@ const BusquedaTramitesAduanales = () => {
   return (
     <div style={{ height: '100%' }}>
       {/* <Button onClick={handleOpen}>Abrir modal</Button> */}
-      <Button onClick={handleOpen} variant="outlined" sx={{ height: '100%', backgroundColor:"white" }}>
+      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor:"white" }}>
         <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
       </Button>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={onClose}>
         <Box sx={style}>
           <Container maxWidth="xl" sx={{ height: '100%' }}>
             {/* Encabezado */}
@@ -197,7 +208,7 @@ const BusquedaTramitesAduanales = () => {
                 }
               }}
             >
-              <TablaColapsable datos={arreglo} datos2={segundoArreglo} />
+              <TablaColapsable datos={arreglo} datos2={segundoArreglo} onSelectRow={handleRowSelect} />
               {/* <TablaColapsable  selectedRow={selectedRow} onSelectRow={setSelectedRow}/> */}
             </Box>
 

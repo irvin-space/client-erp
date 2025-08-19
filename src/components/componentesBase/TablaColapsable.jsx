@@ -137,12 +137,13 @@ function Row(props) {
 //   }).isRequired
 // };
 
-const TablaColapsable = ({ datos, datos2 }) => {
+const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const handleSelect = (rowName) => () => {
     console.log(rowName)
-    setSelectedRow(rowName);
+    // setSelectedRow(rowName);
+    onSelectRow(rowName)
   };
 
   // console.log(datos);
@@ -185,13 +186,30 @@ const TablaColapsable = ({ datos, datos2 }) => {
   });
 
   console.log('below are the rows shape');
+//tramite a la derecha
+//fecha a la izquireda, pedimento,tipo,
+//precintos por ser numero a la derecha
+//cliente facturacion izquierda
+//seleccion
 
+//izquierda cadena
+//derecha
+
+//importe me a dos decimales
+
+//TRAER TODO ROW
+
+//SUCURSAL PERSONAL
+
+//LA FECHA DE HOY MENOS UN MES
+///LA FECHA HASTA, LA FECHA DE HOY
+//Tipo Todos
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell />
+            <TableCell /> 
             <TableCell>Trámite</TableCell>
             <TableCell align="right">Fecha</TableCell>
             <TableCell align="right">Pedimento</TableCell>
@@ -207,7 +225,7 @@ const TablaColapsable = ({ datos, datos2 }) => {
         <TableBody>
           {rows.length > 0 ? (
             rows.map((row) => (
-              <Row key={row.tramite} row={row} isSelected={selectedRow === row.tramite} onSelect={handleSelect(row.tramite)} />
+              <Row key={row.tramite} row={row} isSelected={selectedRow === row.tramite} onSelect={handleSelect(row)} />
             ))
           ) : (
             <TableRow>
