@@ -57,7 +57,6 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleClick = async () => {
     try {
-      console.log('hola');
       const response = await fetch('http://localhost:3001/consulta', {
         method: 'POST',
         headers: {
@@ -312,7 +311,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Ingresos Agencia Aduanal</Typography>
         <br />
-        {/* <DataTable></DataTable> */}
+        <DataTable></DataTable>
       </Box>
 
       <br />
@@ -320,7 +319,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
-        {/* <DataTable></DataTable> */}
+        <DataTable></DataTable>
       </Box>
 
       <Divider sx={{ my: 2 }} />

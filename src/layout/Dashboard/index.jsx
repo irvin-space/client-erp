@@ -61,18 +61,18 @@ export default function DashboardLayout() {
               flexDirection: 'column'
             }}
           >
-            <Breadcrumbs />
+            {/* <Breadcrumbs /> */}
             <Outlet />
-            <Footer />
+            {/* <Footer /> */}
           </Box>
         </Box>
       ) : (
         <Box
           component="main"
           // sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 }, backgroundImage: `url(${spaceBg})`
-          sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 }, backgroundColor: '#d0d6daff', backgroundSize: 'cover' }}
+          sx={{ width: 'calc(100% - 260px)', flexGrow: 1, backgroundColor: '#d0d6daff', backgroundSize: 'cover' }}
         >
-          <Toolbar sx={{ mt: 'inherit' }} />
+          {/* <Toolbar sx={{ mt: 'inherit' }} />
           <Box
             sx={{
               ...{ px: { xs: 0, sm: 2 } },
@@ -89,27 +89,20 @@ export default function DashboardLayout() {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
-            >
-              <Stack
-                sx={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 2,
-                  borderRadius: 1
-                }}
-              >
+            > */}
+              
                 <img
                   onClick={() => {
                     setIsVisible(!isVisible);
                   }}
-                  style={{ objectFit: "cover", width: '100%', height: '100%' }}
+                  style={{ objectFit: "cover", width: '100%', height: '99vh', filter:"blur(8px)" }}
                   src={`${spaceBg}`}
                   alt="space wallpaper image"
                 />
-              </Stack>
-            </Box>
+              
+            {/* </Box> */}
             {/* <Footer /> */}
-          </Box>
+          {/* </Box> */}
         </Box>
       )}
     </Box>

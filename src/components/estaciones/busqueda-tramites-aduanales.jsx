@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress'; // 👈 Loader
 
 import FormControl from '@mui/material/FormControl';
 
@@ -28,7 +29,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '80vw',
+  width: '90vw',
   maxHeight: '80vh',
   //   height: '70vh',
   //   bgcolor: 'background.paper',
@@ -42,19 +43,32 @@ const style = {
 
 const BusquedaTramitesAduanales = () => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [isLoading, setIsLoading] = useState(false); // Cargando
+  const handleOpen = () => {
+    setOpen(true);
+    setSucursal('')
+    setDesdeFecha(null)
+    setHastaFecha(null)
+    setTipo(null)
+  }
+  const handleClose = () => {
+    setOpen(false);
+    setArreglo([])
+    setSegundoArreglo([])
+  }
 
-  const [sucursal, setSucursal] = useState('b');
+  const [sucursal, setSucursal] = useState('');
   const [desdeFecha, setDesdeFecha] = useState(null);
   const [hastaFecha, setHastaFecha] = useState(null);
   const [tipo, setTipo] = useState(null);
 
-  const [arreglo,setArreglo] = useState([])
+  const [arreglo, setArreglo] = useState([])
+  const [segundoArreglo, setSegundoArreglo] = useState([])
 
   const handleFetch = async (parametros) => {
     try {
-      const response = await fetch('http://localhost:3001/dinamico/lista', {
+      setIsLoading(true); // Comenzar a cargar
+      const response = await fetch('http://172.16.2.31:3001/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -66,8 +80,11 @@ const BusquedaTramitesAduanales = () => {
       const data = await response.json()
       console.log(data)
       setArreglo(data[0])
+      setSegundoArreglo(data[1])
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false) //Terminar de cargar
     }
   };
 
@@ -180,13 +197,13 @@ const BusquedaTramitesAduanales = () => {
                 }
               }}
             >
-              <TablaColapsable datos={arreglo} />
+              <TablaColapsable datos={arreglo} datos2={segundoArreglo} />
               {/* <TablaColapsable  selectedRow={selectedRow} onSelectRow={setSelectedRow}/> */}
             </Box>
 
             <br />
 
-            <Button onClick={handleConsultar} variant="contained">
+            <Button onClick={handleConsultar} variant="contained" disabled={isLoading} startIcon={isLoading ? <CircularProgress size={20}/>:null}>
               Consultar
             </Button>
           </Container>

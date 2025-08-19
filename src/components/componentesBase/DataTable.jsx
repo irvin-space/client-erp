@@ -1,91 +1,65 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import * as React from 'react';
+import { DataGrid } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
 
-// Material UI
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+const columns = [
+  { field: 'id', headerName: 'Concepto', width: 70,align: 'center'},
+  { field: 'firstName', headerName: 'Nombre Concepto', flex:1 ,align: 'center'},
+  { field: 'lastName', headerName: 'Moneda', flex:1,align: 'center'},
+  {
+    field: 'age',
+    headerName: 'Cant',
+    type: 'number',
+    flex:1,
+    align: 'center'
+  },
+  {
+    field: 'fullName',
+    headerName: 'Importe M.N',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    flex:1,
+    align: 'center',
+    valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+  },
+  { field: 'lastName', headerName: 'Importe M.E.',align: 'center', flex:1},
+];
 
-const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey,value, onChange}) => {
-  const [options, setOptions] = useState([]);
-  // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
-  const [loading, setLoading] = useState(true);
+const rows = [
+  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
+  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+];
 
-  //Llamar a el backend al montar el componente
-  useEffect(() => {
-    const callBackend = async () => {
-      try {
-        const response = await fetch('http://localhost:3001/dinamico/lista', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instruccionSQL: instruccionSQL, parametros: parametros })
-        });
+const paginationModel = { page: 0, pageSize: 5 };
 
-        const data = await response.json();
-        console.log('🔴 Respuesta completa del backend:', data);
-        console.log('🟢 Tipo de data:', typeof data);
-        console.log('🟡 Es array?', Array.isArray(data));
-        console.log('📦 Primer elemento (si existe):', data[0]);
-        console.log(data);
-
-        //Establecer valores dinamicos
-        // setValoresDinamicos({...valoresDinamicos,options:data[0]})
-        setOptions(data[0]);
-        setLoading(false);
-      } catch (err) {
-        console.log('Error message', err);
-      }
-    };
-
-    callBackend();
-  }, []);
-
-  useEffect(() => {
-    console.log('✅ Opciones actualizadas:', options);
-  }, [options]);
-
-  const handleChange = (event) => {
-    console.log(options);
-    console.log(event.target.value);
-    onChange(event.target.value);
-  };
-
+export default function DataTable() {
   return (
-    <FormControl fullWidth>
-      <InputLabel id="dinamic-simple-select-label">{label}</InputLabel>
-      <Select
-        labelId="dinamic-simple-select-label"
-        id="dinamic-simple-select"
-        value={value}
-        label={label}
-        onChange={handleChange}
-        displayEmpty
-        style={{backgroundColor:"white"}}
-      >
-        {loading ? (
-          <MenuItem disabled>
-            <em>Cargando opciones...</em>
-          </MenuItem>
-        ) : options.length === 0 ? (
-          <MenuItem disabled>
-            <em>Sin opciones disponibles</em>
-          </MenuItem>
-        ) : (
-          options.map((item) => {
-            const value = item[valueKey] ?? '';
-            const label = item[labelKey] ?? '(Sin nombre)';
-
-            return (
-              <MenuItem key={value} value={value}>
-                {label}
-              </MenuItem>
-            );
-          })
-        )}
-      </Select>
-    </FormControl>
+    <Paper sx={{ height: 400, width: '100%' }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{ pagination: { paginationModel } }}
+        pageSizeOptions={[5, 10]}
+        checkboxSelection
+        sx={{
+          border: 0,
+          '& .MuiDataGrid-cell': {
+            py: 0, // Reduce vertical padding in cells
+            // px: 1,   // Reduce horizontal padding in cells
+          },
+          '& .MuiDataGrid-columnHeader': {
+            py: 0.5, // Reduce vertical padding in header
+            px: 1,   // Reduce horizontal padding in header
+          },
+        }}
+      />
+    </Paper>
   );
-};
-
-export default ComponenteListaDinamica;
+}

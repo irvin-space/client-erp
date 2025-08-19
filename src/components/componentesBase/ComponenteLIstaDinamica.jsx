@@ -16,7 +16,7 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
   useEffect(() => {
     const callBackend = async () => {
       try {
-        const response = await fetch('http://localhost:3001/dinamico/lista', {
+        const response = await fetch('http://172.16.2.31:3001/dinamico/lista', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ instruccionSQL: instruccionSQL, parametros: parametros })

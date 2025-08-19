@@ -6,6 +6,7 @@ import DashboardLayout from 'layout/Dashboard';
 import PagesLayout from 'layout/Pages';
 import SimpleLayout from 'layout/Simple';
 
+
 import { SimpleLayoutType } from 'config';
 
 
@@ -23,6 +24,9 @@ const AppContactUS = Loadable(lazy(() => import('pages/contact-us')));
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
 
+//renderizar - sample page 2
+const SamplePage2 = Loadable(lazy(() => import('pages/extra-pages/sample-page2')))
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -35,10 +39,15 @@ const MainRoutes = {
         {
           path: 'sample-page',
           element: <SamplePage />
+          // element: <EstCambiosTramitesAduanales/>
         },
         {
           path: 'user-page',
           element: <EstCambiosTramitesAduanales/>
+        },
+        {
+          path: 'sample-page2', 
+          element: <SamplePage2/> //Ejemplos de componentes para pantalla de Auditoria de Trazabilidad - Deposito # 167957
         }
       ]
     },

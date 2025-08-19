@@ -23,31 +23,7 @@ import { CheckCircleTwoTone } from '@ant-design/icons';
 // import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 // import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-function createData(name, calories, fat, carbs, protein, price, clave) {
-  return {
-    name,
-    clave,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1
-      }
-    ]
-  };
-}
-
-function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento, impuesto, cteFacturacion) {
+function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento, impuesto, cteFacturacion, history) {
   return {
     tramite,
     fecha,
@@ -58,18 +34,7 @@ function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedim
     ctePedimento,
     impuesto,
     cteFacturacion,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1
-      }
-    ]
+    history
   };
 }
 
@@ -86,16 +51,16 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.tramite}
         </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
-        <TableCell align="right">{row.clave}</TableCell>
-        <TableCell align="center">—</TableCell> {/* Placeholder */}
-        <TableCell align="center">—</TableCell>
-        <TableCell align="center">—</TableCell>
+        <TableCell align="right">{row.fecha}</TableCell>
+        <TableCell align="center">{row.pedimento}</TableCell>
+        <TableCell align="center">{row.tipo}</TableCell>
+        <TableCell align="center">{row.precintos}</TableCell>
+        <TableCell align="center">{row.clave}</TableCell>
+        <TableCell align="center">{row.ctePedimento}</TableCell> {/* Placeholder */}
+        <TableCell align="center">{row.impuesto}</TableCell>
+        <TableCell align="center">{row.cteFacturacion}</TableCell>
         {/*  Selection Column */}
         <TableCell align="center">
           <IconButton
@@ -119,22 +84,24 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Nombre</TableCell>
-                    <TableCell>Tipo</TableCell>
-                    <TableCell align="right">Moneda</TableCell>
-                    <TableCell align="right">Importe</TableCell>
-                    <TableCell align="right">Importe ME</TableCell>
-                    <TableCell align="right">Factura</TableCell>
+                    <TableCell align="center">Tipo</TableCell>
+                    <TableCell align="center">Moneda</TableCell>
+                    <TableCell align="center">Importe</TableCell>
+                    <TableCell align="center">Importe ME</TableCell>
+                    <TableCell align="center">Factura</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
+                  {row.history.map((history) => (
+                    <TableRow key={history.tramite}>
                       <TableCell component="th" scope="row">
-                        {historyRow.date}
+                        {history.nombre_concepto}
                       </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">{Math.round(historyRow.amount * row.price * 100) / 100}</TableCell>
+                      <TableCell align="center">{history.naturaleza}</TableCell>
+                      <TableCell align="center">{history.moneda}</TableCell>
+                      <TableCell align="center">{history.importe}</TableCell>
+                      <TableCell align="center">{history.importe_me}</TableCell>
+                      <TableCell align="center">{history.factura}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -147,68 +114,77 @@ function Row(props) {
   );
 }
 
-Row.propTypes = {
-  row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    clave: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired
-      })
-    ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
-    isSelected: PropTypes.bool.isRequired,
-    onSelect: PropTypes.func.isRequired
-  }).isRequired
-};
-
 // ROW PROPTYPES 2
-Row.propTypes = {
-  row: PropTypes.shape({
-    tramite: PropTypes.number.isRequired,
-    fecha: PropTypes.number.isRequired,
-    pedimento: PropTypes.number.isRequired,
-    tipo: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired
-      })
-    ).isRequired,
-    clave: PropTypes.string.isRequired,
-    ctePedimento: PropTypes.number.isRequired,
-    impuesto: PropTypes.number.isRequired,
-    cteFacturacion: PropTypes.number.isRequired,
-    isSelected: PropTypes.bool.isRequired,
-    onSelect: PropTypes.func.isRequired
-  }).isRequired
-};
+// Row.propTypes = {
+//   row: PropTypes.shape({
+//     tramite: PropTypes.number.isRequired,
+//     fecha: PropTypes.number.isRequired,
+//     pedimento: PropTypes.number.isRequired,
+//     tipo: PropTypes.number.isRequired,
+//     history: PropTypes.arrayOf(
+//       PropTypes.shape({
+//         amount: PropTypes.number.isRequired,
+//         customerId: PropTypes.string.isRequired,
+//         date: PropTypes.string.isRequired
+//       })
+//     ).isRequired,
+//     clave: PropTypes.string.isRequired,
+//     ctePedimento: PropTypes.number.isRequired,
+//     impuesto: PropTypes.number.isRequired,
+//     cteFacturacion: PropTypes.number.isRequired,
+//     isSelected: PropTypes.bool.isRequired,
+//     onSelect: PropTypes.func.isRequired
+//   }).isRequired
+// };
 
-const rows = [
-  createData('TrámiteA', 159, 6.0, 24, 4.0, 3.99, 123),
-  createData('TrámiteB', 237, 9.0, 37, 4.3, 4.99, 123),
-  createData('TrámiteC', 262, 16.0, 24, 6.0, 3.79, 123)
-];
-// tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento, impuesto, cteFacturacion
-
-const TablaColapsable = ({ datos }) => {
+const TablaColapsable = ({ datos, datos2 }) => {
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const handleSelect = (rowName) => () => {
+    console.log(rowName)
     setSelectedRow(rowName);
   };
 
-  const newRowsArray = datos.map((item) => {
-    createData2(item.tramite_aduana, item.fecha, item.pedimento, item.tipo, item.precintos, item.clave, item.cliente_pedimento)
+  // console.log(datos);
+
+    // Agrupar datos2 por tramite_aduanal
+  const detailsMap = React.useMemo(() => {
+    const map = {};
+    datos2.forEach((detail) => {
+      const key = detail.tramite_aduana;
+      if (!map[key]) map[key] = [];
+      map[key].push({
+        ...detail,
+        nombre_concepto: detail.nombre_concepto?.trim(),
+        naturaleza: detail.naturaleza?.trim(),
+        moneda: detail.moneda?.trim(),
+        factura: detail.factura,
+        importe: detail.importe,
+        importe_me: detail.importe_me
+      });
+    });
+    return map;
+  }, [datos2]);
+
+  // Crear filas con history correcto
+  const rows = datos.map((item) => {
+    const history = detailsMap[item.tramite_aduana] || [];
+
+    return createData2(
+      item.tramite_aduana,
+      item.cfecha,
+      item.pedimento,
+      item.tipo,
+      item.precintos,
+      item.clave,
+      item.cliente_pedimento,
+      item.impuesto,
+      item.cliente_facturacion,
+      history
+    );
   });
-  
+
+  console.log('below are the rows shape');
 
   return (
     <TableContainer component={Paper}>
@@ -229,17 +205,19 @@ const TablaColapsable = ({ datos }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} isSelected={selectedRow === row.name} onSelect={handleSelect(row.name)} />
-          ))}
-          {/* {newRowsArray.map((row) => (
-            <Row
-              key={row.tramite_aduana}
-              row={row}
-              isSelected={selectedRow === row.tramite_aduana}
-              onSelect={handleSelect(row.tramite_aduana)}
-            />
-          ))} */}
+          {rows.length > 0 ? (
+            rows.map((row) => (
+              <Row key={row.tramite} row={row} isSelected={selectedRow === row.tramite} onSelect={handleSelect(row.tramite)} />
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={11} align="center">
+                <Typography variant="body2" color="textSecondary">
+                  No se encontraron trámites
+                </Typography>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>
