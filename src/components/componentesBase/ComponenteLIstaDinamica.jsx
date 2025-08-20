@@ -16,7 +16,12 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
   useEffect(() => {
     const callBackend = async () => {
       try {
-        const response = await fetch('http://172.16.2.31:3001/dinamico/lista', {
+        /* const response = await fetch('http://172.16.2.31:3001/dinamico/lista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instruccionSQL: instruccionSQL, parametros: parametros })
+        }); */
+        const response = await fetch('http://localhost:3001/dinamico/lista', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ instruccionSQL: instruccionSQL, parametros: parametros })
@@ -33,6 +38,13 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
         // setValoresDinamicos({...valoresDinamicos,options:data[0]})
         setOptions(data[0]);
         setLoading(false);
+        // --- AQUÍ ESTÁ LA LÓGICA AGREGADA PARA ASIGNAR VALOR POR DEFAULT---
+        // Si no se ha proporcionado un valor y hay opciones, asigna el primer valor como por defecto.
+        if (onChange && !value && fetchedOptions && fetchedOptions.length > 0) {
+            onChange(fetchedOptions[0][valueKey]);
+        }
+        // --- FIN DE LA LÓGICA AGREGADA ---
+
       } catch (err) {
         console.log('Error message', err);
       }

@@ -56,7 +56,8 @@ export const JWTProvider = ({ children }) => {
         const serviceToken = window.localStorage.getItem('serviceToken');
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
-          const response = await axios.post('http://172.16.2.31:3001/user/cuenta/yo');
+          //const response = await axios.post('http://172.16.2.31:3001/user/cuenta/yo');
+          const response = await axios.post('http://localhost:3001/user/cuenta/yo');
           console.log(response)
           const { user, menu } = response.data;
           dispatch({
@@ -84,8 +85,9 @@ export const JWTProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await axios.post('http://172.16.2.31:3001/user/login', { email, password });
-    
+    //const response = await axios.post('http://172.16.2.31:3001/user/login', { email, password });
+    const response = await axios.post('http://localhost:3001/user/login', { email, password });
+
     const { serviceToken, user, menu } = response.data;
     console.log(menu)
     setSession(serviceToken);
@@ -107,7 +109,9 @@ export const JWTProvider = ({ children }) => {
       email,
       password,
       firstName,
-      lastName
+      lastName,
+      sucursal,
+      sucursalName
     });
     let users = response.data;
 
@@ -119,7 +123,9 @@ export const JWTProvider = ({ children }) => {
           id,
           email,
           password,
-          name: `${firstName} ${lastName}`
+          name: `${firstName} ${lastName}`,
+          sucursal,
+          sucursalName
         }
       ];
     }

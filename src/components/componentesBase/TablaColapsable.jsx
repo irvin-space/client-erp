@@ -66,7 +66,8 @@ function Row(props) {
           <IconButton
             onClick={onSelect}
             aria-label={isSelected ? `Deselect ${row.name}` : `Select ${row.name}`}
-            color={isSelected ? 'success' : 'default'}
+            color='success'
+            //color={isSelected ? 'success' : 'red'}
             size="medium"
           >
             {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CheckCircleOutlined fontSize="large" />}

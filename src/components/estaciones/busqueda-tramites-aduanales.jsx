@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 
 //MUI
 import Modal from '@mui/material/Modal';
@@ -16,6 +17,7 @@ import { SearchOutlined } from '@ant-design/icons';
 //Componentes.
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import FirstComponent from '../componentesBase/FirstComponent';
+import useAuth from 'hooks/useAuth.js';
 // import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
 import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import TablaColapsable from '../componentesBase/TablaColapsable';
@@ -29,7 +31,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '90vw',
+  width: '130vh',
   maxHeight: '80vh',
   //   height: '70vh',
   //   bgcolor: 'background.paper',
@@ -56,11 +58,11 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   //   setArreglo([])
   //   setSegundoArreglo([])
   // }
-
-  const [sucursal, setSucursal] = useState('');
-  const [desdeFecha, setDesdeFecha] = useState(null);
-  const [hastaFecha, setHastaFecha] = useState(null);
-  const [tipo, setTipo] = useState(null);
+console.log('useAuth', useAuth());
+  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const [desdeFecha, setDesdeFecha] = useState(dayjs().subtract(1, 'month'));
+  const [hastaFecha, setHastaFecha] = useState(dayjs());
+  const [tipo, setTipo] = useState('Todos'); // 'Todos', 'Importación', 'Exportación');
 
   const [arreglo, setArreglo] = useState([]);
   const [segundoArreglo, setSegundoArreglo] = useState([]);
@@ -78,7 +80,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   const handleFetch = async (parametros) => {
     try {
       setIsLoading(true); // Comenzar a cargar
-      const response = await fetch('http://172.16.2.31:3001/dinamico/lista', {
+      const response = await fetch('http://localhost:3001/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
