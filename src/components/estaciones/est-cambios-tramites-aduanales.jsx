@@ -43,10 +43,9 @@ import { color } from 'framer-motion';
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
-   const [openModal, setOpenModal] = useState(false); // ✅ Track modal state
+  const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal
 
-  const [selectedTramite,setSelectedTramite] = useState(null)
-
+  const [selectedTramite, setSelectedTramite] = useState(null);
 
   console.log('Debajo debe mostrarse lo que hay en data');
   // console.log(data.menu);
@@ -71,11 +70,11 @@ const EstCambiosTramitesAduanales = () => {
     }
   };
 
-   // ✅ Callback: called when row is selected
+  // Callback: hace el llamado cuando la fila a sido seleccionada
   const handleRowSelect = (row) => {
     console.log('Row selected in parent:', row);
     setSelectedTramite(row);
-    setOpenModal(false); // ✅ Close modal
+    setOpenModal(false); // Cerrar modal
   };
 
   return (
@@ -88,20 +87,20 @@ const EstCambiosTramitesAduanales = () => {
           {/* Tramite, Fecha */}
           <Grid size={4}>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-              <TextField id="standard-basic" label="Trámite aduana" variant="standard" fullWidth value={selectedTramite?.tramite ? selectedTramite.tramite: ""}/>
-              {/* <Box
-                onClick={() => alert('buscar...')}
-                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '20%', height: '100%' }}
-              >
-                <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
-              </Box> */}
+              <TextField
+                id="standard-basic"
+                label="Trámite aduana"
+                variant="standard"
+                fullWidth
+                value={selectedTramite?.tramite ? selectedTramite.tramite : ''}
+              />
 
-              {/* <Button variant="outlined" sx={{ height: '100%' }}>
-                <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
-              </Button> */}
-
-              {/* Boton de modal de pruebas */}
-              <BusquedaTramitesAduanales onSelectRow={handleRowSelect} open={openModal} onClose={()=>setOpenModal(false)} onOpen={()=>setOpenModal(true)} />
+              <BusquedaTramitesAduanales
+                onSelectRow={handleRowSelect}
+                open={openModal}
+                onClose={() => setOpenModal(false)}
+                onOpen={() => setOpenModal(true)}
+              />
             </Box>
           </Grid>
           <Grid size={4}>
@@ -127,7 +126,13 @@ const EstCambiosTramitesAduanales = () => {
             />
           </Grid>
           <Grid size={4}>
-            <TextField fullWidth id="outlined-number" label="Precintos" type="number" value={selectedTramite?.precintos || selectedTramite?.precintos == 0 ? selectedTramite.precintos: ""} />
+            <TextField
+              fullWidth
+              id="outlined-number"
+              label="Precintos"
+              type="number"
+              value={selectedTramite?.precintos || selectedTramite?.precintos == 0 ? selectedTramite.precintos : ''}
+            />
           </Grid>
           <Grid size={4}>
             <TextField fullWidth placeholder="0.00" id="outlined-start-adornment" slotProps={{ input: { startAdornment: '$' } }} />
@@ -169,7 +174,13 @@ const EstCambiosTramitesAduanales = () => {
                   <Grid size={12}>
                     <Grid container spacing={3}>
                       <Grid size={6}>
-                        <TextField fullWidth id="standard-basic" label="Número de pedimento" variant="standard" value={selectedTramite?.pedimento ? selectedTramite.pedimento: ""} />
+                        <TextField
+                          fullWidth
+                          id="standard-basic"
+                          label="Número de pedimento"
+                          variant="standard"
+                          value={selectedTramite?.pedimento ? selectedTramite.pedimento : ''}
+                        />
                       </Grid>
                       <Grid size={6}>
                         <RowRadioButtonsGroup titulo="" valor1="Con Cargo" valor2="Sin Cargo" />
@@ -191,13 +202,13 @@ const EstCambiosTramitesAduanales = () => {
                     <Grid container spacing={2}>
                       <Grid size={12}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-                          <TextField id="standard-basic" label="Pedimento" variant="standard" value={selectedTramite?.ctePedimento ? selectedTramite.ctePedimento: ""} fullWidth />
-                          {/* <Box
-                            onClick={() => alert('buscar...')}
-                            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '20%', height: '100%' }}
-                          >
-                            <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
-                          </Box> */}
+                          <TextField
+                            id="standard-basic"
+                            label="Pedimento"
+                            variant="standard"
+                            value={selectedTramite?.ctePedimento ? selectedTramite.ctePedimento : ''}
+                            fullWidth
+                          />
 
                           <Button variant="outlined" sx={{ height: '100%' }}>
                             <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
@@ -217,15 +228,9 @@ const EstCambiosTramitesAduanales = () => {
                             multiline
                             maxRows={2}
                             variant="standard"
-                            value={selectedTramite?.cteFacturacion ? selectedTramite.cteFacturacion: ""}
+                            value={selectedTramite?.cteFacturacion ? selectedTramite.cteFacturacion : ''}
                             fullWidth
                           />
-                          {/* <Box
-                            onClick={() => alert('buscar...')}
-                            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '20%', height: '100%' }}
-                          >
-                            <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
-                          </Box> */}
 
                           <Button variant="outlined" sx={{ height: '100%' }}>
                             <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
@@ -290,7 +295,13 @@ const EstCambiosTramitesAduanales = () => {
                     <Grid container spacing={2}>
                       <Grid size={12}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%', width: '100%' }}>
-                          <TextField id="standard-multiline-flexible" label="Impuesto" variant="standard" value={selectedTramite?.impuesto || selectedTramite?.impuesto == 0 ? selectedTramite.impuesto: ""} fullWidth />
+                          <TextField
+                            id="standard-multiline-flexible"
+                            label="Impuesto"
+                            variant="standard"
+                            value={selectedTramite?.impuesto || selectedTramite?.impuesto == 0 ? selectedTramite.impuesto : ''}
+                            fullWidth
+                          />
                         </Box>
                       </Grid>
                     </Grid>

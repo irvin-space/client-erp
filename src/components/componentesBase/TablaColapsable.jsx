@@ -50,18 +50,18 @@ function Row(props) {
             {open ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell align="right" component="th" scope="row">
           {row.tramite}
         </TableCell>
-        <TableCell align="right">{row.fecha}</TableCell>
-        <TableCell align="center">{row.pedimento}</TableCell>
-        <TableCell align="center">{row.tipo}</TableCell>
-        <TableCell align="center">{row.precintos}</TableCell>
-        <TableCell align="center">{row.clave}</TableCell>
-        <TableCell align="center">{row.ctePedimento}</TableCell> {/* Placeholder */}
-        <TableCell align="center">{row.impuesto}</TableCell>
-        <TableCell align="center">{row.cteFacturacion}</TableCell>
-        {/*  Selection Column */}
+        <TableCell align="left">{row.fecha}</TableCell>
+        <TableCell align="left">{row.pedimento}</TableCell>
+        <TableCell align="left">{row.tipo}</TableCell>
+        <TableCell align="right">{row.precintos}</TableCell>
+        <TableCell align="left">{row.clave}</TableCell>
+        <TableCell align="left">{row.ctePedimento}</TableCell>
+        <TableCell align="right">{row.impuesto}</TableCell>
+        <TableCell align="left">{row.cteFacturacion}</TableCell>
+
         <TableCell align="center">
           <IconButton
             onClick={onSelect}
@@ -83,25 +83,25 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nombre</TableCell>
-                    <TableCell align="center">Tipo</TableCell>
-                    <TableCell align="center">Moneda</TableCell>
-                    <TableCell align="center">Importe</TableCell>
-                    <TableCell align="center">Importe ME</TableCell>
-                    <TableCell align="center">Factura</TableCell>
+                    <TableCell align="left">Nombre</TableCell>
+                    <TableCell align="left">Tipo</TableCell>
+                    <TableCell align="left">Moneda</TableCell>
+                    <TableCell align="right">Importe</TableCell>
+                    <TableCell align="right">Importe ME</TableCell>
+                    <TableCell align="right">Factura</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {row.history.map((history) => (
                     <TableRow key={history.tramite}>
-                      <TableCell component="th" scope="row">
+                      <TableCell align="left" component="th" scope="row">
                         {history.nombre_concepto}
                       </TableCell>
-                      <TableCell align="center">{history.naturaleza}</TableCell>
-                      <TableCell align="center">{history.moneda}</TableCell>
-                      <TableCell align="center">{history.importe}</TableCell>
-                      <TableCell align="center">{history.importe_me}</TableCell>
-                      <TableCell align="center">{history.factura}</TableCell>
+                      <TableCell align="left">{history.naturaleza}</TableCell>
+                      <TableCell align="left">{history.moneda}</TableCell>
+                      <TableCell align="right">{history.importe}</TableCell>
+                      <TableCell align="right">{history.importe_me}</TableCell>
+                      <TableCell align="right">{history.factura}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -141,14 +141,12 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const handleSelect = (rowName) => () => {
-    console.log(rowName)
+    console.log(rowName);
     // setSelectedRow(rowName);
-    onSelectRow(rowName)
+    onSelectRow(rowName);
   };
 
-  // console.log(datos);
-
-    // Agrupar datos2 por tramite_aduanal
+  // Agrupar datos2 por tramite_aduanal
   const detailsMap = React.useMemo(() => {
     const map = {};
     datos2.forEach((detail) => {
@@ -186,47 +184,28 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
   });
 
   console.log('below are the rows shape');
-//tramite a la derecha
-//fecha a la izquireda, pedimento,tipo,
-//precintos por ser numero a la derecha
-//cliente facturacion izquierda
-//seleccion
 
-//izquierda cadena
-//derecha
-
-//importe me a dos decimales
-
-//TRAER TODO ROW
-
-//SUCURSAL PERSONAL
-
-//LA FECHA DE HOY MENOS UN MES
-///LA FECHA HASTA, LA FECHA DE HOY
-//Tipo Todos
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell /> 
-            <TableCell>Trámite</TableCell>
-            <TableCell align="right">Fecha</TableCell>
-            <TableCell align="right">Pedimento</TableCell>
-            <TableCell align="right">Tipo</TableCell>
+            <TableCell />
+            <TableCell align="right">Trámite</TableCell>
+            <TableCell align="left">Fecha</TableCell>
+            <TableCell align="left">Pedimento</TableCell>
+            <TableCell align="left">Tipo</TableCell>
             <TableCell align="right">Precintos</TableCell>
-            <TableCell align="center">Clave</TableCell>
-            <TableCell align="center">Cte. Pedimento</TableCell>
-            <TableCell align="center">Impuesto</TableCell>
-            <TableCell align="center">Cte. Facturación</TableCell>
+            <TableCell align="left">Clave</TableCell>
+            <TableCell align="left">Cte. Pedimento</TableCell>
+            <TableCell align="right">Impuesto</TableCell>
+            <TableCell align="left">Cte. Facturación</TableCell>
             <TableCell align="center">Selección</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.length > 0 ? (
-            rows.map((row) => (
-              <Row key={row.tramite} row={row} isSelected={selectedRow === row.tramite} onSelect={handleSelect(row)} />
-            ))
+            rows.map((row) => <Row key={row.tramite} row={row} isSelected={selectedRow === row.tramite} onSelect={handleSelect(row)} />)
           ) : (
             <TableRow>
               <TableCell colSpan={11} align="center">

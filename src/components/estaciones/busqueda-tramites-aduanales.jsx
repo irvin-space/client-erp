@@ -41,7 +41,7 @@ const style = {
   overflow: 'hidden'
 };
 
-const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
+const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   // const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Cargando
   // const handleOpen = () => {
@@ -62,17 +62,16 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
   const [hastaFecha, setHastaFecha] = useState(null);
   const [tipo, setTipo] = useState(null);
 
-  const [arreglo, setArreglo] = useState([])
-  const [segundoArreglo, setSegundoArreglo] = useState([])
+  const [arreglo, setArreglo] = useState([]);
+  const [segundoArreglo, setSegundoArreglo] = useState([]);
 
-
-     // ✅ Close modal and pass data up
+  // Cerrar modal y enviar data hacia arriba
   const handleRowSelect = (row) => {
     if (onSelectRow) {
-      onSelectRow(row); // ✅ Send data to parent
+      onSelectRow(row); // Enviar data al padre componente
     }
     if (onClose) {
-      onClose(); // ✅ Close modal
+      onClose(); // Cerrar modal
     }
   };
 
@@ -88,28 +87,28 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
         })
       });
 
-      const data = await response.json()
-      console.log(data)
-      setArreglo(data[0])
-      setSegundoArreglo(data[1])
+      const data = await response.json();
+      console.log(data);
+      setArreglo(data[0]);
+      setSegundoArreglo(data[1]);
     } catch (error) {
       console.log(error);
     } finally {
-      setIsLoading(false) //Terminar de cargar
+      setIsLoading(false); //Terminar de cargar
     }
   };
 
   const handleConsultar = () => {
     console.log({
       sucursal,
-      tipo: tipo === "Todos" ? "%" : tipo,
+      tipo: tipo === 'Todos' ? '%' : tipo,
       desdeFecha: desdeFecha?.format('YYYY-MM-DD') || null,
-      hastaFecha: hastaFecha?.format('YYYY-MM-DD') || null,
+      hastaFecha: hastaFecha?.format('YYYY-MM-DD') || null
     });
 
     const objetoDeBusqueda = {
       sucursal: `'${sucursal}'`,
-      tipo: tipo === "Todos" ? "'%'" : tipo,
+      tipo: tipo === 'Todos' ? "'%'" : tipo,
       desdeFecha: `'${desdeFecha?.format('YYYY-MM-DD')}'` || null,
       hastaFecha: `'${hastaFecha?.format('YYYY-MM-DD')}'` || null,
       pedimento: null
@@ -117,19 +116,11 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
 
     handleFetch(objetoDeBusqueda);
   };
-  // comentario prueba jgm
-  //Estado de TablaColapsable
-  //const [selectedRow, setSelectedRow] = React.useState(null);
-
-  //Data de fila seleccionada
-  //   const handleConsultar => {
-  //     console.log('Selected Row Data', selectedRow)
-  //   }
 
   return (
     <div style={{ height: '100%' }}>
       {/* <Button onClick={handleOpen}>Abrir modal</Button> */}
-      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor:"white" }}>
+      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor: 'white' }}>
         <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
       </Button>
       <Modal open={open} onClose={onClose}>
@@ -144,15 +135,6 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
                 {/* Sucursal */}
                 <Grid item size={3} sx={{ backgroundColor: 'white' }}>
                   <Typography variant="subtitle2">Sucursal</Typography>
-                  {/* <ComponenteListaDinamica
-                    label="Sucursal"
-                    instruccionSQL="combo_sucursales"
-                    valueKey="sucursal"
-                    labelKey="nombre_sucursal"
-                    parametros={{
-                      '@cCentro': '\"      1"\ '
-                    }}
-                  /> */}
 
                   <ComponenteListaDinamica
                     label="Sucursal"
@@ -165,8 +147,6 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
                       '@cCentro': "'      1'"
                     }}
                   />
-
-                  {/* <ComponenteLista titulo="Sucursal" value={sucursal} onChange={setSucursal}/> */}
                 </Grid>
                 {/* Desde fecha */}
                 <Grid item size={2} sx={{ backgroundColor: 'white' }}>
@@ -201,20 +181,24 @@ const BusquedaTramitesAduanales = ({onSelectRow, open, onClose, onOpen}) => {
             <Box
               sx={{
                 flexGrow: 1,
-                maxHeight: '40vh', // Limits the table area to 40vh of the viewport height
-                overflowY: 'auto', // Enables vertical scrolling only here
+                maxHeight: '40vh', // Limita la tabla a la altura establecida
+                overflowY: 'auto', // Permite el scroll horizontal solo aqui
                 '& .MuiTableContainer-root': {
-                  maxHeight: 'none' // Ensure no inner limit conflicts
+                  maxHeight: 'none' // Asegura que no existan conflictos de limites internos
                 }
               }}
             >
               <TablaColapsable datos={arreglo} datos2={segundoArreglo} onSelectRow={handleRowSelect} />
-              {/* <TablaColapsable  selectedRow={selectedRow} onSelectRow={setSelectedRow}/> */}
             </Box>
 
             <br />
 
-            <Button onClick={handleConsultar} variant="contained" disabled={isLoading} startIcon={isLoading ? <CircularProgress size={20}/>:null}>
+            <Button
+              onClick={handleConsultar}
+              variant="contained"
+              disabled={isLoading}
+              startIcon={isLoading ? <CircularProgress size={20} /> : null}
+            >
               Consultar
             </Button>
           </Container>
