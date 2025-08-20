@@ -79,10 +79,10 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
               ...(drawerOpen && {
                 '&:hover': { bgcolor: 'primary.lighter', ...theme.applyStyles('dark', { bgcolor: 'divider' }) },
                 '&.Mui-selected': {
-                  bgcolor: 'primary.lighter',
+                  bgcolor: 'transparent', // Anteriormente 'primary.lighter'
                   ...theme.applyStyles('dark', { bgcolor: 'divider' }),
                   borderRight: '2px solid',
-                  borderColor: 'primary.main',
+                  borderColor: 'transparent', // Anteriormente 'primary.lighter'
                   color: iconSelectedColor,
                   '&:hover': { color: iconSelectedColor, bgcolor: 'primary.lighter', ...theme.applyStyles('dark', { bgcolor: 'divider' }) }
                 }
