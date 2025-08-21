@@ -25,13 +25,13 @@ export default function UnderConstruction() {
             <CardMedia component="img" src={construction} alt="mantis" sx={{ height: 'auto' }} />
           </Box>
           <Typography align="center" variant="h1">
-            Under Construction
+            Módulo en Construcción
           </Typography>
           <Typography color="text.secondary" align="center" sx={{ width: '85%' }}>
-            Hey! Please check out this site later. We are doing some maintenance on it right now.
+            Nos encontramos trabajando en la construcción, pruebas e implementación de este módulo.
           </Typography>
           <Button component={Link} to={APP_DEFAULT_PATH} variant="contained">
-            Back To Home
+            Regresar
           </Button>
         </Stack>
       </Grid>

@@ -41,12 +41,12 @@ export default function Error404() {
       </Grid>
       <Grid size={12}>
         <Stack sx={{ gap: 2, alignItems: 'center', justifyContent: 'center' }}>
-          <Typography variant="h1">Page Not Found</Typography>
+          <Typography variant="h1">Página no encontrada</Typography>
           <Typography color="text.secondary" align="center" sx={{ width: { xs: '73%', sm: '61%' } }}>
-            The page you are looking was moved, removed, renamed, or might never exist!
+            El sitio que estás buscando fue reubicada, eliminada, renombrada ... o quizá nunca existio!
           </Typography>
           <Button component={Link} to={APP_DEFAULT_PATH} variant="contained">
-            Back To Home
+            Regresar
           </Button>
         </Stack>
       </Grid>

@@ -53,10 +53,10 @@ export default function ComingSoon() {
             <CardMedia component="img" src={coming} alt="mantis" sx={{ height: 1 }} />
           </Box>
           <Typography align="center" variant="h1">
-            Coming Soon
+            Preparate para estrenar
           </Typography>
           <Typography align="center" color="text.secondary">
-            Something new is on its way
+            Algo nuevo está en camino
           </Typography>
         </Stack>
       </Grid>
@@ -71,7 +71,7 @@ export default function ComingSoon() {
           <TimerBox count={seconds} label="sec" />
         </Stack>
       </Grid>
-      <Grid sx={{ width: { xs: 340, md: '40%', lg: '30%' } }} size={12}>
+      {/* <Grid sx={{ width: { xs: 340, md: '40%', lg: '30%' } }} size={12}>
         <Stack sx={{ gap: 2, mt: 2 }}>
           <Typography align="center" color="text.secondary">
             Be the first to be notified when Mantis launches.
@@ -83,7 +83,7 @@ export default function ComingSoon() {
             </Button>
           </Stack>
         </Stack>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

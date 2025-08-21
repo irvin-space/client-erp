@@ -27,13 +27,13 @@ export default function Error500() {
             <CardMedia component="img" src={error500} alt="mantis" />
           </Box>
           <Typography align="center" variant={downSM ? 'h2' : 'h1'}>
-            Internal Server Error
+            Error en el servidor
           </Typography>
           <Typography color="text.secondary" variant="body2" align="center" sx={{ width: { xs: '73%', sm: '70%' }, mt: 1 }}>
-            Server error 500. we fixing the problem. please try again at a later stage.
+            Server error 500. Nuestro maravilloso equipo de TI está corrigiendo el problema, intenta mas tarde.
           </Typography>
           <Button component={Link} to={APP_DEFAULT_PATH} variant="contained" sx={{ textTransform: 'none', mt: 4 }}>
-            Back To Home
+            Regresar
           </Button>
         </Stack>
       </Grid>
