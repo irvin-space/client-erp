@@ -12,6 +12,7 @@ import { SimpleLayoutType } from 'config';
 
 //Componentes
 import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tramites-aduanales'
+import EstDesktop from '../components/estaciones/est-desktop';
 
 // pages routing
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
@@ -29,6 +30,8 @@ const SamplePage2 = Loadable(lazy(() => import('pages/extra-pages/sample-page2')
 
 // ==============================|| MAIN ROUTING ||============================== //
 
+
+
 const MainRoutes = {
   path: '/',
   children: [
@@ -36,18 +39,30 @@ const MainRoutes = {
       path: '/',
       element: <DashboardLayout />,
       children: [
-        // {
-        //   path: 'sample-page',
-        //   element: <SamplePage />
-        //   // element: <EstCambiosTramitesAduanales/>
-        // },
+         /* {
+           path: 'sample-page',
+           element: <SamplePage />
+            //element: <EstCambiosTramitesAduanales/>
+         }, */
         {
           path: 'user-page',
+          element: <EstDesktop/>
+        },
+        {
+          path: 'est-cambios-tramites-aduanales',
           element: <EstCambiosTramitesAduanales/>
         },
         {
           path: 'sample-page2', 
           element: <SamplePage2/> //Ejemplos de componentes para pantalla de Auditoria de Trazabilidad - Deposito # 167957
+        },
+        {
+          path: 'under-construction',
+          element: <MaintenanceUnderConstruction />
+        },
+        {
+          path: 'coming-soon',
+          element: <MaintenanceComingSoon />
         }
       ]
     },

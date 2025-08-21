@@ -1,0 +1,4 @@
+/* Estilos globales para asegurar que SweetAlert2 esté encima de cualquier Modal */
+.swal2-container {
+  z-index: 20000 !important;
+}

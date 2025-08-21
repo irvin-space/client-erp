@@ -23,7 +23,7 @@ import { CheckCircleTwoTone } from '@ant-design/icons';
 // import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 // import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento, impuesto, cteFacturacion, history) {
+function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento,  cteFacturacion, impuesto, history) {
   return {
     tramite,
     fecha,
@@ -32,8 +32,8 @@ function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedim
     precintos,
     clave,
     ctePedimento,
-    impuesto,
     cteFacturacion,
+    impuesto,
     history
   };
 }
@@ -59,8 +59,8 @@ function Row(props) {
         <TableCell align="right">{row.precintos}</TableCell>
         <TableCell align="left">{row.clave}</TableCell>
         <TableCell align="left">{row.ctePedimento}</TableCell>
-        <TableCell align="right">{row.impuesto}</TableCell>
         <TableCell align="left">{row.cteFacturacion}</TableCell>
+        <TableCell align="right">{row.impuesto}</TableCell>
 
         <TableCell align="center">
           <IconButton
@@ -178,8 +178,8 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
       item.precintos,
       item.clave,
       item.cliente_pedimento,
-      item.impuesto,
       item.cliente_facturacion,
+      item.impuesto,
       history
     );
   });
@@ -199,8 +199,8 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
             <TableCell align="right">Precintos</TableCell>
             <TableCell align="left">Clave</TableCell>
             <TableCell align="left">Cte. Pedimento</TableCell>
-            <TableCell align="right">Impuesto</TableCell>
             <TableCell align="left">Cte. Facturación</TableCell>
+            <TableCell align="right">Impuesto</TableCell>
             <TableCell align="center">Selección</TableCell>
           </TableRow>
         </TableHead>

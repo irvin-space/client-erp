@@ -11,6 +11,9 @@ import CircularProgress from '@mui/material/CircularProgress'; // 👈 Loader
 
 import FormControl from '@mui/material/FormControl';
 
+// Mensajes
+import { mensajes } from '../../utils/mensajes.js';
+
 //Ant Design icons
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -23,7 +26,7 @@ import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import TablaColapsable from '../componentesBase/TablaColapsable';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { borderRadius, maxHeight } from '@mui/system';
+import { borderRadius, maxHeight, minWidth } from '@mui/system';
 // import ComponenteLista from '../componentesBase/ComponenteLista';
 
 const style = {
@@ -31,7 +34,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '130vh',
+  minWidthwidth: '1500px',
   maxHeight: '80vh',
   //   height: '70vh',
   //   bgcolor: 'background.paper',
@@ -41,6 +44,8 @@ const style = {
   p: 4,
   borderRadius: '16px',
   overflow: 'hidden'
+
+  
 };
 
 const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
@@ -58,7 +63,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   //   setArreglo([])
   //   setSegundoArreglo([])
   // }
-console.log('useAuth', useAuth());
+
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
   const [desdeFecha, setDesdeFecha] = useState(dayjs().subtract(1, 'month'));
   const [hastaFecha, setHastaFecha] = useState(dayjs());
@@ -91,6 +96,12 @@ console.log('useAuth', useAuth());
 
       const data = await response.json();
       console.log(data);
+      // --- Lógica agregada para verificar si hay registros ---
+      if (data[0] && data[0].length === 0) {
+        // Si el primer array está vacío, muestra una alerta.
+        {mensajes('aviso' ,'Consulta Realizada' )}  // este es sweetalert2
+      }
+
       setArreglo(data[0]);
       setSegundoArreglo(data[1]);
     } catch (error) {

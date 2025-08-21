@@ -9,6 +9,11 @@ const MiSweetAlert = withReactContent(Swal);
 export const mensajes = (metodo, titulo, mensaje) => {
   const icon = metodo === 'aviso' ? 'info' : metodo === 'error' ? 'error' : metodo === 'pregunta' ? 'question' : 'info';
 
+  // Configuración de la clase para el z-index
+  const customClass = {
+    popup: 'sweet-alert-top' // Le asignamos una clase CSS
+  };
+
   const configuracionDeAlerta =
     metodo == 'pregunta'
       ? {
@@ -19,13 +24,17 @@ export const mensajes = (metodo, titulo, mensaje) => {
           denyButtonText: `No`,
           denyButtonColor: '#8d8c8d',
           confirmButtonText: 'Si',
-          confirmButtonColor: '#1776ff'
+          confirmButtonColor: '#1776ff',
+          customClass: customClass, // Agregamos la clase aquí
+          target: 'body',   // 👈 aquí el truco
         }
       : {
           title: titulo,
           text: mensaje,
           icon: icon,
-          confirmButtonText: 'Aceptar'
+          confirmButtonText: 'Aceptar',
+          customClass: customClass, // Agregamos la clase aquí
+          target: 'body',   // 👈 también aquí
         };
 
   if (metodo == 'pregunta') {
