@@ -10,6 +10,8 @@ import useConfig from 'hooks/useConfig';
 // load locales files
 const loadLocaleData = (locale) => {
   switch (locale) {
+    case 'es':
+      return import('utils/locales/es.json');
     case 'fr':
       return import('utils/locales/fr.json');
     case 'ro':
@@ -39,7 +41,15 @@ export default function Locales({ children }) {
   return (
     <>
       {messages && (
-        <IntlProvider locale={i18n} defaultLocale="en" messages={messages}>
+        <IntlProvider
+          locale={i18n}
+          defaultLocale="en"
+          messages={messages}
+          onError={(err) => {
+            if (err.code === 'MISSING_TRANSLATION') return;
+            throw err;
+          }}  // Si el error es 'MISSING_TRANSLATION' solo retornar, si el error es otro, mostrar
+        >
           {children}
         </IntlProvider>
       )}

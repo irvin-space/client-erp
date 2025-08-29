@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey,value, onChange}) => {
+const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey, value, onChange}) => {
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
     };
 
     callBackend();
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     console.log('✅ Opciones actualizadas:', options);

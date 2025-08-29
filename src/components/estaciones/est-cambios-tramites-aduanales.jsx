@@ -2,9 +2,15 @@ import React from 'react';
 import { useContext, useState } from 'react';
 import { MyContext } from '../../context';
 
+import useAuth from 'hooks/useAuth.js';
+
+//Librerias
+import dayjs from 'dayjs';
+
 // Mensajes
 import { mensajes } from '../../utils/mensajes.js';
 
+// Componentes de material ui
 import Typography from '@mui/material/Typography';
 import { Input } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -21,7 +27,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import { DownOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 
-//Componentes
+// Componentes propios del proyecto
 import FirstComponent from '../componentesBase/FirstComponent';
 // import ComponenteLista from '../componentesBase/ComponenteLista';
 // import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
@@ -31,48 +37,73 @@ import DataTable2 from '../componentesBase/DataTable2.jsx';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.jsx';
 // import Mensajes from '../componentesBase/Mensajes.jsx';
 
-//Modals
+//Modal
 import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
 
 //Iconos
 import { SearchOutlined } from '@ant-design/icons';
 import { DownCircleOutlined } from '@ant-design/icons';
-import { bgcolor, fontSize, height, width } from '@mui/system';
+import { bgcolor, border, fontSize, height, width } from '@mui/system';
 import { color } from 'framer-motion';
 
+
+// Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal
-
   const [selectedTramite, setSelectedTramite] = useState(null);
+  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
 
-  console.log('Debajo debe mostrarse lo que hay en data');
+  // console.log('Debajo debe mostrarse lo que hay en data');
   // console.log(data.menu);
   // console.log(JSON.parse(Object.values(JSON.parse(data.resultado).recordsets[1][0])[0]).Menu);
 
-  const handleClick = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/consulta', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          Procedimiento: 'Combo_Tasas_Ivas',
-          Parametros: { otros: 0, solo_activas: 0 }
-        })
-      });
-      const data = await response.json();
-      console.log('Respuesta del servidor:', data);
-    } catch (error) {
-      console.error('Error en la petición:', error);
+  // const handleClick = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:3001/consulta', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         Procedimiento: 'Combo_Tasas_Ivas',
+  //         Parametros: { otros: 0, solo_activas: 0 }
+  //       })
+  //     });
+  //     const data = await response.json();
+  //     console.log('Respuesta del servidor:', data);
+  //   } catch (error) {
+  //     console.error('Error en la petición:', error);
+  //   }
+  // };
+
+  const handleClick = () => {
+    if (selectedTramite) {
+      console.log(selectedTramite);
     }
   };
 
   // Callback: hace el llamado cuando la fila a sido seleccionada
   const handleRowSelect = (row) => {
     console.log('Row selected in parent:', row);
+    //Ejemplo:
+
+    // {
+    //   "clave": "RT",
+    //   "cteFacturacion": "RM HEALTHCARE PRODUCTS",
+    //   "ctePedimento": "RM HEALTHCARE PRODUCTS",
+    //   "fecha": "22 Jul 2025",
+    //   "history": [
+    //     {}, {}, {}, {}, {}, {}
+    //   ],
+    //   "impuesto": 2731,
+    //   "pedimento": "250730665024852",
+    //   "precintos": 0,
+    //   "tipo": "E",
+    //   "tramite": 960977
+    // }
+
     setSelectedTramite(row);
     setOpenModal(false); // Cerrar modal
   };
@@ -98,13 +129,17 @@ const EstCambiosTramitesAduanales = () => {
               <BusquedaTramitesAduanales
                 onSelectRow={handleRowSelect}
                 open={openModal}
-                onClose={() => setOpenModal(false)}
+                onClose={() => {
+                  document.activeElement?.blur();
+                  setOpenModal(false)
+                }
+                }
                 onOpen={() => setOpenModal(true)}
               />
             </Box>
           </Grid>
           <Grid size={4}>
-            <FirstComponent />
+            <FirstComponent value={dayjs(selectedTramite?.fecha)} />
           </Grid>
         </Grid>
 
@@ -115,14 +150,15 @@ const EstCambiosTramitesAduanales = () => {
           <Grid size={4}>
             {/* <ComponenteLista titulo="Sucursal" /> */}
             <ComponenteListaDinamica
-              label="Ivas"
-              instruccionSQL="combo_tasas_ivas"
+              label="Sucursal"
+              onChange={setSucursal}
+              instruccionSQL="combo_sucursales"
+              value={selectedTramite?.sucursal ? selectedTramite?.sucursal : sucursal}
+              valueKey="sucursal"
+              labelKey="nombre_sucursal"
               parametros={{
-                '@lOtros': 0,
-                '@lSolo_Activas': 0
+                '@cCentro': "'      1'"
               }}
-              valueKey="folio"
-              labelKey="tasa_iva"
             />
           </Grid>
           <Grid size={4}>
@@ -131,11 +167,20 @@ const EstCambiosTramitesAduanales = () => {
               id="outlined-number"
               label="Precintos"
               type="number"
-              value={selectedTramite?.precintos || selectedTramite?.precintos == 0 ? selectedTramite.precintos : ''}
+              // value={selectedTramite?.precintos || selectedTramite?.precintos == 0 ? selectedTramite.precintos : ''}
+              value={selectedTramite?.precintos.lenght > 0 || selectedTramite?.precintos[0] == 0 ? selectedTramite.precintos[0] : ''}
             />
           </Grid>
           <Grid size={4}>
-            <TextField fullWidth placeholder="0.00" id="outlined-start-adornment" slotProps={{ input: { startAdornment: '$' } }} />
+            <TextField
+              fullWidth
+              placeholder="0.00"
+              id="outlined-start-adornment"
+              slotProps={{ input: { startAdornment: '$' } }}
+              value={
+                selectedTramite?.tipo_cambio || selectedTramite?.tipo_cambio == 0 ? Math.floor(selectedTramite.tipo_cambio * 100) / 100 : ''
+              }
+            />
           </Grid>
         </Grid>
 
@@ -166,7 +211,13 @@ const EstCambiosTramitesAduanales = () => {
                     {/* Radio group aqui */}
                     <Grid container spacing={1}>
                       <Grid size={6}>
-                        <RowRadioButtonsGroup titulo="Tipo" valor1="Importación" valor2="Exportación" />
+                        {/* <RowRadioButtonsGroup titulo="Tipo" valor1="Importación" valor2="Exportación" /> */}
+                        <RowRadioButtonsGroup
+                          titulo="Tipo"
+                          valor1="Importación"
+                          valor2="Exportación"
+                          value={selectedTramite ? (selectedTramite?.tipo.startsWith('I') ? 'Importación' : 'Exportación') : null}
+                        />
                       </Grid>
                       <Grid size={6}>{/* <ComponenteLista titulo="Clave" /> */}</Grid>
                     </Grid>
@@ -179,11 +230,17 @@ const EstCambiosTramitesAduanales = () => {
                           id="standard-basic"
                           label="Número de pedimento"
                           variant="standard"
-                          value={selectedTramite?.pedimento ? selectedTramite.pedimento : ''}
+                          // value={selectedTramite?.pedimento ? selectedTramite.pedimento : ''}
+                          value={selectedTramite?.pedimento.length > 0 ? selectedTramite.pedimento[0] : ''}
                         />
                       </Grid>
                       <Grid size={6}>
-                        <RowRadioButtonsGroup titulo="" valor1="Con Cargo" valor2="Sin Cargo" />
+                        <RowRadioButtonsGroup
+                          titulo=""
+                          valor1="Con Cargo"
+                          valor2="Sin Cargo"
+                          value={selectedTramite ? (selectedTramite?.con_cargo == true ? 'Con Cargo' : 'Sin Cargo') : null}
+                        />
                       </Grid>
                     </Grid>
                   </Grid>
@@ -211,8 +268,14 @@ const EstCambiosTramitesAduanales = () => {
                           />
 
                           <Button variant="outlined" sx={{ height: '100%' }}>
-                            <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
+                            <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
                           </Button>
+                          {/* <BusquedaTramitesAduanales
+                            onSelectRow={handleRowSelect}
+                            open={openModal}
+                            onClose={() => setOpenModal(false)}
+                            onOpen={() => setOpenModal(true)}
+                          /> */}
                         </Box>
                       </Grid>
                     </Grid>
@@ -233,8 +296,15 @@ const EstCambiosTramitesAduanales = () => {
                           />
 
                           <Button variant="outlined" sx={{ height: '100%' }}>
-                            <SearchOutlined style={{ fontSize: '1.5em', color: '#1876d3' }} />
+                            <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
                           </Button>
+
+                          {/* <BusquedaTramitesAduanales
+                            onSelectRow={handleRowSelect}
+                            open={openModal}
+                            onClose={() => setOpenModal(false)}
+                            onOpen={() => setOpenModal(true)}
+                          /> */}
                         </Box>
                       </Grid>
                     </Grid>
@@ -272,7 +342,16 @@ const EstCambiosTramitesAduanales = () => {
                           titulo="Tipo de Pago"
                           valor1="Financiado"
                           valor2="Anticipo"
-                          valor3="Trasferencia de Cliente"
+                          valor3="Transferencia de Cliente"
+                          value={
+                            selectedTramite?.tipo_pago_impuestos.includes('Financiado')
+                              ? 'Financiado'
+                              : selectedTramite?.tipo_pago_impuestos.includes('Anticipo')
+                                ? 'Anticipo'
+                                : selectedTramite?.tipo_pago_impuestos.includes('Transferencia')
+                                  ? 'Transferencia de Cliente'
+                                  : null
+                          }
                         />
                       </Grid>
                     </Grid>
@@ -299,7 +378,7 @@ const EstCambiosTramitesAduanales = () => {
                             id="standard-multiline-flexible"
                             label="Impuesto"
                             variant="standard"
-                            value={selectedTramite?.impuesto || selectedTramite?.impuesto == 0 ? selectedTramite.impuesto : ''}
+                            value={selectedTramite?.impuesto.length > 0 || selectedTramite?.impuesto[0] == 0 ? selectedTramite.impuesto[0] : ''}
                             fullWidth
                           />
                         </Box>
@@ -327,7 +406,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Ingresos Agencia Aduanal</Typography>
         <br />
-        <DataTable></DataTable>
+        <DataTable datos={selectedTramite?.history} flag={'Ingresos'} />
       </Box>
 
       <br />
@@ -335,7 +414,7 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
-        <DataTable></DataTable>
+        <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable>
       </Box>
 
       <Divider sx={{ my: 2 }} />
@@ -390,4 +469,5 @@ const EstCambiosTramitesAduanales = () => {
   );
 };
 
+// Exportacion de componente EstCambiosTramitesAduanales
 export default EstCambiosTramitesAduanales;

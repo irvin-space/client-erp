@@ -23,7 +23,22 @@ import { CheckCircleTwoTone } from '@ant-design/icons';
 // import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 // import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedimento,  cteFacturacion, impuesto, history) {
+function createData2(
+  tramite,
+  fecha,
+  pedimento,
+  tipo,
+  precintos,
+  clave,
+  ctePedimento,
+  cteFacturacion,
+  impuesto,
+  history,
+  tipo_pago_impuestos,
+  tipo_cambio,
+  con_cargo,
+  sucursal
+) {
   return {
     tramite,
     fecha,
@@ -34,7 +49,11 @@ function createData2(tramite, fecha, pedimento, tipo, precintos, clave, ctePedim
     ctePedimento,
     cteFacturacion,
     impuesto,
-    history
+    history,
+    tipo_pago_impuestos,
+    tipo_cambio,
+    con_cargo,
+    sucursal
   };
 }
 
@@ -54,19 +73,22 @@ function Row(props) {
           {row.tramite}
         </TableCell>
         <TableCell align="left">{row.fecha}</TableCell>
-        <TableCell align="left">{row.pedimento}</TableCell>
+        {/* <TableCell align="left">{row.pedimento}</TableCell> */}
+        <TableCell align="left">{row.pedimento[0]}</TableCell>
         <TableCell align="left">{row.tipo}</TableCell>
-        <TableCell align="right">{row.precintos}</TableCell>
+        {/* <TableCell align="right">{row.precintos}</TableCell> */}
+        <TableCell align="right">{row.precintos[0]}</TableCell>
         <TableCell align="left">{row.clave}</TableCell>
         <TableCell align="left">{row.ctePedimento}</TableCell>
         <TableCell align="left">{row.cteFacturacion}</TableCell>
-        <TableCell align="right">{row.impuesto}</TableCell>
+        {/* <TableCell align="right">{row.impuesto}</TableCell> */}
+        <TableCell align="right">{row.impuesto[0]}</TableCell>
 
         <TableCell align="center">
           <IconButton
             onClick={onSelect}
             aria-label={isSelected ? `Deselect ${row.name}` : `Select ${row.name}`}
-            color='success'
+            color="success"
             //color={isSelected ? 'success' : 'red'}
             size="medium"
           >
@@ -94,14 +116,15 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.history.map((history) => (
-                    <TableRow key={history.tramite}>
+                    // <TableRow key={history.tramite}>
+                    <TableRow key={Math.random()}>
                       <TableCell align="left" component="th" scope="row">
                         {history.nombre_concepto}
                       </TableCell>
                       <TableCell align="left">{history.naturaleza}</TableCell>
                       <TableCell align="left">{history.moneda}</TableCell>
-                      <TableCell align="right">{history.importe}</TableCell>
-                      <TableCell align="right">{history.importe_me}</TableCell>
+                      <TableCell align="right">{(Math.floor(history.importe * 100) / 100).toFixed(2)}</TableCell>
+                      <TableCell align="right">{(Math.floor(history.importe_me * 100) / 100).toFixed(2)}</TableCell>
                       <TableCell align="right">{history.factura}</TableCell>
                     </TableRow>
                   ))}
@@ -180,7 +203,11 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
       item.cliente_pedimento,
       item.cliente_facturacion,
       item.impuesto,
-      history
+      history,
+      item.tipo_pago_impuestos,
+      item.tipo_cambio,
+      item.con_cargo,
+      item.sucursal
     );
   });
 

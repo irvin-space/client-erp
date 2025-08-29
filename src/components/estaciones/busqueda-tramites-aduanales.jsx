@@ -44,8 +44,6 @@ const style = {
   p: 4,
   borderRadius: '16px',
   overflow: 'hidden'
-
-  
 };
 
 const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
@@ -75,6 +73,14 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   // Cerrar modal y enviar data hacia arriba
   const handleRowSelect = (row) => {
     if (onSelectRow) {
+      console.log('selected row info:', row);
+      console.log('row tramite', row?.tramite);
+      console.log('arreglo', arreglo);
+      const selectedRowInfo = arreglo.find((item) => {
+        return item.tramite_aduana == row.tramite;
+      });
+
+      console.log('selectedRowInfo', selectedRowInfo);
       onSelectRow(row); // Enviar data al padre componente
     }
     if (onClose) {
@@ -95,12 +101,15 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
       });
 
       const data = await response.json();
+      console.log('debajo esta el resultado del sp');
       console.log(data);
       // --- Lógica agregada para verificar si hay registros ---
       if (data[0] && data[0].length === 0) {
-        // Si el primer array está vacío, muestra una alerta.
-        {mensajes('aviso' ,'Consulta Realizada' )}  // este es sweetalert2
-      }
+        // Si el primer array está vacío, muestra una alerta.
+        {
+          mensajes('aviso', 'Consulta Realizada');
+        } // este es sweetalert2
+      }
 
       setArreglo(data[0]);
       setSegundoArreglo(data[1]);
@@ -146,7 +155,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
             <FormControl fullWidth>
               <Grid container spacing={2}>
                 {/* Sucursal */}
-                <Grid item size={3} sx={{ backgroundColor: 'white' }}>
+                <Grid size={3} sx={{ backgroundColor: 'white' }}>
                   <Typography variant="subtitle2">Sucursal</Typography>
 
                   <ComponenteListaDinamica
@@ -162,17 +171,17 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                   />
                 </Grid>
                 {/* Desde fecha */}
-                <Grid item size={2} sx={{ backgroundColor: 'white' }}>
+                <Grid size={2} sx={{ backgroundColor: 'white' }}>
                   <Typography variant="subtitle2">Desde</Typography>
                   <FirstComponent value={desdeFecha} onChange={setDesdeFecha} />
                 </Grid>
                 {/* Hasta fecha */}
-                <Grid item size={2} sx={{ backgroundColor: 'white' }}>
+                <Grid size={2} sx={{ backgroundColor: 'white' }}>
                   <Typography variant="subtitle2">Hasta</Typography>
                   <FirstComponent value={hastaFecha} onChange={setHastaFecha} />
                 </Grid>
                 {/* Tipo */}
-                <Grid item size={4} sx={{ backgroundColor: 'white' }}>
+                <Grid size={4} sx={{ backgroundColor: 'white' }}>
                   <RowRadioButtonsGroup
                     titulo="Tipo"
                     valor1="Todos"

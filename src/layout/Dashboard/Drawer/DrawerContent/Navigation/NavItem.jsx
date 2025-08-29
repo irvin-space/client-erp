@@ -22,6 +22,9 @@ import { MenuOrientation, ThemeMode, NavActionType } from 'config';
 import useConfig from 'hooks/useConfig';
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
+//Ant design icons
+import { DesktopOutlined, ReconciliationOutlined, ShopOutlined } from '@ant-design/icons';
+
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 export default function NavItem({ item, level, isParents = false, setSelectedID }) {
@@ -44,7 +47,13 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
     }
   };
 
-  const Icon = item.icon;
+  const iconMap = {
+  ReconciliationOutlined,
+  ShopOutlined,
+  DesktopOutlined,
+};
+
+  const Icon = iconMap[item.icon];
   const itemIcon = item.icon ? (
     <Icon
       style={{
