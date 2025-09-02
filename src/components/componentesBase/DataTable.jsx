@@ -6,7 +6,34 @@ import Paper from '@mui/material/Paper';
 import { useState, useEffect } from 'react';
 import { bgcolor } from '@mui/system';
 
-const columns = [
+const columnsA = [
+  // { field: 'tramite_aduana', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
+  { field: 'concepto', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
+  // { field: 'nombre_concepto', headerName: 'Nombre Concepto', flex: 1, align: 'left' },
+  { field: 'descripcion', headerName: 'Nombre Concepto', flex: 1, align: 'left' },
+  { field: 'moneda', headerName: 'Moneda', flex: .6, align: 'left', headerAlign: 'left' },
+  {
+    field: 'importe',
+    headerName: 'Importe',
+    type: 'number',
+    flex: .6,
+    align: 'right'
+  },
+  {
+    field: 'importe_me',
+    headerName: 'Importe M.E',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: true,
+    flex: .7,
+    align: 'right',
+    headerAlign: 'right'
+    // valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`
+  },
+  { field: 'factura', headerName: 'Factura', align: 'right', flex: .8, headerAlign: 'right' }
+];
+
+
+const columnsB = [
   { field: 'tramite_aduana', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
   { field: 'nombre_concepto', headerName: 'Nombre Concepto', flex: 1, align: 'left' },
   { field: 'moneda', headerName: 'Moneda', flex: .6, align: 'left', headerAlign: 'left' },
@@ -80,6 +107,16 @@ export default function DataTable({ datos, flag }) {
         });
         console.log('ingresos con id', ingresosConID);
         setArregloIngresos(ingresosConID);
+      } else if (flag !== 'Ingresos' && flag !== 'Gastos'){
+        const datosDeIngresosConID = datos.map((item)=>{
+          return {
+            ...item,
+            importe_me: (Math.floor(item.importe_me * 100) / 100).toFixed(2),
+            importe: (Math.floor(item.importe * 100) / 100).toFixed(2),
+            id: Math.floor(Math.random() * 100)
+          }
+        })
+        setArregloIngresos(datosDeIngresosConID)
       }
     }
   }, [datos]);
@@ -88,10 +125,10 @@ export default function DataTable({ datos, flag }) {
     <Paper sx={{ height: 400, width: '100%' }}>
       <DataGrid
         rows={arregloIngresos}
-        columns={columns}
+        columns={flag !== 'Ingresos' && flag !== 'Gastos' ? columnsA : columnsB}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
+        // checkboxSelection
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         sx={{
           border: 0,
@@ -101,7 +138,9 @@ export default function DataTable({ datos, flag }) {
           },
           '& .MuiDataGrid-columnHeader': {
             py: 0.5, // Reduce vertical padding in header
-            px: 1 // Reduce horizontal padding in header
+            px: 1, // Reduce horizontal padding in header,
+            backgroundColor: 'primary.darker',
+            color: 'primary.lighter'
           }
         }}
       />

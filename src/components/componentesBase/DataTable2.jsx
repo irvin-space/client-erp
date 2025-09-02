@@ -45,7 +45,7 @@ export default function DataTable2() {
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
+        // checkboxSelection
         sx={{ border: 0 }}
       />
     </Paper>

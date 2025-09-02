@@ -1,5 +1,5 @@
 import React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { MyContext } from '../../context';
 
 import useAuth from 'hooks/useAuth.js';
@@ -46,7 +46,6 @@ import { DownCircleOutlined } from '@ant-design/icons';
 import { bgcolor, border, fontSize, height, width } from '@mui/system';
 import { color } from 'framer-motion';
 
-
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
@@ -54,6 +53,81 @@ const EstCambiosTramitesAduanales = () => {
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal
   const [selectedTramite, setSelectedTramite] = useState(null);
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const [ingresos,setIngresos] = useState(null)
+  const [gastos,setGastos] = useState(null)
+
+  const [folio, setFolio] = useState('');
+
+  useEffect(() => {
+    const handleFetch = async (parametros) => {
+      try {
+        const response = await fetch('http://localhost:3001/dinamico/lista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            instruccionSQL: 'Trae_Tramite_Aduanal',
+            parametros: parametros
+          })
+        });
+
+        const data = await response.json();
+        console.log('debajo esta el resultado del sp del tramite X');
+        console.log(data)
+        console.log(data[0][0]);
+        // --- Lógica agregada para verificar si hay registros ---
+        // if (data[0] && data[0].length === 0) {
+        // Si el primer array está vacío, muestra una alerta.
+        {
+          // mensajes('aviso', 'Consulta Realizada');
+        } // este es sweetalert2
+        // }
+
+        setSelectedTramite(data[0][0]);
+        setIngresos(data[1])
+        setGastos(data[2])
+        // setSegundoArreglo(data[1]);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        // setIsLoading(false); //Terminar de cargar
+        console.log('Done');
+      }
+    };
+
+    console.log('Updated folio state:', folio);
+    console.log('Type:', typeof folio);
+    if (folio) {
+      console.log('folio', folio);
+      console.log('length', folio.length);
+      if(folio.length<6 || folio.length>=7){
+        setIngresos([])
+        setGastos([])
+      }
+      if (folio.length > 5 && folio.length < 7) {
+        console.log('Valid length range:', folio.length, folio);
+        handleFetch(folio);
+      }
+    } else {
+      console.log('No hay resultados');
+    }
+  }, [folio]); // Este codigo se ejecuta cada vez que la variable folio cambia
+
+  const handleEnterButton = (e) => {
+    console.log('key pressed', e);
+    if (e.key === 'Enter') {
+      //Buscar tramite por el folio
+      console.log(e.target.value);
+    }
+  };
+
+  const handleFolio = (e) => {
+    if (selectedTramite) {
+      setSelectedTramite(null);
+    }
+    let value = e.target.value;
+    // console.log('Input value (current):', value); // This is what the user just typed
+    setFolio(value);
+  };
 
   // console.log('Debajo debe mostrarse lo que hay en data');
   // console.log(data.menu);
@@ -122,8 +196,11 @@ const EstCambiosTramitesAduanales = () => {
                 id="standard-basic"
                 label="Trámite aduana"
                 variant="standard"
+                onChange={handleFolio}
+                onKeyDown={(e) => handleEnterButton(e)}
                 fullWidth
-                value={selectedTramite?.tramite ? selectedTramite.tramite : ''}
+                value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
+                // value={folio}
               />
 
               <BusquedaTramitesAduanales
@@ -131,9 +208,8 @@ const EstCambiosTramitesAduanales = () => {
                 open={openModal}
                 onClose={() => {
                   document.activeElement?.blur();
-                  setOpenModal(false)
-                }
-                }
+                  setOpenModal(false);
+                }}
                 onOpen={() => setOpenModal(true)}
               />
             </Box>
@@ -168,7 +244,16 @@ const EstCambiosTramitesAduanales = () => {
               label="Precintos"
               type="number"
               // value={selectedTramite?.precintos || selectedTramite?.precintos == 0 ? selectedTramite.precintos : ''}
-              value={selectedTramite?.precintos.lenght > 0 || selectedTramite?.precintos[0] == 0 ? selectedTramite.precintos[0] : ''}
+              // value={selectedTramite?.precintos.lenght > 0 || selectedTramite?.precintos[0] == 0 ? selectedTramite.precintos[0] : ''}
+              value={
+                Array.isArray(selectedTramite?.precintos)
+                  ? selectedTramite.precintos.length > 0 || selectedTramite.precintos[0] === 0
+                    ? selectedTramite.precintos[0]
+                    : ''
+                  : typeof selectedTramite?.precintos === 'number'
+                    ? selectedTramite.precintos
+                    : ''
+              }
             />
           </Grid>
           <Grid size={4}>
@@ -216,7 +301,15 @@ const EstCambiosTramitesAduanales = () => {
                           titulo="Tipo"
                           valor1="Importación"
                           valor2="Exportación"
-                          value={selectedTramite ? (selectedTramite?.tipo.startsWith('I') ? 'Importación' : 'Exportación') : null}
+                          value={
+                            selectedTramite
+                              ? selectedTramite.tipo?.startsWith('I')
+                                ? 'Importación'
+                                : selectedTramite.tipo_pedimento?.startsWith('I')
+                                  ? 'Importación'
+                                  : 'Exportación'
+                              : null
+                          }
                         />
                       </Grid>
                       <Grid size={6}>{/* <ComponenteLista titulo="Clave" /> */}</Grid>
@@ -231,7 +324,14 @@ const EstCambiosTramitesAduanales = () => {
                           label="Número de pedimento"
                           variant="standard"
                           // value={selectedTramite?.pedimento ? selectedTramite.pedimento : ''}
-                          value={selectedTramite?.pedimento.length > 0 ? selectedTramite.pedimento[0] : ''}
+                          // value={selectedTramite?.pedimento.length > 0 ? selectedTramite.pedimento[0] : ''}
+                          value = {
+                            Array.isArray(selectedTramite?.pedimento) 
+                            ? selectedTramite?.pedimento[0]
+                            : selectedTramite?.pedimento 
+                                ? selectedTramite?.pedimento
+                                : ''
+                          }
                         />
                       </Grid>
                       <Grid size={6}>
@@ -263,7 +363,7 @@ const EstCambiosTramitesAduanales = () => {
                             id="standard-basic"
                             label="Pedimento"
                             variant="standard"
-                            value={selectedTramite?.ctePedimento ? selectedTramite.ctePedimento : ''}
+                            value={selectedTramite?.ctePedimento ? selectedTramite.ctePedimento : selectedTramite?.nombre_cliente_pedimento ? selectedTramite?.nombre_cliente_pedimento : '' }
                             fullWidth
                           />
 
@@ -291,7 +391,7 @@ const EstCambiosTramitesAduanales = () => {
                             multiline
                             maxRows={2}
                             variant="standard"
-                            value={selectedTramite?.cteFacturacion ? selectedTramite.cteFacturacion : ''}
+                            value={selectedTramite?.cteFacturacion ? selectedTramite.cteFacturacion : selectedTramite?.nombre_cliente_factura ? selectedTramite?.nombre_cliente_factura : ''}
                             fullWidth
                           />
 
@@ -378,7 +478,16 @@ const EstCambiosTramitesAduanales = () => {
                             id="standard-multiline-flexible"
                             label="Impuesto"
                             variant="standard"
-                            value={selectedTramite?.impuesto.length > 0 || selectedTramite?.impuesto[0] == 0 ? selectedTramite.impuesto[0] : ''}
+                            // value={
+                            //   selectedTramite?.impuesto.length > 0 || selectedTramite?.impuesto[0] == 0 ? selectedTramite.impuesto[0] : ''
+                            // }
+                            value={
+                              Array.isArray(selectedTramite?.impuesto)
+                              ? selectedTramite?.impuesto[0]
+                              : selectedTramite?.impuesto
+                                  ? selectedTramite?.impuesto
+                                  : ''
+                            }
                             fullWidth
                           />
                         </Box>
@@ -406,7 +515,9 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Ingresos Agencia Aduanal</Typography>
         <br />
-        <DataTable datos={selectedTramite?.history} flag={'Ingresos'} />
+        {/* <DataTable datos={selectedTramite?.history} flag={'Ingresos'} /> */}
+        <DataTable datos={ selectedTramite?.history ? selectedTramite?.history : ingresos} flag={selectedTramite?.history ? 'Ingresos' : ''} />
+
       </Box>
 
       <br />
@@ -414,7 +525,8 @@ const EstCambiosTramitesAduanales = () => {
       <Box>
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
-        <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable>
+        {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
+        <DataTable datos={ selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} />
       </Box>
 
       <Divider sx={{ my: 2 }} />
