@@ -59,6 +59,10 @@ const EstCambiosTramitesAduanales = () => {
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
 
+  const [esHabilitadoIniciar,setEsHabilitadoIniciar] = useState(true)
+  const [esHabilitadoGuardar,setEsHabilitadoGuardar] = useState(false)
+  const [esHabilitadoCancelar,setEsHabilitadoCancelar] = useState(false)
+
   const [folio, setFolio] = useState('');
 
   const handleFetch = async (parametros) => {
@@ -183,12 +187,38 @@ const EstCambiosTramitesAduanales = () => {
   // };
 
   const handleIniciar = () => {
-    if (selectedTramite) {
-      console.log('boton iniciar presionado');
-    }
+    console.log("El boton Iniciar se presiono")
+    // Si no se ha cargado informacion del pedimento ingresando el folio y presionando enter o buscando y seleccionandolo por medio del modal,
+    // al presionarlo se desabilita el mismo boton(iniciar) y se habilita el boton de guardar
+    // al presinarlo se habilita el boton cancelar
+    //console.log(typeof selectedTramite)
+    // if(!selectedTramite){
+    //   setEsHabilitadoGuardar(true)
+    //   setEsHabilitadoIniciar(false)
+    //   setEsHabilitadoCancelar(true)
+    // }
+
+
+    setEsHabilitadoGuardar(true)
+    setEsHabilitadoIniciar(false)
+    setEsHabilitadoCancelar(true)
   };
 
+  const handleGuardar = () => {
+    console.log("El boton guardar se presiono")
+  }
+
+  const handleCancelar = () => {
+    console.log("El boton cancelar se presiono")
+    //Si esta habilitado el propio boton(cancelar) y se presiona el boton iniciar se habilita el boton iniciar
+    //y el boton guardar se desabilita
+    setEsHabilitadoIniciar(true)
+    setEsHabilitadoGuardar(false)
+    setEsHabilitadoCancelar(false)
+  }
+
   const handleImprimir = () => {
+    console.log("El boton Imprimir se presiono")
     if (selectedTramite) {
       console.log(selectedTramite);
     }
@@ -585,13 +615,13 @@ const EstCambiosTramitesAduanales = () => {
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Box>
-            <Button variant="contained" disabled={selectedTramite} onClick={handleIniciar}>
+            <Button variant="contained" disabled={!esHabilitadoIniciar} onClick={handleIniciar}>
               Iniciar
             </Button>
-            <Button variant="contained" disabled={!selectedTramite}>
+            <Button variant="contained" disabled={!esHabilitadoGuardar} onClick={handleGuardar}>
               Guardar
             </Button>
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" disabled={!esHabilitadoCancelar} onClick={handleCancelar} color="secondary">
               Cancelar
             </Button>
           </Box>
