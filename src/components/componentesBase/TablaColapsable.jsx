@@ -37,7 +37,10 @@ function createData2(
   tipo_pago_impuestos,
   tipo_cambio,
   con_cargo,
-  sucursal
+  sucursal,
+  id_cliente_pedimento,
+  id_cliente_factura
+
 ) {
   return {
     tramite,
@@ -53,7 +56,9 @@ function createData2(
     tipo_pago_impuestos,
     tipo_cambio,
     con_cargo,
-    sucursal
+    sucursal,
+    id_cliente_pedimento,
+    id_cliente_factura
   };
 }
 
@@ -207,7 +212,9 @@ const TablaColapsable = ({ datos, datos2, onSelectRow }) => {
       item.tipo_pago_impuestos,
       item.tipo_cambio,
       item.con_cargo,
-      item.sucursal
+      item.sucursal,
+      item.id_cliente_pedimento,
+      item.id_cliente_factura
     );
   });
 

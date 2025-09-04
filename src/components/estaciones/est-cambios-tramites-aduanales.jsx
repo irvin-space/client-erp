@@ -82,12 +82,12 @@ const EstCambiosTramitesAduanales = () => {
       console.log(data[0][0]);
 
       // --- Lógica agregada para verificar si hay registros ---
-      // if (data[0] && data[0].length === 0) {
+       if (data[0] && data[0].length === 0) {
       // Si el primer array está vacío, muestra una alerta.
       {
-        // mensajes('aviso', 'Consulta Realizada');
+         mensajes('aviso', 'Consulta Realizada');
       } // este es sweetalert2
-      // }
+       }
 
       setSelectedTramite(data[0][0]);
       setIngresos(data[1]);
@@ -104,15 +104,15 @@ const EstCambiosTramitesAduanales = () => {
   useEffect(() => {
     console.log(pathname);
     if (pathname.includes('est-cambios-tramites-aduanales')) {
-      console.log('menu', nivelDeSeguridad);
+      // console.log('menu', nivelDeSeguridad);
       for (let i = 0; i < nivelDeSeguridad.length; i++) {
-        console.log('menu object', nivelDeSeguridad[i]);
-        console.log('children', nivelDeSeguridad[i].children);
+        // console.log('menu object', nivelDeSeguridad[i]);
+        // console.log('children', nivelDeSeguridad[i].children);
         for (let index = 0; index < nivelDeSeguridad[i].children.length; index++) {
           const element = nivelDeSeguridad[i].children[index];
-          console.log('children item', element.url);
+          // console.log('children item', element.url);
           if (typeof element?.url === 'string' && element.url.includes('/est-cambios-tramites-aduanales')) {
-            console.log('elemento objetivo', element);
+            // console.log('elemento objetivo', element);
             console.log(element.nivel_seguridad);
             //Una vez se encuentra el nivel de seguridad se setea en el estado nivelDeSeguridad
             setNivelDeSeguridad(element.nivel_seguridad);
@@ -120,7 +120,7 @@ const EstCambiosTramitesAduanales = () => {
         }
       }
     }
-  }); // Este codigo se ejecuta cada vez que el comoponente se monta
+  },[]); // Este codigo se ejecuta cada vez que el comoponente se monta
 
   useEffect(() => {
     console.log('nivel de seguridad', nivelDeSeguridad);
@@ -150,7 +150,7 @@ const EstCambiosTramitesAduanales = () => {
       //Buscar tramite por el folio
       console.log(e.target.value);
       await handleFetch(folio);
-      mensajes('aviso', 'Consulta realizada', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do');
+      // mensajes('aviso', 'Consulta realizada', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do');
     }
   };
 
@@ -215,6 +215,10 @@ const EstCambiosTramitesAduanales = () => {
     setEsHabilitadoIniciar(true)
     setEsHabilitadoGuardar(false)
     setEsHabilitadoCancelar(false)
+    setSelectedTramite(null)
+    setIngresos([])
+    setGastos([])
+    setFolio('')
   }
 
   const handleImprimir = () => {
@@ -245,6 +249,14 @@ const EstCambiosTramitesAduanales = () => {
     // }
 
     setSelectedTramite(row);
+
+    //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales 
+    //se habilita el boton Guardar, se habilita el boton Cancelar, se deshabilita el boton Iniciar
+    setEsHabilitadoGuardar(true)
+    setEsHabilitadoCancelar(true)
+    setEsHabilitadoIniciar(false)
+
+
     setOpenModal(false); // Cerrar modal
   };
 
@@ -427,13 +439,13 @@ const EstCambiosTramitesAduanales = () => {
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
                           <TextField
                             id="standard-basic"
-                            label="Pedimento"
+                            label="Fólio - Pedimento"
                             variant="standard"
                             value={
                               selectedTramite?.ctePedimento
-                                ? selectedTramite.ctePedimento
+                                ? `${selectedTramite?.id_cliente_pedimento}-${selectedTramite.ctePedimento}`
                                 : selectedTramite?.nombre_cliente_pedimento
-                                  ? selectedTramite?.nombre_cliente_pedimento
+                                  ? `${selectedTramite?.cliente_pedimento} - ${selectedTramite?.nombre_cliente_pedimento}`
                                   : ''
                             }
                             fullWidth
@@ -459,15 +471,15 @@ const EstCambiosTramitesAduanales = () => {
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
                           <TextField
                             id="standard-multiline-flexible"
-                            label="Facturación"
+                            label="Fólio - Facturación"
                             multiline
                             maxRows={2}
                             variant="standard"
                             value={
                               selectedTramite?.cteFacturacion
-                                ? selectedTramite.cteFacturacion
+                                ? `${selectedTramite?.id_cliente_factura} - ${selectedTramite.cteFacturacion}`
                                 : selectedTramite?.nombre_cliente_factura
-                                  ? selectedTramite?.nombre_cliente_factura
+                                  ? `${selectedTramite?.cliente_factura} - ${selectedTramite?.nombre_cliente_factura}`
                                   : ''
                             }
                             fullWidth
