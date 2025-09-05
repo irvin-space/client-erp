@@ -38,8 +38,9 @@ import DataTable2 from '../componentesBase/DataTable2.jsx';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.jsx';
 // import Mensajes from '../componentesBase/Mensajes.jsx';
 
-//Modal
+//Modales
 import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
+import BusquedaDeClientes from './busqueda-de-clientes.jsx'
 
 //Iconos
 import { SearchOutlined } from '@ant-design/icons';
@@ -51,7 +52,9 @@ import { color } from 'framer-motion';
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
-  const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal
+  const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
+  const [openBusquedaClienteModal,setOpenBusquedaClienteModal]=useState(false) // Seguimiento del estado del modal de busqueda de clientes
+
   const [selectedTramite, setSelectedTramite] = useState(null);
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
   const [ingresos, setIngresos] = useState(null);
@@ -59,9 +62,9 @@ const EstCambiosTramitesAduanales = () => {
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
 
-  const [esHabilitadoIniciar,setEsHabilitadoIniciar] = useState(true)
-  const [esHabilitadoGuardar,setEsHabilitadoGuardar] = useState(false)
-  const [esHabilitadoCancelar,setEsHabilitadoCancelar] = useState(false)
+  const [esHabilitadoIniciar, setEsHabilitadoIniciar] = useState(true);
+  const [esHabilitadoGuardar, setEsHabilitadoGuardar] = useState(false);
+  const [esHabilitadoCancelar, setEsHabilitadoCancelar] = useState(false);
 
   const [folio, setFolio] = useState('');
 
@@ -82,12 +85,12 @@ const EstCambiosTramitesAduanales = () => {
       console.log(data[0][0]);
 
       // --- Lógica agregada para verificar si hay registros ---
-       if (data[0] && data[0].length === 0) {
-      // Si el primer array está vacío, muestra una alerta.
-      {
-         mensajes('aviso', 'Consulta Realizada');
-      } // este es sweetalert2
-       }
+      if (data[0] && data[0].length === 0) {
+        // Si el primer array está vacío, muestra una alerta.
+        {
+          mensajes('aviso', 'Consulta Realizada');
+        } // este es sweetalert2
+      }
 
       setSelectedTramite(data[0][0]);
       setIngresos(data[1]);
@@ -120,7 +123,7 @@ const EstCambiosTramitesAduanales = () => {
         }
       }
     }
-  },[]); // Este codigo se ejecuta cada vez que el comoponente se monta
+  }, []); // Este codigo se ejecuta cada vez que el comoponente se monta
 
   useEffect(() => {
     console.log('nivel de seguridad', nivelDeSeguridad);
@@ -187,7 +190,7 @@ const EstCambiosTramitesAduanales = () => {
   // };
 
   const handleIniciar = () => {
-    console.log("El boton Iniciar se presiono")
+    console.log('El boton Iniciar se presiono');
     // Si no se ha cargado informacion del pedimento ingresando el folio y presionando enter o buscando y seleccionandolo por medio del modal,
     // al presionarlo se desabilita el mismo boton(iniciar) y se habilita el boton de guardar
     // al presinarlo se habilita el boton cancelar
@@ -198,31 +201,30 @@ const EstCambiosTramitesAduanales = () => {
     //   setEsHabilitadoCancelar(true)
     // }
 
-
-    setEsHabilitadoGuardar(true)
-    setEsHabilitadoIniciar(false)
-    setEsHabilitadoCancelar(true)
+    setEsHabilitadoGuardar(true);
+    setEsHabilitadoIniciar(false);
+    setEsHabilitadoCancelar(true);
   };
 
   const handleGuardar = () => {
-    console.log("El boton guardar se presiono")
-  }
+    console.log('El boton guardar se presiono');
+  };
 
   const handleCancelar = () => {
-    console.log("El boton cancelar se presiono")
+    console.log('El boton cancelar se presiono');
     //Si esta habilitado el propio boton(cancelar) y se presiona el boton iniciar se habilita el boton iniciar
     //y el boton guardar se desabilita
-    setEsHabilitadoIniciar(true)
-    setEsHabilitadoGuardar(false)
-    setEsHabilitadoCancelar(false)
-    setSelectedTramite(null)
-    setIngresos([])
-    setGastos([])
-    setFolio('')
-  }
+    setEsHabilitadoIniciar(true);
+    setEsHabilitadoGuardar(false);
+    setEsHabilitadoCancelar(false);
+    setSelectedTramite(null);
+    setIngresos([]);
+    setGastos([]);
+    setFolio('');
+  };
 
   const handleImprimir = () => {
-    console.log("El boton Imprimir se presiono")
+    console.log('El boton Imprimir se presiono');
     if (selectedTramite) {
       console.log(selectedTramite);
     }
@@ -250,12 +252,11 @@ const EstCambiosTramitesAduanales = () => {
 
     setSelectedTramite(row);
 
-    //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales 
+    //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales
     //se habilita el boton Guardar, se habilita el boton Cancelar, se deshabilita el boton Iniciar
-    setEsHabilitadoGuardar(true)
-    setEsHabilitadoCancelar(true)
-    setEsHabilitadoIniciar(false)
-
+    setEsHabilitadoGuardar(true);
+    setEsHabilitadoCancelar(true);
+    setEsHabilitadoIniciar(false);
 
     setOpenModal(false); // Cerrar modal
   };
@@ -451,9 +452,15 @@ const EstCambiosTramitesAduanales = () => {
                             fullWidth
                           />
 
-                          <Button variant="outlined" sx={{ height: '100%' }}>
-                            <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
-                          </Button>
+                          <BusquedaDeClientes
+                            open={openBusquedaClienteModal}
+                            onClose={() => setOpenBusquedaClienteModal(false)}
+                            onOpen={() => setOpenBusquedaClienteModal(true)}
+                            //
+                            //
+                            //
+                            //
+                          />
                           {/* <BusquedaTramitesAduanales
                             onSelectRow={handleRowSelect}
                             open={openModal}
