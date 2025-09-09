@@ -22,6 +22,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 //Components del proyecto
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import DataTable from '../componentesBase/DataTable2';
+import { setIn } from 'formik';
+import { maxHeight } from '@mui/system';
 
 //Modal Style
 const style = {
@@ -31,7 +33,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   //   minWidthwidth: '1500px',
   width: '90vw',
-height: '80vh',
+  maxHeight: '80vh',
   //   maxHeight: '80vh',
   //   height: '70vh',
   bgcolor: 'background.paper',
@@ -44,20 +46,70 @@ height: '80vh',
 };
 
 const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
-const [isLoading, setIsLoading] = useState(false); // Cargando
-  const [age, setAge] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Cargando
+
+  const [inputBusquedaDeCliente, setInputBusquedaDeCliente] = useState('');
+  const [buscarPor, setBuscarPor] = useState('Nombre');
   const [searchInputConstrain, setSearchInputConstrain] = useState('contiene');
+  const [busquedaSucursal, setBusquedaSucursal] = useState('');
+
+  const [arregloDeClientes,setArregloDeClientes] = useState([])
+
+  const handleFetch = async (orden, texto, principio, sucursal) => {
+    try {
+      const response = await fetch('http://localhost:3001/dinamico/lista', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instruccionSQL: 'ser_busca_cliente',
+          parametros: {
+            '@cOrden': orden,
+            '@cTexto': texto,
+            '@bPrincipio': principio == 'contiene' ? 1 : 0,
+            '@nSucursal': sucursal
+          }
+        })
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+      setArregloDeClientes(data)
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleConsultar = () => {
     console.log('consulstar');
-  }
+    console.log('inputBusquedaDeCliente', inputBusquedaDeCliente);
+    console.log('searchInputConstrain:', searchInputConstrain);
+    console.log('buscarPor:', buscarPor);
+    console.log('sucursal:', busquedaSucursal);
+    handleFetch(buscarPor, inputBusquedaDeCliente, searchInputConstrain, busquedaSucursal);
+  };
+
+  const handleInputBusquedaDeCliente = (event) => {
+    console.log(event.target.value);
+    setInputBusquedaDeCliente(event.target.value);
+  };
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    console.log('buscar por', event.target.value);
+    setBuscarPor(event.target.value);
   };
 
   const handleSearchInputConstrain = (event, newSearchInputConstrain) => {
+    console.log('input constrain', newSearchInputConstrain);
     setSearchInputConstrain(newSearchInputConstrain);
+  };
+
+  const handleBusquedaSucursal = (e) => {
+    console.log(e);
+    if (e == 'Todos') {
+      setBusquedaSucursal('Todos');
+    }
+    setBusquedaSucursal(e);
   };
 
   return (
@@ -77,7 +129,7 @@ const [isLoading, setIsLoading] = useState(false); // Cargando
             <Box sx={{ backgroundColor: '', display: 'flex', flexDirection: 'row' }}>
               <FormControl sx={{ width: '35%' }}>
                 <InputLabel htmlFor="buscar-input">Buscar</InputLabel>
-                <Input id="buscar-input" aria-describedby="buscar-helper-text" />
+                <Input onChange={handleInputBusquedaDeCliente} id="buscar-input" aria-describedby="buscar-helper-text" />
               </FormControl>
 
               {/* <FormHelperText id="buscar-helper-text">Buscar cliente</FormHelperText> */}
@@ -88,7 +140,7 @@ const [isLoading, setIsLoading] = useState(false); // Cargando
                 value={searchInputConstrain}
                 exclusive
                 onChange={handleSearchInputConstrain}
-                aria-label="t"
+                aria-label="contiene-empieza-con"
               >
                 <ToggleButton value="contiene" aria-label="contiene">
                   <Typography variant="p">Contiene</Typography>
@@ -101,10 +153,19 @@ const [isLoading, setIsLoading] = useState(false); // Cargando
               {/* Busqueda por  */}
               <FormControl sx={{ width: '25%' }}>
                 <InputLabel id="demo-simple-select-label">Buscar Por</InputLabel>
-                <Select labelId="demo-simple-select-label" id="demo-simple-select" value={age} label="Age" onChange={handleChange}>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={buscarPor}
+                  label="Buscar-Por"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={'Nombre'}>Nombre</MenuItem>
+                  <MenuItem value={'RFC'}>RFC</MenuItem>
+                  <MenuItem value={'Anterior'}>Anterior</MenuItem>
+                  <MenuItem value={'Cliente'}>Cliente</MenuItem>
+                  <MenuItem value={'Agente'}>Agente</MenuItem>
+                  <MenuItem value={'Comercial'}>Comercial</MenuItem>
                 </Select>
               </FormControl>
 
@@ -117,18 +178,23 @@ const [isLoading, setIsLoading] = useState(false); // Cargando
                   }}
                   valueKey="sucursal"
                   labelKey="nombre_sucursal"
+                  extraOption="Todos"
+                  onChange={handleBusquedaSucursal}
                 />
               </Box>
             </Box>
             <br />
-            <Box sx={{
-                maxHeight: '40vh', // Limita la tabla a la altura establecida
+            <Box
+              sx={{
+                flexGrow: 1,
+                maxHeight: '50vh', // Limita la tabla a la altura establecida
                 overflowY: 'auto', // Permite el scroll horizontal solo aqui
-                                '& .MuiTableContainer-root': {
-                                  maxHeight: 'none' // Asegura que no existan conflictos de limites internos
-                                }
-            }}>
-                <DataTable/>
+                '& .MuiTableContainer-root': {
+                  maxHeight: 'none' // Asegura que no existan conflictos de limites internos
+                }
+              }}
+            >
+              <DataTable datos={arregloDeClientes} />
             </Box>
             <br />
             <Button

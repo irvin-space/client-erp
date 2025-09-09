@@ -121,12 +121,12 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   };
 
   const handleConsultar = () => {
-    console.log({
-      sucursal,
-      tipo: tipo === 'Todos' ? '%' : tipo,
-      desdeFecha: desdeFecha?.format('YYYY-MM-DD') || null,
-      hastaFecha: hastaFecha?.format('YYYY-MM-DD') || null
-    });
+    // console.log({
+    //   sucursal,
+    //   tipo: tipo === 'Todos' ? '%' : tipo,
+    //   desdeFecha: desdeFecha?.format('YYYY-MM-DD') || null,
+    //   hastaFecha: hastaFecha?.format('YYYY-MM-DD') || null
+    // });
 
     const objetoDeBusqueda = {
       sucursal: `'${sucursal}'`,

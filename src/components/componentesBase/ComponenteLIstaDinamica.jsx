@@ -7,7 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey, value, onChange}) => {
+const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey, value, onChange, extraOption}) => {
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
   const [loading, setLoading] = useState(true);
@@ -37,6 +37,16 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
         //Establecer valores dinamicos
         // setValoresDinamicos({...valoresDinamicos,options:data[0]})
         setOptions(data[0]);
+        if(extraOption){
+          let extraOptionObject = {
+            es_distribucion: false,
+            es_sucursal: false,
+            nombre_sucursal: "*Todos*",
+            rango_folios: false,
+            sucursal: "Todos",
+          }
+          setOptions([extraOptionObject,...data[0]])
+        }
         setLoading(false);
         // --- AQUÍ ESTÁ LA LÓGICA AGREGADA PARA ASIGNAR VALOR POR DEFAULT---
         // Si no se ha proporcionado un valor y hay opciones, asigna el primer valor como por defecto.
