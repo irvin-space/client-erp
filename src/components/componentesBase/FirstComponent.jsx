@@ -8,6 +8,7 @@ export default function FirstComponent({label, value, onChange}) {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         value={value}
+        label={label}
         onChange={onChange}
         slotProps={{
           textField: {

@@ -139,7 +139,7 @@ export default function DataTable({ datos, flag }) {
           '& .MuiDataGrid-columnHeader': {
             py: 0.5, // Reduce vertical padding in header
             px: 1, // Reduce horizontal padding in header,
-            backgroundColor: 'primary.darker',
+            backgroundColor: "#00345D",
             color: 'primary.lighter'
           }
         }}

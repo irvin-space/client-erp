@@ -159,7 +159,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                   <Typography variant="subtitle2">Sucursal</Typography>
 
                   <ComponenteListaDinamica
-                    label="Sucursal"
+                    label=""
                     onChange={setSucursal}
                     instruccionSQL="combo_sucursales"
                     value={sucursal}
@@ -182,8 +182,9 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                 </Grid>
                 {/* Tipo */}
                 <Grid size={4} sx={{ backgroundColor: 'white' }}>
+                  <Typography variant="subtitle2">Tipo</Typography>
                   <RowRadioButtonsGroup
-                    titulo="Tipo"
+                    titulo=""
                     valor1="Todos"
                     valor2="Importación"
                     valor3="Exportación"

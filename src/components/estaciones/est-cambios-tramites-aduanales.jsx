@@ -48,6 +48,9 @@ import { DownCircleOutlined } from '@ant-design/icons';
 import { bgcolor, border, fontSize, height, width } from '@mui/system';
 import { color } from 'framer-motion';
 
+//Componentes Comunes
+import Autoriza from '../comun/autoriza.jsx';
+
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
@@ -59,6 +62,7 @@ const EstCambiosTramitesAduanales = () => {
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
   const [ingresos, setIngresos] = useState(null);
   const [gastos, setGastos] = useState(null);
+  const [clave_pedimento, setClave] = useState('');
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
 
@@ -261,6 +265,27 @@ const EstCambiosTramitesAduanales = () => {
     setOpenModal(false); // Cerrar modal
   };
 
+  const handleAutorizar=(row)=>{
+    console.log('Autorizar el registro:', row);
+  };
+
+  const handleNuevo=()=>{
+    console.log('Nuevo registro');  
+  };
+
+  const handleBorrar=(row)=>{ 
+    console.log('Borrar el registro:', row);
+  };
+
+  const handleCambiar=(row)=>{
+    console.log('Cambiar el registro:', row);
+  };
+
+  const handleVerHistoria=(row)=>{ 
+    console.log('Ver historia del registro:', row);
+  };
+  
+
   return (
     <div>
       <Typography variant="h2">Modificación de Trámites Aduanales</Typography>
@@ -294,7 +319,7 @@ const EstCambiosTramitesAduanales = () => {
             </Box>
           </Grid>
           <Grid size={4}>
-            <FirstComponent value={dayjs(selectedTramite?.fecha)} />
+            <FirstComponent value={dayjs(selectedTramite?.fecha)} label = "Fecha" />
           </Grid>
         </Grid>
 
@@ -340,6 +365,7 @@ const EstCambiosTramitesAduanales = () => {
               fullWidth
               placeholder="0.00"
               id="outlined-start-adornment"
+              label="Tipo Cambio"
               slotProps={{ input: { startAdornment: '$' } }}
               value={
                 selectedTramite?.tipo_cambio || selectedTramite?.tipo_cambio == 0 ? Math.floor(selectedTramite.tipo_cambio * 100) / 100 : ''
@@ -391,7 +417,17 @@ const EstCambiosTramitesAduanales = () => {
                           }
                         />
                       </Grid>
-                      <Grid size={6}>{/* <ComponenteLista titulo="Clave" /> */}</Grid>
+                      <Grid size={6}>
+                        <ComponenteListaDinamica
+                          label="Clave"
+                          onChange={setClave}
+                          instruccionSQL="SELECT DISTINCT nombre_clave, clave_pedimento FROM Claves_Pedimentos ORDER BY nombre_clave"
+                          value={selectedTramite?.clave_pedimento ? selectedTramite?.clave_pedimento : clave_pedimento}
+                          valueKey="clave_pedimento"
+                          labelKey="nombre_clave"
+                          
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                   <Grid size={12}>
@@ -415,7 +451,7 @@ const EstCambiosTramitesAduanales = () => {
                       </Grid>
                       <Grid size={6}>
                         <RowRadioButtonsGroup
-                          titulo=""
+                          titulo="Cargo"
                           valor1="Con Cargo"
                           valor2="Sin Cargo"
                           value={selectedTramite ? (selectedTramite?.con_cargo == true ? 'Con Cargo' : 'Sin Cargo') : null}
@@ -627,6 +663,41 @@ const EstCambiosTramitesAduanales = () => {
         {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
         <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} />
       </Box>
+      <br/>
+      <Stack direction="row">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Box>
+            <Autoriza 
+              texto="Autorizar Gastos"
+              Color="success"
+              onSelectRow={handleRowSelect}
+              open={openModal}
+              onClose={() => {
+                document.activeElement?.blur();
+                setOpenModal(false);
+              }}
+              onOpen={() => setOpenModal(true)}/>
+            &nbsp;
+            <Button variant="outlined" onClick={handleNuevo} color="primary">
+              Nuevo Gasto
+            </Button>
+            &nbsp;
+            <Button variant="outlined" onClick={handleCambiar} color="warning">
+              Cambiar Gasto
+            </Button>
+            &nbsp;
+            <Button variant="outlined" onClick={handleBorrar} color="error">
+              Borrar Gasto
+            </Button>
+            
+          </Box>
+          <Box>
+            <Button variant="text" onClick={handleVerHistoria} color="success">
+              Ver Historia
+            </Button>
+          </Box>
+        </Box>
+      </Stack>
 
       <Divider sx={{ my: 2 }} />
 
