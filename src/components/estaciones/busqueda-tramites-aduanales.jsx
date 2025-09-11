@@ -165,6 +165,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                     value={sucursal}
                     valueKey="sucursal"
                     labelKey="nombre_sucursal"
+                    extraOption={'*Todos*'}
                     parametros={{
                       '@cCentro': "'      1'"
                     }}

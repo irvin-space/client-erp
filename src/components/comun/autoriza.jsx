@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -8,16 +8,13 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Input from '@mui/material/Input';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
 
 //Components del proyecto
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
+import useAuth from 'hooks/useAuth.js';
+import { mensajes } from '../../utils/mensajes.js';
 
 //Modal Style
 const style = {
@@ -25,13 +22,9 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  //   minWidthwidth: '1500px',
-  width: '20vw',
-height: '30vh',
-  //   maxHeight: '80vh',
-  //   height: '70vh',
+  width: '400px',
+  height: '380px',
   bgcolor: 'background.paper',
-  //   bgcolor: 'primary.lighter', // white
   border: '8px solid #00345D',
   boxShadow: 24,
   p: 4,
@@ -39,51 +32,139 @@ height: '30vh',
   overflow: 'hidden'
 };
 
-const Autoriza = ({ open, onClose, onOpen, texto, Color }) => {
-const [isLoading, setIsLoading] = useState(false); // Cargando
+const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Color, open, onClose, onOpen, onSelectRow, onProcesoPosterior }) => {
+  const [password, setPassword] = useState('');
+  const [nombreOperacion, setNombreOperacion] = useState('');
+
+  //alert(onSelectRow.concepto);
+  // Nuevo useEffect para registrar la acción de apertura
+  useEffect(() => {
+    if (open) {
+      console.log('Abriendo modal', FolioAutorizacion);
+      const Params = {
+              operacion: `'${FolioAutorizacion}'`
+            };
+
+      handleFetch(Params);
+    }
+  }, [open]);
+
+  const handleFetch = async (parametros) => {
+      try {
+            
+
+            const response = await fetch('http://localhost:3001/dinamico/lista', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                instruccionSQL: 'Combo_Personal_Autoriza',
+                parametros: parametros
+              })
+            });
+      
+            const data = await response.json();
+            console.log('debajo esta el resultado del sp');
+            console.log(data);
+            // --- Lógica agregada para verificar si hay registros ---
+            if (data[0] && data[0].length === 0) {
+              // Si el primer array está vacío, muestra una alerta.
+              {
+                mensajes('aviso', 'Consulta Realizada');
+              } // este es sweetalert2
+            }
+      
+            setNombreOperacion(data[1][0].nombre_operacion);
+
+            console.log('Nombre de la Operacion:', nombreOperacion);
+          } catch (error) {
+            console.log(error);
+          } finally {
+            console.log('Finalizando carga');
+            //setIsLoading(false); //Terminar de cargar
+          }
+    };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
   
   const handleAceptar = () => {
-    console.log('Aceptar');
+    
+    if(password==='123'){
+      mensajes('aviso', 'Proceso Autorizado');
+
+      // Aquí se llama a la función del componente padre
+      // para que realice la acción final.
+      if (onProcesoPosterior) {
+          onProcesoPosterior();
+      }
+
+
+      console.log('Aqui va el codiigo para actualizar la autorizacion en la tabla correspondiente');
+      setPassword('');
+      FolioAutorizacion = '0';
+      onClose();
+    }
+    else{
+      mensajes('error', 'Proceso No Autorizado');
+      setPassword('');
+      //FolioAutorizacion = '0';
+      return;
+    }
   }
 
-  const handleAutorizar = (event) => {
-    console.log('consultar');
-  };
+  const handleCancelar = () => {
+    console.log('Cancelar');
+    setPassword('');
+    FolioAutorizacion = '0';
+    //setNombreOperacion('xxx');
+    onClose();
+  }
 
- 
+  const [usuario, setUsuario] = useState(useAuth().user.id_persona);
+  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+
   return (
-    <div>
+    <Box>
       <Button onClick={onOpen} variant="outlined" color={Color ? Color : 'primary'}>
-        {texto ? texto : 'Autorizar'}
+        {txtBoton ? txtBoton : 'Autorizar'}
       </Button>
       <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
           <Container>
             {/* Encabezado */}
-            <Box sx={{ backgroundColor: '', display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
-              {/* <Box sx={{ backgroundColor: 'orange', display: 'flex', justifyContent: 'center', alignItems: 'center' }}> */}
+            <Box sx={{ backgroundColor: '', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              
               <Typography variant="h4">Autorización de Proceso</Typography>
             </Box>
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="h6">{nombreOperacion}</Typography>
             <br />
-            <Box sx={{ backgroundColor: '', display: 'flex', flexDirection: 'row' }}>
-              <FormControl sx={{ width: '35%' }}>
-                <InputLabel htmlFor="buscar-input">Persona</InputLabel>
-                <Input id="buscar-input" aria-describedby="buscar-helper-text" />
-              </FormControl>
-
-              
-              <Box sx={{ width: '25%' }}>
+            <Box sx={{ width: '100%' }}>
                 <ComponenteListaDinamica
                   label="Autoriza"
-                  instruccionSQL="combo_personal"
+                  instruccionSQL="Combo_Personal_Autoriza"
+                  value={usuario}
+                  onChange={setUsuario}
                   parametros={{
-                    '@cCentro': "'      1'",
-                    '@cRol': "'%'"
+                    '@nOperacion': `'${FolioAutorizacion}'`
                   }}
                   valueKey="persona"
                   labelKey="nombre"
                 />
               </Box>
+              <br />
+            <Box sx={{ backgroundColor: '', display: 'flex', flexDirection: 'row' }}>
+              <FormControl variant="outlined" sx={{ width: '50%' }}>
+                <TextField
+                  id="password"
+                  label="Contraseña"
+                  type="password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                />
+              </FormControl>
+
             </Box>
             <br />
             <Box sx={{
@@ -96,18 +177,26 @@ const [isLoading, setIsLoading] = useState(false); // Cargando
 
             </Box>
             <br />
-            <Button
-              onClick={handleAceptar}
-              variant="contained"
-              disabled={isLoading}
-              startIcon={isLoading ? <CircularProgress size={20} /> : null}
-            >
-              Aceptar
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 0 }}>
+              <Button
+                onClick={handleAceptar}
+                variant="contained"
+                color="success"
+              >
+                Aceptar
+              </Button>
+              <Button
+                onClick={handleCancelar}
+                variant="contained"
+                color="error"
+              >
+                Cancelar
+              </Button>
+            </Box>
           </Container>
         </Box>
       </Modal>
-    </div>
+    </Box>
   );
 };
 

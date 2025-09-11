@@ -50,13 +50,16 @@ import { color } from 'framer-motion';
 
 //Componentes Comunes
 import Autoriza from '../comun/autoriza.jsx';
+import AutorizaBorrar from '../comun/autoriza.jsx';
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
-  const [openBusquedaClienteModal,setOpenBusquedaClienteModal]=useState(false) // Seguimiento del estado del modal de busqueda de clientes
+  const [openBusquedaClienteModal,setOpenBusquedaClienteModal]=useState(false); // Seguimiento del estado del modal de busqueda de clientes
+  const [openAutoriza,setOpenAutoriza]=useState(false); // Seguimiento del estado del modal de autorizacion
+  const [openAutorizaBorrar,setOpenAutorizaBorrar]=useState(false); // Seguimiento del estado del modal de autorizacion
 
   const [selectedTramite, setSelectedTramite] = useState(null);
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
@@ -255,6 +258,9 @@ const EstCambiosTramitesAduanales = () => {
     // }
 
     setSelectedTramite(row);
+    // if (selectedTramite.tramite > 0){
+    //   setFolio(row.tramite);
+    // }
 
     //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales
     //se habilita el boton Guardar, se habilita el boton Cancelar, se deshabilita el boton Iniciar
@@ -284,7 +290,41 @@ const EstCambiosTramitesAduanales = () => {
   const handleVerHistoria=(row)=>{ 
     console.log('Ver historia del registro:', row);
   };
-  
+
+  // Lógica de validación previa
+  const handleProcesoPrevio = () => {
+      let pasaValidacion = true; 
+      let registrosGastos = 0;
+
+      let dataToFilter = selectedTramite?.history || gastos;
+
+    // Check if dataToFilter exists and is an array before filtering
+    if (Array.isArray(dataToFilter)) {
+        const filteredRecords = dataToFilter.filter(gasto => {
+            // Apply all three conditions from your FoxPro query
+            return gasto.gasto_no_deducible > 0 && 
+                   gasto.estado_gasto_nd === 'Capturado' && 
+                   gasto.estatus_proveedor === 'Pagado';
+        });
+        registrosGastos = filteredRecords.length;
+    }
+
+    if (registrosGastos === 0) {
+        pasaValidacion = false;
+    }
+
+      if (!pasaValidacion) {
+          mensajes('error', 'No hay gastos no deducibles a autorizar.');
+          return false;
+      }
+      return true;
+  };
+
+  // Lógica de acción final después de la autorización exitosa
+  const handleProcesoPosterior = () => {
+      mensajes('aviso','¡Autorización exitosa! Continuando con las acciones del padre...');
+      // Por ejemplo, enviar un formulario, recargar datos, etc.
+  };
 
   return (
     <div>
@@ -666,17 +706,26 @@ const EstCambiosTramitesAduanales = () => {
       <br/>
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <Box>
+          <Box sx={{ display: 'flex' }}>
             <Autoriza 
-              texto="Autorizar Gastos"
+              txtBoton="Autorizar Gastos"
+              FolioAutorizacion="861"
+              Tabla="Tramites_Aduanales"
+              Folio={folio}
               Color="success"
               onSelectRow={handleRowSelect}
-              open={openModal}
+              open={openAutoriza}
               onClose={() => {
-                document.activeElement?.blur();
-                setOpenModal(false);
+                  setOpenAutoriza(false);
               }}
-              onOpen={() => setOpenModal(true)}/>
+              onOpen={() => {
+                // La validación previa va aquí, justo antes de abrir la modal
+                if (handleProcesoPrevio()) {
+                    setOpenAutoriza(true); // Solo abre el modal si la validación es exitosa
+                }
+                }}
+              onProcesoPosterior={handleProcesoPosterior}
+              />
             &nbsp;
             <Button variant="outlined" onClick={handleNuevo} color="primary">
               Nuevo Gasto
@@ -686,9 +735,21 @@ const EstCambiosTramitesAduanales = () => {
               Cambiar Gasto
             </Button>
             &nbsp;
-            <Button variant="outlined" onClick={handleBorrar} color="error">
+            <Autoriza 
+              txtBoton="Borrar Gasto"
+              FolioAutorizacion="801"
+              Tabla="Tramites_Aduanales"
+              Folio={folio}
+              Color="error"
+              onSelectRow={handleRowSelect}
+              open={openAutorizaBorrar}
+              onClose={() => {
+                  setOpenAutorizaBorrar(false);
+              }}
+              onOpen={() => setOpenAutorizaBorrar(true)}/>
+            {/* <Button variant="outlined" onClick={handleBorrar} color="error">
               Borrar Gasto
-            </Button>
+            </Button> */}
             
           </Box>
           <Box>
