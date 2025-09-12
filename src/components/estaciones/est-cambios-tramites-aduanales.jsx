@@ -40,7 +40,7 @@ import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.
 
 //Modales
 import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
-import BusquedaDeClientes from './busqueda-de-clientes.jsx'
+import BusquedaDeClientes from './busqueda-de-clientes.jsx';
 
 //Iconos
 import { SearchOutlined } from '@ant-design/icons';
@@ -57,12 +57,13 @@ const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
-  const [openBusquedaClienteModal,setOpenBusquedaClienteModal]=useState(false); // Seguimiento del estado del modal de busqueda de clientes
   const [openAutoriza,setOpenAutoriza]=useState(false); // Seguimiento del estado del modal de autorizacion
   const [openAutorizaBorrar,setOpenAutorizaBorrar]=useState(false); // Seguimiento del estado del modal de autorizacion
+  const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes pedimento
+  const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
 
   const [selectedTramite, setSelectedTramite] = useState(null);
-  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
   const [ingresos, setIngresos] = useState(null);
   const [gastos, setGastos] = useState(null);
   const [clave_pedimento, setClave] = useState('');
@@ -237,25 +238,14 @@ const EstCambiosTramitesAduanales = () => {
     }
   };
 
+  const handleRowSelectClientePedimento = (row) => {
+    console.log("est-camb-ad", row)
+    setOpenBusquedaClientePedimentoModal(false)
+  }
+
   // Callback: hace el llamado cuando la fila a sido seleccionada
   const handleRowSelect = (row) => {
     console.log('Row selected in parent:', row);
-    //Ejemplo:
-
-    // {
-    //   "clave": "RT",
-    //   "cteFacturacion": "RM HEALTHCARE PRODUCTS",
-    //   "ctePedimento": "RM HEALTHCARE PRODUCTS",
-    //   "fecha": "22 Jul 2025",
-    //   "history": [
-    //     {}, {}, {}, {}, {}, {}
-    //   ],
-    //   "impuesto": 2731,
-    //   "pedimento": "250730665024852",
-    //   "precintos": 0,
-    //   "tipo": "E",
-    //   "tramite": 960977
-    // }
 
     setSelectedTramite(row);
     if (row.tramite > 0){
@@ -271,23 +261,23 @@ const EstCambiosTramitesAduanales = () => {
     setOpenModal(false); // Cerrar modal
   };
 
-  const handleAutorizar=(row)=>{
+  const handleAutorizar = (row) => {
     console.log('Autorizar el registro:', row);
   };
 
-  const handleNuevo=()=>{
-    console.log('Nuevo registro');  
+  const handleNuevo = () => {
+    console.log('Nuevo registro');
   };
 
-  const handleBorrar=(row)=>{ 
+  const handleBorrar = (row) => {
     console.log('Borrar el registro:', row);
   };
 
-  const handleCambiar=(row)=>{
+  const handleCambiar = (row) => {
     console.log('Cambiar el registro:', row);
   };
 
-  const handleVerHistoria=(row)=>{ 
+  const handleVerHistoria = (row) => {
     console.log('Ver historia del registro:', row);
   };
 
@@ -349,7 +339,6 @@ const EstCambiosTramitesAduanales = () => {
                 onKeyDown={(e) => handleEnterButton(e)}
                 fullWidth
                 value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
-                // value={folio}
               />
 
               <BusquedaTramitesAduanales
@@ -364,7 +353,7 @@ const EstCambiosTramitesAduanales = () => {
             </Box>
           </Grid>
           <Grid size={4}>
-            <FirstComponent value={dayjs(selectedTramite?.fecha)} label = "Fecha" />
+            <FirstComponent value={dayjs(selectedTramite?.fecha)} label="Fecha" />
           </Grid>
         </Grid>
 
@@ -381,6 +370,7 @@ const EstCambiosTramitesAduanales = () => {
               value={selectedTramite?.sucursal ? selectedTramite?.sucursal : sucursal}
               valueKey="sucursal"
               labelKey="nombre_sucursal"
+              retornaObjeto={false}
               parametros={{
                 '@cCentro': "'      1'"
               }}
@@ -470,7 +460,6 @@ const EstCambiosTramitesAduanales = () => {
                           value={selectedTramite?.clave_pedimento ? selectedTramite?.clave_pedimento : clave_pedimento}
                           valueKey="clave_pedimento"
                           labelKey="nombre_clave"
-                          
                         />
                       </Grid>
                     </Grid>
@@ -534,9 +523,10 @@ const EstCambiosTramitesAduanales = () => {
                           />
 
                           <BusquedaDeClientes
-                            open={openBusquedaClienteModal}
-                            onClose={() => setOpenBusquedaClienteModal(false)}
-                            onOpen={() => setOpenBusquedaClienteModal(true)}
+                            open={openBusquedaClientePedimentoModal}
+                            onClose={() => setOpenBusquedaClientePedimentoModal(false)}
+                            onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
+                            onSelectedRow = {handleRowSelectClientePedimento}
                             //
                             //
                             //
@@ -573,9 +563,19 @@ const EstCambiosTramitesAduanales = () => {
                             fullWidth
                           />
 
-                          <Button variant="outlined" sx={{ height: '100%' }}>
+                          {/* <Button variant="outlined" sx={{ height: '100%' }}>
                             <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
-                          </Button>
+                          </Button> */}
+
+                          <BusquedaDeClientes
+                            open={openBusquedaClienteFacturaModal}
+                            onClose={() => setOpenBusquedaClienteFacturaModal(false)}
+                            onOpen={() => setOpenBusquedaClienteFacturaModal(true)}
+                            //
+                            //
+                            //
+                            //
+                          />
 
                           {/* <BusquedaTramitesAduanales
                             onSelectRow={handleRowSelect}
@@ -708,7 +708,7 @@ const EstCambiosTramitesAduanales = () => {
         {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
         <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} />
       </Box>
-      <br/>
+      <br />
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Box sx={{ display: 'flex' }}>
@@ -792,32 +792,6 @@ const EstCambiosTramitesAduanales = () => {
           </Box>
         </Box>
       </Stack>
-
-      {/* Componente lista de prueba */}
-
-      {/* <ComponenteListaDinamica
-        label="Ivas"
-        instruccionSQL="combo_tasas_ivas"
-        parametros={{
-          '@lOtros': 0,
-          '@lSolo_Activas': 0
-        }}
-        valueKey="folio"
-        labelKey="tasa_iva"
-      />  */}
-      {/* <ComponenteListaDinamica
-        label="Forma pago"
-        instruccionSQL="combo_formas_pago"
-        valueKey="forma_pago"
-        labelKey="forma_pago"
-      /> */}
-
-      {/* Sweet Alerts de pruebas */}
-      {/* {mensajes('error' ,'Lorem Ipsum','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do' )} */}
-
-      {/* {mensajes('pregunta' ,'Lorem Ipsum','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do' )} */}
-
-      {/* {mensajes('aviso' ,'Lorem Ipsum','Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do' )} */}
     </div>
   );
 };

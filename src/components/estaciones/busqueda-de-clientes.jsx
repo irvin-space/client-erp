@@ -15,6 +15,9 @@ import Input from '@mui/material/Input';
 import Checkbox from '@mui/material/Checkbox';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Grid';
+
+import { SearchOutlined } from '@ant-design/icons';
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -22,8 +25,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 //Components del proyecto
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import DataTable from '../componentesBase/DataTable2';
-import { setIn } from 'formik';
-import { maxHeight } from '@mui/system';
+
+import useAuth from '../../hooks/useAuth';
 
 //Modal Style
 const style = {
@@ -32,6 +35,8 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   //   minWidthwidth: '1500px',
+  // width: '90vw',
+  // maxHeight: '80vh',
   width: '90vw',
   maxHeight: '80vh',
   //   maxHeight: '80vh',
@@ -45,15 +50,15 @@ const style = {
   overflow: 'hidden'
 };
 
-const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
+const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
   const [isLoading, setIsLoading] = useState(false); // Cargando
 
   const [inputBusquedaDeCliente, setInputBusquedaDeCliente] = useState('');
   const [buscarPor, setBuscarPor] = useState('Nombre');
   const [searchInputConstrain, setSearchInputConstrain] = useState('contiene');
-  const [busquedaSucursal, setBusquedaSucursal] = useState('');
+  const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user.sucursal);
 
-  const [arregloDeClientes,setArregloDeClientes] = useState([])
+  const [arregloDeClientes, setArregloDeClientes] = useState([]);
 
   const handleFetch = async (orden, texto, principio, sucursal) => {
     try {
@@ -65,8 +70,8 @@ const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
           parametros: {
             '@cOrden': orden,
             '@cTexto': texto,
-            '@bPrincipio': principio == 'contiene' ? 1 : 0,
-            '@nSucursal': sucursal
+            '@bPrincipio': principio == 'contiene' ? 0 : 1,
+            '@nSucursal': sucursal == 'Todos' ? '0' : sucursal
           }
         })
       });
@@ -74,7 +79,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
       const data = await response.json();
 
       console.log(data);
-      setArregloDeClientes(data)
+      setArregloDeClientes(data);
     } catch (e) {
       console.log(e);
     }
@@ -108,68 +113,35 @@ const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
     console.log(e);
     if (e == 'Todos') {
       setBusquedaSucursal('Todos');
+    } else {
+      setBusquedaSucursal(e);
     }
-    setBusquedaSucursal(e);
+  };
+
+  const handleRowSelect = (row) => {
+    console.log('Selected row:', row);
+    // Do something with the selected row
+    // e.g., close modal and send data up, or store in state
+    onSelectedRow(row);
   };
 
   return (
-    <div>
-      <Button onClick={onOpen} variant="outlined">
-        ...
+    <div style={{ height: '100%' }}>
+      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor: 'white' }}>
+        <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
       </Button>
       <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
-          <Container>
+          <Container maxWidth="xl" sx={{ height: '100%' }}>
             {/* Encabezado */}
             <Box sx={{ backgroundColor: '', display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
               {/* <Box sx={{ backgroundColor: 'orange', display: 'flex', justifyContent: 'center', alignItems: 'center' }}> */}
               <Typography variant="h4">Búsqueda de Clientes</Typography>
             </Box>
             <br />
-            <Box sx={{ backgroundColor: '', display: 'flex', flexDirection: 'row' }}>
-              <FormControl sx={{ width: '35%' }}>
-                <InputLabel htmlFor="buscar-input">Buscar</InputLabel>
-                <Input onChange={handleInputBusquedaDeCliente} id="buscar-input" aria-describedby="buscar-helper-text" />
-              </FormControl>
-
-              {/* <FormHelperText id="buscar-helper-text">Buscar cliente</FormHelperText> */}
-              {/* <FormControlLabel control={<Checkbox sx={{ marginLeft: '12px' }} defaultChecked />} label="Inicia con" /> */}
-
-              <ToggleButtonGroup
-                sx={{ height: '30px', width: '200px' }}
-                value={searchInputConstrain}
-                exclusive
-                onChange={handleSearchInputConstrain}
-                aria-label="contiene-empieza-con"
-              >
-                <ToggleButton value="contiene" aria-label="contiene">
-                  <Typography variant="p">Contiene</Typography>
-                </ToggleButton>
-                <ToggleButton value="empieza" aria-label="empieza">
-                  <Typography variant="p">Empieza con</Typography>
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              {/* Busqueda por  */}
-              <FormControl sx={{ width: '25%' }}>
-                <InputLabel id="demo-simple-select-label">Buscar Por</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={buscarPor}
-                  label="Buscar-Por"
-                  onChange={handleChange}
-                >
-                  <MenuItem value={'Nombre'}>Nombre</MenuItem>
-                  <MenuItem value={'RFC'}>RFC</MenuItem>
-                  <MenuItem value={'Anterior'}>Anterior</MenuItem>
-                  <MenuItem value={'Cliente'}>Cliente</MenuItem>
-                  <MenuItem value={'Agente'}>Agente</MenuItem>
-                  <MenuItem value={'Comercial'}>Comercial</MenuItem>
-                </Select>
-              </FormControl>
-
-              <Box sx={{ width: '25%' }}>
+            {/* Componentes de busqueda */}
+            <Grid container spacing={2}>
+              <Grid size={2}>
                 <ComponenteListaDinamica
                   label="Sucursal"
                   instruccionSQL="combo_sucursales"
@@ -177,24 +149,70 @@ const BusquedaDeClientes = ({ open, onClose, onOpen }) => {
                     '@cCentro': "'      1'"
                   }}
                   valueKey="sucursal"
+                  value={busquedaSucursal}
                   labelKey="nombre_sucursal"
                   extraOption="Todos"
                   onChange={handleBusquedaSucursal}
                 />
-              </Box>
-            </Box>
+              </Grid>
+              <Grid size={2}>
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Buscar Por</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={buscarPor}
+                    label="Buscar-Por"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value={'Nombre'}>Nombre</MenuItem>
+                    <MenuItem value={'RFC'}>RFC</MenuItem>
+                    <MenuItem value={'Anterior'}>Anterior</MenuItem>
+                    <MenuItem value={'Cliente'}>Cliente</MenuItem>
+                    <MenuItem value={'Agente'}>Agente</MenuItem>
+                    <MenuItem value={'Comercial'}>Comercial</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={3}>
+                <ToggleButtonGroup
+                  value={searchInputConstrain}
+                  exclusive
+                  onChange={handleSearchInputConstrain}
+                  aria-label="contiene-empieza-con"
+                  fullWidth
+                  sx={{ height: '100%' }}
+                >
+                  <ToggleButton value="contiene" aria-label="contiene">
+                    <Typography variant="p">Contiene</Typography>
+                  </ToggleButton>
+                  <ToggleButton value="empieza" aria-label="empieza">
+                    <Typography variant="p">Empieza con</Typography>
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Grid>
+
+              <Grid size={3}>
+                <FormControl>
+                  <InputLabel htmlFor="buscar-input">Buscar</InputLabel>
+                  <Input onChange={handleInputBusquedaDeCliente} id="buscar-input" aria-describedby="buscar-helper-text" />
+                </FormControl>
+              </Grid>
+            </Grid>
             <br />
+            {/* Tabla */}
             <Box
               sx={{
                 flexGrow: 1,
-                maxHeight: '50vh', // Limita la tabla a la altura establecida
+                maxHeight: '40vh', // Limita la tabla a la altura establecida
                 overflowY: 'auto', // Permite el scroll horizontal solo aqui
                 '& .MuiTableContainer-root': {
                   maxHeight: 'none' // Asegura que no existan conflictos de limites internos
                 }
               }}
             >
-              <DataTable datos={arregloDeClientes} />
+              <DataTable datos={arregloDeClientes} onSelectRow={handleRowSelect} />
             </Box>
             <br />
             <Button

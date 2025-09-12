@@ -1,81 +1,116 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, Toolbar, ToolbarButton, FilterPanelTrigger } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import { FilterOutlined } from '@ant-design/icons';
 import { esES } from '@mui/x-data-grid/locales';
-import { flex } from '@mui/system';
-import { isArray } from 'lodash-es';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-// const columns = [
-//   { field: 'id', headerName: 'ID', width: 70 },
-//   { field: 'firstName', headerName: 'First name', width: 130 },
-//   { field: 'lastName', headerName: 'Last name', width: 130 },
-//   {
-//     field: 'age',
-//     headerName: 'Age',
-//     type: 'number',
-//     width: 90,
-//   },
-//   {
-//     field: 'fullName',
-//     headerName: 'Full name',
-//     description: 'This column has a value getter and is not sortable.',
-//     sortable: false,
-//     width: 160,
-//     valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-//   },
-// ];
+import { CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleTwoTone } from '@ant-design/icons';
 
-const columns = [
-  { field: 'nombre_comercial', headerName: 'Nombre Comercial', flex: 1.5 },
-  { field: 'nombre_cliente', headerName: 'Nombre', flex: 1.5 },
-  { field: 'cliente', headerName: 'Clave', flex: 0.4 },
-  { field: 'clave_anterior', headerName: 'Clave anterior', flex: 0.6 },
-  {
-    field: 'rfc',
-    headerName: 'RFC',
-    type: 'number',
-    flex: 0.8
-  },
-  {
-    field: 'agente',
-    headerName: 'Agente',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    flex: 0.5
-    // valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`
-  },
-  {
-    field: 'age2',
-    headerName: 'Nombre Comercial',
-    type: 'number',
-    flex: 1
-  }
-];
+const paginationModel = { page: 0, pageSize: 50 };
 
-const rows = [
-  {
-    nombre: 'DOOREMALEN INDUSTRIES MEXICO, SA DE CV ',
-    lastName: 'U100085',
-    firstName: '2600',
-    age: 'ALE2-00123F-Z9',
-    fullName: 'Administrador VITServices',
-    age2: 'ALEQUIP SA DE CV'
-  },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 }
-];
+function CustomToolbar({ setFilterButtonEl }) {
+  return (
+    <Toolbar sx={{ height: '80px', display: 'flex', justifyContent: 'left' }}>
+      <Tooltip title="Filtros">
+        <FilterPanelTrigger render={<ToolbarButton />} ref={setFilterButtonEl}>
+          <FilterOutlined fontSize="40px" />
+        </FilterPanelTrigger>
+      </Tooltip>
+    </Toolbar>
+  );
+}
 
-const paginationModel = { page: 0, pageSize: 5 };
-
-export default function DataTable({ datos }) {
+export default function DataTable({ datos, onSelectRow }) {
+  const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [arregloDeClientes, setArregloDeClientes] = useState([]);
+
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
+  const columns = [
+    { field: 'nombre_cliente', headerName: 'Nombre', flex: 1.5, filterable: true, type: 'string' },
+    { field: 'nombre_comercial', headerName: 'Nombre Comercial', flex: 1.5, filterable: true, type: 'string' },
+    { field: 'cliente', headerName: 'Clave', headerAlign: 'right', align: 'right', flex: 0.4, filterable: true, type: 'string' },
+    {
+      field: 'clave_anterior',
+      headerName: 'Clave anterior',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 0.6,
+      filterable: true,
+      type: 'string'
+    },
+    {
+      field: 'rfc',
+      headerName: 'RFC',
+      headerAlign: 'left',
+      type: 'string',
+      flex: 0.8,
+      filterable: true
+    },
+    {
+      field: 'agente',
+      headerName: 'Agente',
+      description: 'This column has a value getter and is not sortable.',
+      sortable: false,
+      flex: 0.5,
+      filterable: true,
+      type: 'string'
+      // valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`
+    },
+    {
+      field: 'seleccion',
+      headerName: 'Selección',
+      headerAlign: 'center',
+      filterable: false, // usually you don't filter this column
+      sortable: false,
+      cellClassName: 'no-padding-cell',
+      align: 'center',
+      renderCell: (params) => {
+        const isSelected = selectedRowId === params.row.id;
+
+        const handleSelect = () => {
+          setSelectedRowId(params.row.id); // Update local state for visual feedback
+          if (onSelectRow) {
+            onSelectRow(params.row); // Notify parent
+          }
+        };
+
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+              px: 0,
+              py: 0
+            }}
+          >
+            <IconButton
+              onClick={handleSelect}
+              aria-label={isSelected ? `Deseleccionar ${params.row.nombre_cliente}` : `Seleccionar ${params.row.nombre_cliente}`}
+              color="success"
+              size="medium"
+              sx={{ width: '100%', height: '100%' }}
+            >
+              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CheckCircleOutlined fontSize="large" />}
+            </IconButton>
+          </Box>
+        );
+      }
+    }
+  ];
+
+  useEffect(() => {
+    setSelectedRowId(null);
+  }, [datos]);
 
   useEffect(() => {
     console.log('me he montado o actualizado');
@@ -86,11 +121,11 @@ export default function DataTable({ datos }) {
         // console.log("item",item)
         return {
           ...item,
-          id: item.cliente,
+          id: item.cliente
         };
       });
-      console.log("arregloDeclientesConID debajo")
-      console.log(arregloDeClientes["0"])
+      console.log('arregloDeclientesConID debajo');
+      console.log(arregloDeClientes['0']);
       console.log(arregloDeClientesConID);
       setArregloDeClientes(arregloDeClientesConID);
     }
@@ -102,26 +137,36 @@ export default function DataTable({ datos }) {
         rows={arregloDeClientes}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10, 50, 100]}
-        checkboxSelection
+        pageSizeOptions={[50, 100]}
+        // checkboxSelection
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         sx={{
           border: 0,
           '& .MuiDataGrid-columnHeader': {
-            py: 0.5, // Reduce vertical padding in header
-            px: 1, // Reduce horizontal padding in header,
+            py: 0.5,
+            px: 1,
             backgroundColor: 'primary.dark',
             color: 'primary.lighter'
           },
           '& .MuiDataGrid-menuIconButton': {
             color: 'primary.light',
-            opacity: 1 // make sure it’s fully visible
+            opacity: 1
           },
-          // recolor the sort icon (up/down arrow)
-          '& .MuiDataGrid-sortIcon': {
+          '&.MuiDataGrid-root .MuiDataGrid-sortIcon': {
             color: 'primary.light',
-            opacity: 1 // ensure it's fully visible
+            opacity: 1
+          },
+          '& .no-padding-cell': {
+            padding: '0 !important'
           }
+        }}
+        showToolbar
+        slots={{ toolbar: CustomToolbar }}
+        slotProps={{
+          panel: {
+            target: filterButtonEl
+          },
+          toolbar: { setFilterButtonEl }
         }}
       />
     </Paper>

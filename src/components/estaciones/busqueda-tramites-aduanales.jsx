@@ -26,7 +26,7 @@ import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import TablaColapsable from '../componentesBase/TablaColapsable';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { borderRadius, maxHeight, minWidth } from '@mui/system';
+import { borderRadius, maxHeight, maxWidth, minWidth, width } from '@mui/system';
 // import ComponenteLista from '../componentesBase/ComponenteLista';
 
 const style = {
@@ -34,7 +34,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  minWidthwidth: '1500px',
+  width: '90vw',
   maxHeight: '80vh',
   //   height: '70vh',
   //   bgcolor: 'background.paper',
