@@ -258,9 +258,9 @@ const EstCambiosTramitesAduanales = () => {
     // }
 
     setSelectedTramite(row);
-    // if (selectedTramite.tramite > 0){
-    //   setFolio(row.tramite);
-    // }
+    if (row.tramite > 0){
+      setFolio(row.tramite);
+    }
 
     //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales
     //se habilita el boton Guardar, se habilita el boton Cancelar, se deshabilita el boton Iniciar
@@ -310,7 +310,7 @@ const EstCambiosTramitesAduanales = () => {
     }
 
     if (registrosGastos === 0) {
-        pasaValidacion = false;
+        pasaValidacion = true;
     }
 
       if (!pasaValidacion) {
@@ -324,6 +324,11 @@ const EstCambiosTramitesAduanales = () => {
   const handleProcesoPosterior = () => {
       mensajes('aviso','¡Autorización exitosa! Continuando con las acciones del padre...');
       // Por ejemplo, enviar un formulario, recargar datos, etc.
+  };
+
+  const handleSucursalSelected=(value, objeto)=>{ 
+    console.log('Sucursal seleccionada:', value);
+    setSucursal(value)
   };
 
   return (
@@ -371,7 +376,7 @@ const EstCambiosTramitesAduanales = () => {
             {/* <ComponenteLista titulo="Sucursal" /> */}
             <ComponenteListaDinamica
               label="Sucursal"
-              onChange={setSucursal}
+              onChange={handleSucursalSelected}
               instruccionSQL="combo_sucursales"
               value={selectedTramite?.sucursal ? selectedTramite?.sucursal : sucursal}
               valueKey="sucursal"
@@ -712,6 +717,7 @@ const EstCambiosTramitesAduanales = () => {
               FolioAutorizacion="861"
               Tabla="Tramites_Aduanales"
               Folio={folio}
+              Componente= "est-cambios-tramites-aduanales"
               Color="success"
               onSelectRow={handleRowSelect}
               open={openAutoriza}
@@ -740,13 +746,15 @@ const EstCambiosTramitesAduanales = () => {
               FolioAutorizacion="801"
               Tabla="Tramites_Aduanales"
               Folio={folio}
+              Componente= "est-cambios-tramites-aduanales"
               Color="error"
               onSelectRow={handleRowSelect}
               open={openAutorizaBorrar}
               onClose={() => {
                   setOpenAutorizaBorrar(false);
               }}
-              onOpen={() => setOpenAutorizaBorrar(true)}/>
+              onOpen={() => setOpenAutorizaBorrar(true)}
+              onProcesoPosterior={handleProcesoPosterior}/>
             {/* <Button variant="outlined" onClick={handleBorrar} color="error">
               Borrar Gasto
             </Button> */}

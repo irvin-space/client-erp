@@ -1,17 +1,29 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-
+ 
+const APIURL = import.meta.env.DEV_SPACE_ERP_APP_API_URL;
+ 
 // Material UI
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-
-const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionSQL, parametros, valueKey, labelKey, value, onChange, extraOption}) => {
+ 
+const ComponenteListaDinamica = ({
+  label = 'Seleccione una opcion',
+  instruccionSQL,
+  parametros,
+  valueKey,
+  labelKey,
+  value,
+  onChange,
+  extraOption,
+  retornaObjeto
+}) => {
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
   const [loading, setLoading] = useState(true);
-
+ 
   //Llamar a el backend al montar el componente
   useEffect(() => {
     const callBackend = async () => {
@@ -26,53 +38,57 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ instruccionSQL: instruccionSQL, parametros: parametros })
         });
-
+ 
         const data = await response.json();
         console.log('🔴 Respuesta completa del backend:', data);
         console.log('🟢 Tipo de data:', typeof data);
         console.log('🟡 Es array?', Array.isArray(data));
         console.log('📦 Primer elemento (si existe):', data[0]);
         console.log(data);
-
+ 
         //Establecer valores dinamicos
         // setValoresDinamicos({...valoresDinamicos,options:data[0]})
         setOptions(data[0]);
-        if(extraOption){
+        if (extraOption) {
           let extraOptionObject = {
             es_distribucion: false,
             es_sucursal: false,
-            nombre_sucursal: "*Todos*",
+            nombre_sucursal: '*Todos*',
             rango_folios: false,
-            sucursal: "Todos",
-          }
-          setOptions([extraOptionObject,...data[0]])
+            sucursal: 'Todos'
+          };
+          setOptions([extraOptionObject, ...data[0]]);
         }
         setLoading(false);
         // --- AQUÍ ESTÁ LA LÓGICA AGREGADA PARA ASIGNAR VALOR POR DEFAULT---
         // Si no se ha proporcionado un valor y hay opciones, asigna el primer valor como por defecto.
         if (onChange && !value && fetchedOptions && fetchedOptions.length > 0) {
-            onChange(fetchedOptions[0][valueKey]);
+          onChange(fetchedOptions[0][valueKey]);
         }
         // --- FIN DE LA LÓGICA AGREGADA ---
-
       } catch (err) {
         console.log('Error message', err);
       }
     };
-
+ 
     callBackend();
   }, [value]);
-
+ 
   useEffect(() => {
     console.log('✅ Opciones actualizadas:', options);
   }, [options]);
-
+ 
   const handleChange = (event) => {
     console.log(options);
-    console.log(event.target.value);
-    onChange(event.target.value);
+    console.log(event);
+    console.log(event.target);
+ 
+    const opcionSeleccionada = options.find((opt) => opt[valueKey] === event.target.value);
+ 
+    console.log('objeto completo:', opcionSeleccionada);
+    onChange(event.target.value, opcionSeleccionada);
   };
-
+ 
   return (
     <FormControl fullWidth>
       <InputLabel id="dinamic-simple-select-label">{label}</InputLabel>
@@ -96,17 +112,26 @@ const ComponenteListaDinamica = ({ label = 'Seleccione una opcion', instruccionS
           options.map((item) => {
             const value = item[valueKey] ?? '';
             const label = item[labelKey] ?? '(Sin nombre)';
-
-            return (
-              <MenuItem key={value} value={value}>
-                {label}
-              </MenuItem>
-            );
+            const objeto = item;
+ 
+            if (retornaObjeto) {
+              return (
+                <MenuItem key={value} value={objeto}>
+                  {label}
+                </MenuItem>
+              );
+            } else {
+              return (
+                <MenuItem key={value} value={value}>
+                  {label}
+                </MenuItem>
+              );
+            }
           })
         )}
       </Select>
     </FormControl>
   );
 };
-
+ 
 export default ComponenteListaDinamica;

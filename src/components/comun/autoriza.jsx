@@ -15,6 +15,7 @@ import Divider from '@mui/material/Divider';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import useAuth from 'hooks/useAuth.js';
 import { mensajes } from '../../utils/mensajes.js';
+import { set } from 'lodash-es';
 
 //Modal Style
 const style = {
@@ -32,10 +33,14 @@ const style = {
   overflow: 'hidden'
 };
 
-const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Color, open, onClose, onOpen, onSelectRow, onProcesoPosterior }) => {
+const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color, open, onClose, onOpen, onSelectRow, onProcesoPosterior }) => {
   const [password, setPassword] = useState('');
   const [nombreOperacion, setNombreOperacion] = useState('');
-
+  const [contrasena, setContrasena] = useState('');
+  const [usuario, setUsuario] = useState(useAuth().user.id_persona);
+  const [usuarioLogged, setUsuarioLogged] = useState(usuario);  
+  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  
   //alert(onSelectRow.concepto);
   // Nuevo useEffect para registrar la acción de apertura
   useEffect(() => {
@@ -50,57 +55,87 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Color, open, onCl
   }, [open]);
 
   const handleFetch = async (parametros) => {
-      try {
-            
+    try {
+          const response = await fetch('http://localhost:3001/dinamico/lista', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              instruccionSQL: 'Combo_Personal_Autoriza',
+              parametros: parametros
+            })
+          });
+    
+          const data = await response.json();
+          console.log('debajo esta el resultado del sp');
+          console.log(data);
 
-            const response = await fetch('http://localhost:3001/dinamico/lista', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                instruccionSQL: 'Combo_Personal_Autoriza',
-                parametros: parametros
-              })
-            });
-      
-            const data = await response.json();
-            console.log('debajo esta el resultado del sp');
-            console.log(data);
-            // --- Lógica agregada para verificar si hay registros ---
-            if (data[0] && data[0].length === 0) {
-              // Si el primer array está vacío, muestra una alerta.
-              {
-                mensajes('aviso', 'Consulta Realizada');
-              } // este es sweetalert2
-            }
-      
-            setNombreOperacion(data[1][0].nombre_operacion);
-
-            console.log('Nombre de la Operacion:', nombreOperacion);
-          } catch (error) {
-            console.log(error);
-          } finally {
-            console.log('Finalizando carga');
-            //setIsLoading(false); //Terminar de cargar
+          if (data[0] && data[0].length === 0) {
+            {
+              mensajes('aviso', 'Consulta Realizada');
+            } 
           }
-    };
+    
+          setNombreOperacion(data[1][0].nombre_operacion);
+
+          console.log('Nombre de la Operacion:', nombreOperacion);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          console.log('Finalizando carga');
+        }
+  };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
   
-  const handleAceptar = () => {
+  const handleAceptar = async () => {
+    let continua = true;
     
-    if(password==='123'){
-      mensajes('aviso', 'Proceso Autorizado');
+    const Params = {
+      sucursal: `'${sucursal}'`,
+      solicita: `'${usuarioLogged}'`,
+      autoriza: `'${usuario}'`,
+      operacion: `'${FolioAutorizacion}'`,
+      componente: `'${Componente}'`,
+      tabla: `'${Tabla}'`,
+      folio: `'${Folio}'`,
+      justificacion: `''`
+    };
+    
+    if(password===contrasena){
+      console.log('Proceso Autorizado');
 
-      // Aquí se llama a la función del componente padre
-      // para que realice la acción final.
-      if (onProcesoPosterior) {
+      try {
+        const response = await fetch('http://localhost:3001/dinamico/lista', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            instruccionSQL: 'Registra_Autorizacion_Web',
+            parametros: Params
+          })
+        });
+  
+        const data = await response.json();
+
+        if (data[0] && data[0].length === 0) {
+          error('error', 'Error durante registro de autorización');
+          continua = false;
+        }
+        else{
+          continua = true;
+        }
+      } 
+      catch (error) {
+        console.log(error);
+      } finally {
+        console.log('Finalizando carga');
+      }
+
+      if ((onProcesoPosterior) && continua) {
           onProcesoPosterior();
       }
 
-
-      console.log('Aqui va el codiigo para actualizar la autorizacion en la tabla correspondiente');
       setPassword('');
       FolioAutorizacion = '0';
       onClose();
@@ -121,8 +156,12 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Color, open, onCl
     onClose();
   }
 
-  const [usuario, setUsuario] = useState(useAuth().user.id_persona);
-  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const handleListaSeleccion = (value, objeto) => {
+    setUsuario(objeto.persona);
+    setContrasena(objeto.contrasena)
+  }
+
+
 
   return (
     <Box>
@@ -145,7 +184,7 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Color, open, onCl
                   label="Autoriza"
                   instruccionSQL="Combo_Personal_Autoriza"
                   value={usuario}
-                  onChange={setUsuario}
+                  onChange={handleListaSeleccion}
                   parametros={{
                     '@nOperacion': `'${FolioAutorizacion}'`
                   }}
