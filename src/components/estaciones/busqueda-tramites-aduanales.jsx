@@ -26,7 +26,7 @@ import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import TablaColapsable from '../componentesBase/TablaColapsable';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { borderRadius, maxHeight, maxWidth, minWidth, width } from '@mui/system';
+import { borderRadius, display, justifyContent, maxHeight, maxWidth, minWidth, width } from '@mui/system';
 // import ComponenteLista from '../componentesBase/ComponenteLista';
 
 const style = {
@@ -36,6 +36,8 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: '90vw',
   maxHeight: '80vh',
+  display: 'flex',
+  justifyContent: 'center',
   //   height: '70vh',
   //   bgcolor: 'background.paper',
   bgcolor: 'white',
@@ -81,7 +83,9 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
       });
 
       console.log('selectedRowInfo', selectedRowInfo);
-      onSelectRow(row); // Enviar data al padre componente
+      console.log('row', row);
+      console.log('combined', { ...selectedRowInfo, history: row.history });
+      onSelectRow({ ...selectedRowInfo, history: row.history, ctePedimento: row.ctePedimento, cteFacturacion: row.cteFacturacion }); // Enviar data al padre componente
     }
     if (onClose) {
       onClose(); // Cerrar modal
@@ -147,7 +151,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
       </Button>
       <Modal open={open} onClose={onClose}>
         <Box sx={style}>
-          <Container maxWidth="xl" sx={{ height: '100%' }}>
+          <Box sx={{ width: '95%', height: '100%'}}>
             {/* Encabezado */}
             <Typography variant="h4">Búsqueda de Trámites Aduanales</Typography>
             <br />
@@ -225,7 +229,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
             >
               Consultar
             </Button>
-          </Container>
+          </Box>
         </Box>
       </Modal>
     </div>
