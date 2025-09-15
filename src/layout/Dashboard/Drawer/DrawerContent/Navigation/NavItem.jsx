@@ -25,6 +25,10 @@ import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 //Ant design icons
 import { DesktopOutlined, ReconciliationOutlined, ShopOutlined } from '@ant-design/icons';
 
+// ... otros imports
+import useAuth from 'hooks/useAuth.js';
+import useSQL from 'hooks/useSQL.js';
+
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 export default function NavItem({ item, level, isParents = false, setSelectedID }) {
@@ -34,6 +38,11 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   const downLG = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
   const { mode, menuOrientation } = useConfig();
+
+   // 1. Llama a los hooks useAuth y useSQL
+  const { user } = useAuth();
+  const { executeFetch } = useSQL();
+
   let itemTarget = '_self';
   if (item.target) {
     itemTarget = '_blank';
@@ -45,6 +54,19 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
     if (isParents && setSelectedID) {
       setSelectedID(item.id);
     }
+    // 2. Agrega aquí la lógica de auditoría
+    // Verificamos que el usuario esté logueado y que el item tenga un título para auditar
+    if (user && item.title) {
+        // Llama a la función de auditoría
+        const params = {
+          sucursal: `'${user.sucursal}'`,
+          usuario: `'${user.id_persona}'`,
+          modulo: `'${item.title}'`,
+          evento: `'Inicio'`
+        };
+        executeFetch('Registra_Acceso_Modulo', params);
+    }
+
   };
 
   const iconMap = {

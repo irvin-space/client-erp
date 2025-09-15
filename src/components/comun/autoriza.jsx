@@ -15,7 +15,7 @@ import Divider from '@mui/material/Divider';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import useAuth from 'hooks/useAuth.js';
 import { mensajes } from '../../utils/mensajes.js';
-import { set } from 'lodash-es';
+import useSQL from 'hooks/useSQL.js';
 
 //Modal Style
 const style = {
@@ -38,59 +38,39 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
   const [nombreOperacion, setNombreOperacion] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [usuario, setUsuario] = useState(useAuth().user.id_persona);
-  const [usuarioLogged, setUsuarioLogged] = useState(usuario);  
+  const [usuarioLogged, setUsuarioLogged] = useState(usuario);
   const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
-  
-  //alert(onSelectRow.concepto);
-  // Nuevo useEffect para registrar la acción de apertura
-  useEffect(() => {
-    if (open) {
+
+  // 1. Use el hook useSQL
+const { loading, error, executeFetch } = useSQL();
+
+useEffect(() => {
+  if (open) {
       console.log('Abriendo modal', FolioAutorizacion);
       const Params = {
-              operacion: `'${FolioAutorizacion}'`
-            };
+        operacion: `'${FolioAutorizacion}'`
+      };
 
       handleFetch(Params);
     }
   }, [open]);
 
   const handleFetch = async (parametros) => {
-    try {
-          const response = await fetch('http://localhost:3001/dinamico/lista', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              instruccionSQL: 'Combo_Personal_Autoriza',
-              parametros: parametros
-            })
-          });
-    
-          const data = await response.json();
-          console.log('debajo esta el resultado del sp');
-          console.log(data);
-
-          if (data[0] && data[0].length === 0) {
-            {
-              mensajes('aviso', 'Consulta Realizada');
-            } 
-          }
-    
-          setNombreOperacion(data[1][0].nombre_operacion);
-
-          console.log('Nombre de la Operacion:', nombreOperacion);
-        } catch (error) {
-          console.log(error);
-        } finally {
-          console.log('Finalizando carga');
-        }
+    // Usa executeFetch para la llamada inicial
+    const result = await executeFetch('Combo_Personal_Autoriza', parametros);
+      
+      if (result.success && result.data && result.data[1] && result.data[1][0]) {
+        setNombreOperacion(result.data[1][0].nombre_operacion);
+      } else {
+        mensajes('error', 'No se pudo obtener el nombre de la operación.');
+      }
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-  
+
   const handleAceptar = async () => {
-    let continua = true;
     
     const Params = {
       sucursal: `'${sucursal}'`,
@@ -106,44 +86,25 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
     if(password===contrasena){
       console.log('Proceso Autorizado');
 
-      try {
-        const response = await fetch('http://localhost:3001/dinamico/lista', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            instruccionSQL: 'Registra_Autorizacion_Web',
-            parametros: Params
-          })
-        });
-  
-        const data = await response.json();
+      // 3. Usa executeFetch para registrar la autorización
+      const result = await executeFetch('Registra_Autorizacion_Web', Params);
 
-        if (data[0] && data[0].length === 0) {
-          error('error', 'Error durante registro de autorización');
-          continua = false;
-        }
-        else{
-          continua = true;
-        }
-      } 
-      catch (error) {
-        console.log(error);
-      } finally {
-        console.log('Finalizando carga');
-      }
-
-      if ((onProcesoPosterior) && continua) {
+      if (result.success) {
+              mensajes('aviso', 'Autorización registrada con éxito.');
+              // Ejecuta el proceso posterior si existe
+        if (onProcesoPosterior) {
           onProcesoPosterior();
+        }
+              setPassword('');
+        onClose();
       }
-
-      setPassword('');
-      FolioAutorizacion = '0';
-      onClose();
+      else{
+        mensajes('error', 'Error al registrar la autorización');
+      }
     }
     else{
       mensajes('error', 'Proceso No Autorizado');
       setPassword('');
-      //FolioAutorizacion = '0';
       return;
     }
   }
@@ -151,8 +112,6 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
   const handleCancelar = () => {
     console.log('Cancelar');
     setPassword('');
-    FolioAutorizacion = '0';
-    //setNombreOperacion('xxx');
     onClose();
   }
 
@@ -161,10 +120,8 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
     setContrasena(objeto.contrasena)
   }
 
-
-
   return (
-    <Box>
+   <Box>
       <Button onClick={onOpen} variant="outlined" color={Color ? Color : 'primary'}>
         {txtBoton ? txtBoton : 'Autorizar'}
       </Button>
@@ -173,14 +130,14 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
           <Container>
             {/* Encabezado */}
             <Box sx={{ backgroundColor: '', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              
+    
               <Typography variant="h4">Autorización de Proceso</Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6">{nombreOperacion}</Typography>
             <br />
             <Box sx={{ width: '100%' }}>
-                <ComponenteListaDinamica
+               <ComponenteListaDinamica
                   label="Autoriza"
                   instruccionSQL="Combo_Personal_Autoriza"
                   value={usuario}
@@ -190,9 +147,9 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
                   }}
                   valueKey="persona"
                   labelKey="nombre"
-                />
-              </Box>
-              <br />
+               />
+            </Box>
+            <br />
             <Box sx={{ backgroundColor: '', display: 'flex', flexDirection: 'row' }}>
               <FormControl variant="outlined" sx={{ width: '50%' }}>
                 <TextField
@@ -212,7 +169,7 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
                                 '& .MuiTableContainer-root': {
                                   maxHeight: 'none' // Asegura que no existan conflictos de limites internos
                                 }
-            }}>
+              }}>
 
             </Box>
             <br />
@@ -221,21 +178,21 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
                 onClick={handleAceptar}
                 variant="contained"
                 color="success"
-              >
+                >
                 Aceptar
               </Button>
               <Button
                 onClick={handleCancelar}
                 variant="contained"
                 color="error"
-              >
+                >
                 Cancelar
               </Button>
             </Box>
           </Container>
         </Box>
       </Modal>
-    </Box>
+   </Box>
   );
 };
 

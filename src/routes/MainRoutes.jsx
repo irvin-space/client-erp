@@ -54,7 +54,7 @@ const MainRoutes = {
         },
         {
           path: 'sample-page2', 
-          element: <SamplePage2/> //Ejemplos de componentes para pantalla de Auditoria de Trazabilidad - Deposito # 167957
+          element: <SamplePage2/> //Ejemplos de componentes para pantalla de Auditoria de Trazabilidad - Deposito # 167957 
         },
         {
           path: 'under-construction',
