@@ -57,8 +57,8 @@ const EstCambiosTramitesAduanales = () => {
   const { data, setData } = useContext(MyContext);
   // const [selectedValue, setSelectedValue] = useState('');
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
-  const [openAutoriza,setOpenAutoriza]=useState(false); // Seguimiento del estado del modal de autorizacion
-  const [openAutorizaBorrar,setOpenAutorizaBorrar]=useState(false); // Seguimiento del estado del modal de autorizacion
+  const [openAutoriza, setOpenAutoriza] = useState(false); // Seguimiento del estado del modal de autorizacion
+  const [openAutorizaBorrar, setOpenAutorizaBorrar] = useState(false); // Seguimiento del estado del modal de autorizacion
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes pedimento
   const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
 
@@ -73,6 +73,9 @@ const EstCambiosTramitesAduanales = () => {
   const [esHabilitadoIniciar, setEsHabilitadoIniciar] = useState(true);
   const [esHabilitadoGuardar, setEsHabilitadoGuardar] = useState(false);
   const [esHabilitadoCancelar, setEsHabilitadoCancelar] = useState(false);
+
+  const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
+  const [clienteFolioFacturacion, setClienteFolioFacturacion] = useState('');
 
   const [folio, setFolio] = useState('');
 
@@ -174,28 +177,6 @@ const EstCambiosTramitesAduanales = () => {
     setFolio(value);
   };
 
-  // console.log('Debajo debe mostrarse lo que hay en data');
-  // console.log(data.menu);
-  // console.log(JSON.parse(Object.values(JSON.parse(data.resultado).recordsets[1][0])[0]).Menu);
-
-  // const handleClick = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:3001/consulta', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({
-  //         Procedimiento: 'Combo_Tasas_Ivas',
-  //         Parametros: { otros: 0, solo_activas: 0 }
-  //       })
-  //     });
-  //     const data = await response.json();
-  //     console.log('Respuesta del servidor:', data);
-  //   } catch (error) {
-  //     console.error('Error en la petición:', error);
-  //   }
-  // };
 
   const handleIniciar = () => {
     console.log('El boton Iniciar se presiono');
@@ -238,17 +219,53 @@ const EstCambiosTramitesAduanales = () => {
     }
   };
 
+
+
+
+
+
+
+
+
+
+
+
   const handleRowSelectClientePedimento = (row) => {
-    console.log("est-camb-ad", row)
-    setOpenBusquedaClientePedimentoModal(false)
-  }
+    console.log('est-camb-ad', row);
+    setOpenBusquedaClientePedimentoModal(false);
+    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`
+    setSelectedTramite(null)
+    setFolio('')
+    setGastos([])
+    setIngresos([])
+    setClienteFolioPedimento(folioYNombre)
+  };
+
+  const handleRowSelectClienteFacturacion = (row) => {
+    console.log('est-camb-ad', row);
+    setOpenBusquedaClienteFacturaModal(false);
+    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`
+    setSelectedTramite(null)
+    setFolio('')
+    setGastos([])
+    setIngresos([])
+    setClienteFolioFacturacion(folioYNombre)
+  };
+
+
+
+
+
+
+
 
   // Callback: hace el llamado cuando la fila a sido seleccionada
-  const handleRowSelect = (row) => {
+  const handleRowSelect = (row,o) => {
     console.log('Row selected in parent:', row);
-
+    console.log(row.clave)
+    // console.log(setClave(row.clave))
     setSelectedTramite(row);
-    if (row.tramite > 0){
+    if (row.tramite > 0) {
       setFolio(row.tramite);
     }
 
@@ -283,43 +300,47 @@ const EstCambiosTramitesAduanales = () => {
 
   // Lógica de validación previa
   const handleProcesoPrevio = () => {
-      let pasaValidacion = true; 
-      let registrosGastos = 0;
+    let pasaValidacion = true;
+    let registrosGastos = 0;
 
-      let dataToFilter = selectedTramite?.history || gastos;
+    let dataToFilter = selectedTramite?.history || gastos;
 
     // Check if dataToFilter exists and is an array before filtering
     if (Array.isArray(dataToFilter)) {
-        const filteredRecords = dataToFilter.filter(gasto => {
-            // Apply all three conditions from your FoxPro query
-            return gasto.gasto_no_deducible > 0 && 
-                   gasto.estado_gasto_nd === 'Capturado' && 
-                   gasto.estatus_proveedor === 'Pagado';
-        });
-        registrosGastos = filteredRecords.length;
+      const filteredRecords = dataToFilter.filter((gasto) => {
+        // Apply all three conditions from your FoxPro query
+        return gasto.gasto_no_deducible > 0 && gasto.estado_gasto_nd === 'Capturado' && gasto.estatus_proveedor === 'Pagado';
+      });
+      registrosGastos = filteredRecords.length;
     }
 
     if (registrosGastos === 0) {
-        pasaValidacion = true;
+      pasaValidacion = true;
     }
 
-      if (!pasaValidacion) {
-          mensajes('error', 'No hay gastos no deducibles a autorizar.');
-          return false;
-      }
-      return true;
+    if (!pasaValidacion) {
+      mensajes('error', 'No hay gastos no deducibles a autorizar.');
+      return false;
+    }
+    return true;
   };
 
   // Lógica de acción final después de la autorización exitosa
   const handleProcesoPosterior = () => {
-      mensajes('aviso','¡Autorización exitosa! Continuando con las acciones del padre...');
-      // Por ejemplo, enviar un formulario, recargar datos, etc.
+    mensajes('aviso', '¡Autorización exitosa! Continuando con las acciones del padre...');
+    // Por ejemplo, enviar un formulario, recargar datos, etc.
   };
 
-  const handleSucursalSelected=(value, objeto)=>{ 
+  const handleSucursalSelected = (value, objeto) => {
     console.log('Sucursal seleccionada:', value);
-    setSucursal(value)
+    setSucursal(value);
   };
+
+  const handleClaveSelected = (value,objeto) => {
+    console.log("valueclave", value)
+    console.log("objetodeclave",objeto)
+    setClave(value)
+  }
 
   return (
     <div>
@@ -455,7 +476,8 @@ const EstCambiosTramitesAduanales = () => {
                       <Grid size={6}>
                         <ComponenteListaDinamica
                           label="Clave"
-                          onChange={setClave}
+                          //onChange={setClave}
+                          onChange={handleClaveSelected}
                           instruccionSQL="SELECT DISTINCT nombre_clave, clave_pedimento FROM Claves_Pedimentos ORDER BY nombre_clave"
                           value={selectedTramite?.clave_pedimento ? selectedTramite?.clave_pedimento : clave_pedimento}
                           valueKey="clave_pedimento"
@@ -517,7 +539,7 @@ const EstCambiosTramitesAduanales = () => {
                                 ? `${selectedTramite?.id_cliente_pedimento}-${selectedTramite.ctePedimento}`
                                 : selectedTramite?.nombre_cliente_pedimento
                                   ? `${selectedTramite?.cliente_pedimento} - ${selectedTramite?.nombre_cliente_pedimento}`
-                                  : ''
+                                  : clienteFolioPedimento != '' ? clienteFolioPedimento : ''
                             }
                             fullWidth
                           />
@@ -526,7 +548,7 @@ const EstCambiosTramitesAduanales = () => {
                             open={openBusquedaClientePedimentoModal}
                             onClose={() => setOpenBusquedaClientePedimentoModal(false)}
                             onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
-                            onSelectedRow = {handleRowSelectClientePedimento}
+                            onSelectedRow={handleRowSelectClientePedimento}
                             //
                             //
                             //
@@ -558,7 +580,7 @@ const EstCambiosTramitesAduanales = () => {
                                 ? `${selectedTramite?.id_cliente_factura} - ${selectedTramite.cteFacturacion}`
                                 : selectedTramite?.nombre_cliente_factura
                                   ? `${selectedTramite?.cliente_factura} - ${selectedTramite?.nombre_cliente_factura}`
-                                  : ''
+                                  : clienteFolioFacturacion != '' ? clienteFolioFacturacion : '' 
                             }
                             fullWidth
                           />
@@ -571,6 +593,7 @@ const EstCambiosTramitesAduanales = () => {
                             open={openBusquedaClienteFacturaModal}
                             onClose={() => setOpenBusquedaClienteFacturaModal(false)}
                             onOpen={() => setOpenBusquedaClienteFacturaModal(true)}
+                            onSelectedRow={handleRowSelectClienteFacturacion}
                             //
                             //
                             //
@@ -712,26 +735,26 @@ const EstCambiosTramitesAduanales = () => {
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Box sx={{ display: 'flex' }}>
-            <Autoriza 
+            <Autoriza
               txtBoton="Autorizar Gastos"
               FolioAutorizacion="861"
               Tabla="Tramites_Aduanales"
               Folio={folio}
-              Componente= "est-cambios-tramites-aduanales"
+              Componente="est-cambios-tramites-aduanales"
               Color="success"
               onSelectRow={handleRowSelect}
               open={openAutoriza}
               onClose={() => {
-                  setOpenAutoriza(false);
+                setOpenAutoriza(false);
               }}
               onOpen={() => {
                 // La validación previa va aquí, justo antes de abrir la modal
                 if (handleProcesoPrevio()) {
-                    setOpenAutoriza(true); // Solo abre el modal si la validación es exitosa
+                  setOpenAutoriza(true); // Solo abre el modal si la validación es exitosa
                 }
-                }}
+              }}
               onProcesoPosterior={handleProcesoPosterior}
-              />
+            />
             &nbsp;
             <Button variant="outlined" onClick={handleNuevo} color="primary">
               Nuevo Gasto
@@ -741,24 +764,24 @@ const EstCambiosTramitesAduanales = () => {
               Cambiar Gasto
             </Button>
             &nbsp;
-            <Autoriza 
+            <Autoriza
               txtBoton="Borrar Gasto"
               FolioAutorizacion="801"
               Tabla="Tramites_Aduanales"
               Folio={folio}
-              Componente= "est-cambios-tramites-aduanales"
+              Componente="est-cambios-tramites-aduanales"
               Color="error"
               onSelectRow={handleRowSelect}
               open={openAutorizaBorrar}
               onClose={() => {
-                  setOpenAutorizaBorrar(false);
+                setOpenAutorizaBorrar(false);
               }}
               onOpen={() => setOpenAutorizaBorrar(true)}
-              onProcesoPosterior={handleProcesoPosterior}/>
+              onProcesoPosterior={handleProcesoPosterior}
+            />
             {/* <Button variant="outlined" onClick={handleBorrar} color="error">
               Borrar Gasto
             </Button> */}
-            
           </Box>
           <Box>
             <Button variant="text" onClick={handleVerHistoria} color="success">

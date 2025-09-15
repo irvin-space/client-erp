@@ -81,7 +81,9 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
       });
 
       console.log('selectedRowInfo', selectedRowInfo);
-      onSelectRow(row); // Enviar data al padre componente
+      console.log('row', row);
+      console.log('combined', { ...selectedRowInfo, history: row.history });
+      onSelectRow({ ...selectedRowInfo, history: row.history, ctePedimento: row.ctePedimento, cteFacturacion: row.cteFacturacion }); // Enviar data al padre componente
     }
     if (onClose) {
       onClose(); // Cerrar modal
