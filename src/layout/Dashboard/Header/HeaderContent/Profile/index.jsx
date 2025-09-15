@@ -33,6 +33,9 @@ import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
 
+// ... otros imports
+import useSQL from 'hooks/useSQL.js';
+
 // tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -55,9 +58,27 @@ export default function Profile() {
   const theme = useTheme();
   const navigate = useNavigate();
 
+    // 1. Llama a los hooks useAuth y useSQL
+  const { executeFetch } = useSQL();
+
   const { logout, user } = useAuth();
   const handleLogout = async () => {
+    
     try {
+
+      // 2. Agrega aquí la lógica de auditoría
+    // Verificamos que el usuario esté logueado
+    if (user ) {
+        // Llama a la función de auditoría
+        const params = {
+          sucursal: `'${user.sucursal}'`,
+          usuario: `'${user.id_persona}'`,
+          modulo: `'LogOut'`,
+          evento: `'LogOut'`
+        };
+        executeFetch('Registra_Acceso_Modulo', params);
+    }
+
       await logout();
       navigate(`/login`, {
         state: {

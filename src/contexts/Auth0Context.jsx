@@ -63,6 +63,7 @@ const Auth0ContextProvider = ({ children }) => {
 
   const logoutAuth = () => {
     logout();
+    
   };
 
   const resetPassword = async (email) => {

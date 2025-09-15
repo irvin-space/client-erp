@@ -300,7 +300,7 @@ const EstCambiosTramitesAduanales = () => {
     }
 
     if (registrosGastos === 0) {
-        pasaValidacion = true;
+        pasaValidacion = false;
     }
 
       if (!pasaValidacion) {

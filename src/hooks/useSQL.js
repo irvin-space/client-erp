@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { mensajes } from '../utils/mensajes.js'; // Asegúrate de que la ruta sea correcta
+import { mensajes } from '../utils/mensajes.js'; 
 
 const API_URL = 'http://localhost:3001/ejecuta';
 

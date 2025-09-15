@@ -107,7 +107,6 @@ export const SupabseProvider = ({ children }) => {
   // LOGOUT
   const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
-
     if (error) {
       console.error(error);
       throw error;
