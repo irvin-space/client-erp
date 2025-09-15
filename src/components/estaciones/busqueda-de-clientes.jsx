@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -16,17 +15,21 @@ import Checkbox from '@mui/material/Checkbox';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
-
-import { SearchOutlined } from '@ant-design/icons';
-
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
+//Ant Design
+import { SearchOutlined } from '@ant-design/icons';
 
 //Components del proyecto
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica';
 import DataTable from '../componentesBase/DataTable2';
 
+//Hooks
 import useAuth from '../../hooks/useAuth';
+
+//Custom Hooks
+import useSQL from '../../hooks/useSQL';
 
 //Modal Style
 const style = {
@@ -34,15 +37,11 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  //   minWidthwidth: '1500px',
-  // width: '90vw',
-  // maxHeight: '80vh',
   width: '90vw',
   maxHeight: '80vh',
-  //   maxHeight: '80vh',
-  //   height: '70vh',
+  display: 'flex',
+  justifyContent: 'center',
   bgcolor: 'background.paper',
-  //   bgcolor: 'primary.lighter', // white
   border: '8px solid #00345D',
   boxShadow: 24,
   p: 4,
@@ -51,13 +50,13 @@ const style = {
 };
 
 const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
-  const [isLoading, setIsLoading] = useState(false); // Cargando
+  const { data, loading, error, executeFetch } = useSQL();
 
+  const [isLoading, setIsLoading] = useState(false); // Cargando
   const [inputBusquedaDeCliente, setInputBusquedaDeCliente] = useState('');
   const [buscarPor, setBuscarPor] = useState('Nombre');
   const [searchInputConstrain, setSearchInputConstrain] = useState('contiene');
   const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user.sucursal);
-
   const [arregloDeClientes, setArregloDeClientes] = useState([]);
 
   const handleFetch = async (orden, texto, principio, sucursal) => {
@@ -132,7 +131,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
       </Button>
       <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
-          <Container maxWidth="xl" sx={{ height: '100%' }}>
+          <Box sx={{ width: '95%', height: '100%' }}>
             {/* Encabezado */}
             <Box sx={{ backgroundColor: '', display: 'flex', justifyContent: 'left', alignItems: 'center' }}>
               {/* <Box sx={{ backgroundColor: 'orange', display: 'flex', justifyContent: 'center', alignItems: 'center' }}> */}
@@ -223,7 +222,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
             >
               Consultar
             </Button>
-          </Container>
+          </Box>
         </Box>
       </Modal>
     </div>
