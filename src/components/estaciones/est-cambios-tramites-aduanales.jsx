@@ -79,6 +79,59 @@ const EstCambiosTramitesAduanales = () => {
 
   const [folio, setFolio] = useState('');
 
+  // Estado para guardar el resultado del análisis
+  const [analisisIA, setAnalisisIA] = useState('');
+  const [cargandoIA, setCargandoIA] = useState(false);
+
+  const handleAnalisisIA = async (servicio) => {
+  if (!selectedTramite) {
+    mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
+    return;
+  }
+  
+  // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
+  setCargandoIA(true);
+
+  const Params = {
+        ficha_deposito: `'167230'`
+      };
+    const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
+    const parametros = Params; // Usa el folio del trámite seleccionado
+    const promptAI = "Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.";
+
+  // Elige la URL del endpoint según el servicio que se le pasó como argumento
+  const endpointURL = servicio === 'gemini' 
+    ? 'http://localhost:3001/analisis-ia' 
+    : 'http://localhost:3001/analisis-ia-gpt';
+
+  try {
+    const response = await fetch(endpointURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        instruccionSQL: instruccionSQL,
+        parametros: parametros,
+        promptAI: promptAI,
+      }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    setAnalisisIA(data.analisis);
+    mensajes('success', `Análisis de ${servicio} completado`);
+
+  } catch (error) {
+    console.error(`Error al realizar el análisis con ${servicio}:`, error);
+    mensajes('error', `Error al realizar el análisis con ${servicio}: ${error.message}`);
+    setAnalisisIA('No se pudo realizar el análisis. Intenta de nuevo más tarde.');
+  } finally {
+    setCargandoIA(false);
+  }
+};
+
   const handleFetch = async (parametros) => {
     try {
       const response = await fetch('http://localhost:3001/dinamico/lista', {
@@ -731,6 +784,18 @@ const EstCambiosTramitesAduanales = () => {
         {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
         <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} />
       </Box>
+      // Debajo de tus tablas de ingresos y gastos, agrega un nuevo contenedor:
+<br />
+<Divider sx={{ my: 2 }} />
+<Box sx={{ mt: 2 }}>
+  <Typography variant="h4">Análisis de IA</Typography>
+  <br />
+  {cargandoIA ? (
+    <Typography>Cargando análisis, por favor espera...</Typography>
+  ) : (
+    <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
+  )}
+</Box>
       <br />
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
@@ -803,6 +868,25 @@ const EstCambiosTramitesAduanales = () => {
             <Button variant="contained" disabled={!esHabilitadoGuardar} onClick={handleGuardar}>
               Guardar
             </Button>
+            {/* Botón de Gemini */}
+        <Button
+          variant="contained"
+          onClick={() => handleAnalisisIA('gemini')}
+          disabled={cargandoIA || !selectedTramite}
+          color="primary"
+        >
+          {cargandoIA ? 'Analizando...' : 'Analizar con Gemini'}
+        </Button>
+        &nbsp;
+        {/* Nuevo botón de ChatGPT */}
+        <Button
+          variant="contained"
+          onClick={() => handleAnalisisIA('gpt')}
+          disabled={cargandoIA || !selectedTramite}
+          color="primary"
+        >
+          {cargandoIA ? 'Analizando...' : 'Analizar con ChatGPT'}
+        </Button>
             <Button variant="contained" disabled={!esHabilitadoCancelar} onClick={handleCancelar} color="secondary">
               Cancelar
             </Button>
