@@ -38,7 +38,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '90vw',
-  maxHeight: '80vh',
+  height: '80vh',
   display: 'flex',
   justifyContent: 'center',
   bgcolor: 'background.paper',
@@ -56,7 +56,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
   const [inputBusquedaDeCliente, setInputBusquedaDeCliente] = useState('');
   const [buscarPor, setBuscarPor] = useState('Nombre');
   const [searchInputConstrain, setSearchInputConstrain] = useState('contiene');
-  const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user.sucursal);
+  const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user?.sucursal || '');
   const [arregloDeClientes, setArregloDeClientes] = useState([]);
 
   const handleFetch = async (orden, texto, principio, sucursal) => {
@@ -126,7 +126,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
 
   return (
     <div style={{ height: '100%' }}>
-      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor: 'white' }}>
+      <Button onClick={onOpen} variant="outlined" sx={{height:'100%' }}>
         <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
       </Button>
       <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">

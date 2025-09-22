@@ -132,7 +132,8 @@ export default function DataTable({ datos, onSelectRow }) {
   }, [datos]);
 
   return (
-    <Paper sx={{ height: 400, width: '100%' }}>
+    //Altura de paper anterior 400
+    <Paper sx={{ height: '100%', width: '100%' }}>
       <DataGrid
         rows={arregloDeClientes}
         columns={columns}

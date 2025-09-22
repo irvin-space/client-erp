@@ -14,6 +14,9 @@ import { SimpleLayoutType } from 'config';
 import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tramites-aduanales'
 import EstDesktop from '../components/estaciones/est-desktop';
 
+//Pages
+import TrazabilidadDePagos from '../pages/extra-pages/trazabilidad-de-pagos';
+
 // pages routing
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
 const MaintenanceError500 = Loadable(lazy(() => import('pages/maintenance/500')));
@@ -51,6 +54,10 @@ const MainRoutes = {
         {
           path: 'est-cambios-tramites-aduanales',
           element: <EstCambiosTramitesAduanales/>
+        },
+        {
+          path: 'trazabilidad-de-pagos',
+          element: <TrazabilidadDePagos/>
         },
         {
           path: 'sample-page2', 

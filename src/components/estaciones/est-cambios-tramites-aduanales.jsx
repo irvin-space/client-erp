@@ -30,38 +30,27 @@ import Grid from '@mui/material/Grid';
 
 // Componentes propios del proyecto
 import FirstComponent from '../componentesBase/FirstComponent';
-// import ComponenteLista from '../componentesBase/ComponenteLista';
-// import RowRadioButtonsGroup from '../componentesBase/RowRadioButon';
 import RowRadioButtonsGroup from '../componentesBase/RowRadioButton.jsx';
 import DataTable from '../componentesBase/DataTable.jsx';
-import DataTable2 from '../componentesBase/DataTable2.jsx';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.jsx';
-// import Mensajes from '../componentesBase/Mensajes.jsx';
 
 //Modales
 import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
 import BusquedaDeClientes from './busqueda-de-clientes.jsx';
-
-//Iconos
-import { SearchOutlined } from '@ant-design/icons';
-import { DownCircleOutlined } from '@ant-design/icons';
-import { bgcolor, border, fontSize, height, width } from '@mui/system';
-import { color } from 'framer-motion';
+import AltaYCambiosAGastosNoDeducibles from './alta-y-cambios-a-gastos-no-deducibles.jsx';
 
 //Componentes Comunes
 import Autoriza from '../comun/autoriza.jsx';
-import AutorizaBorrar from '../comun/autoriza.jsx';
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
-  const { data, setData } = useContext(MyContext);
-  // const [selectedValue, setSelectedValue] = useState('');
+  //const { data, setData } = useContext(MyContext);
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
   const [openAutoriza, setOpenAutoriza] = useState(false); // Seguimiento del estado del modal de autorizacion
   const [openAutorizaBorrar, setOpenAutorizaBorrar] = useState(false); // Seguimiento del estado del modal de autorizacion
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes pedimento
   const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
-
+  const [openAltaYCambiosAGastosNoDeduciblesModal, setOpenAltaYCambiosAGastosNoDeduciblesModal] = useState(false); // Seguimiento del estado del modal de alta y cambios a gastos no deducibles
   const [selectedTramite, setSelectedTramite] = useState(null);
   const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
   const [ingresos, setIngresos] = useState(null);
@@ -230,7 +219,6 @@ const EstCambiosTramitesAduanales = () => {
     setFolio(value);
   };
 
-
   const handleIniciar = () => {
     console.log('El boton Iniciar se presiono');
     // Si no se ha cargado informacion del pedimento ingresando el folio y presionando enter o buscando y seleccionandolo por medio del modal,
@@ -272,50 +260,32 @@ const EstCambiosTramitesAduanales = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
   const handleRowSelectClientePedimento = (row) => {
     console.log('est-camb-ad', row);
     setOpenBusquedaClientePedimentoModal(false);
-    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`
-    setSelectedTramite(null)
-    setFolio('')
-    setGastos([])
-    setIngresos([])
-    setClienteFolioPedimento(folioYNombre)
+    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`;
+    setSelectedTramite(null);
+    setFolio('');
+    setGastos([]);
+    setIngresos([]);
+    setClienteFolioPedimento(folioYNombre);
   };
 
   const handleRowSelectClienteFacturacion = (row) => {
     console.log('est-camb-ad', row);
     setOpenBusquedaClienteFacturaModal(false);
-    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`
-    setSelectedTramite(null)
-    setFolio('')
-    setGastos([])
-    setIngresos([])
-    setClienteFolioFacturacion(folioYNombre)
+    let folioYNombre = `${row.folio} - ${row.nombre_cliente}`;
+    setSelectedTramite(null);
+    setFolio('');
+    setGastos([]);
+    setIngresos([]);
+    setClienteFolioFacturacion(folioYNombre);
   };
 
-
-
-
-
-
-
-
   // Callback: hace el llamado cuando la fila a sido seleccionada
-  const handleRowSelect = (row,o) => {
+  const handleRowSelect = (row, o) => {
     console.log('Row selected in parent:', row);
-    console.log(row.clave)
+    console.log(row.clave);
     // console.log(setClave(row.clave))
     setSelectedTramite(row);
     if (row.tramite > 0) {
@@ -389,11 +359,11 @@ const EstCambiosTramitesAduanales = () => {
     setSucursal(value);
   };
 
-  const handleClaveSelected = (value,objeto) => {
-    console.log("valueclave", value)
-    console.log("objetodeclave",objeto)
-    setClave(value)
-  }
+  const handleClaveSelected = (value, objeto) => {
+    console.log('valueclave', value);
+    console.log('objetodeclave', objeto);
+    setClave(value);
+  };
 
   return (
     <div>
@@ -592,7 +562,9 @@ const EstCambiosTramitesAduanales = () => {
                                 ? `${selectedTramite?.id_cliente_pedimento}-${selectedTramite.ctePedimento}`
                                 : selectedTramite?.nombre_cliente_pedimento
                                   ? `${selectedTramite?.cliente_pedimento} - ${selectedTramite?.nombre_cliente_pedimento}`
-                                  : clienteFolioPedimento != '' ? clienteFolioPedimento : ''
+                                  : clienteFolioPedimento != ''
+                                    ? clienteFolioPedimento
+                                    : ''
                             }
                             fullWidth
                           />
@@ -633,7 +605,9 @@ const EstCambiosTramitesAduanales = () => {
                                 ? `${selectedTramite?.id_cliente_factura} - ${selectedTramite.cteFacturacion}`
                                 : selectedTramite?.nombre_cliente_factura
                                   ? `${selectedTramite?.cliente_factura} - ${selectedTramite?.nombre_cliente_factura}`
-                                  : clienteFolioFacturacion != '' ? clienteFolioFacturacion : '' 
+                                  : clienteFolioFacturacion != ''
+                                    ? clienteFolioFacturacion
+                                    : ''
                             }
                             fullWidth
                           />
@@ -821,9 +795,13 @@ const EstCambiosTramitesAduanales = () => {
               onProcesoPosterior={handleProcesoPosterior}
             />
             &nbsp;
-            <Button variant="outlined" onClick={handleNuevo} color="primary">
+            {/* <Button variant="outlined" onClick={handleNuevo} color="primary">
               Nuevo Gasto
-            </Button>
+            </Button> */}
+            <AltaYCambiosAGastosNoDeducibles 
+              open={openAltaYCambiosAGastosNoDeduciblesModal} 
+              onOpen={()=>setOpenAltaYCambiosAGastosNoDeduciblesModal(true)}
+              onClose={()=>setOpenAltaYCambiosAGastosNoDeduciblesModal(false)}  />
             &nbsp;
             <Button variant="outlined" onClick={handleCambiar} color="warning">
               Cambiar Gasto
