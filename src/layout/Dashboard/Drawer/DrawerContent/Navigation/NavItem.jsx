@@ -23,7 +23,7 @@ import useConfig from 'hooks/useConfig';
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
 //Ant design icons
-import { DesktopOutlined, ReconciliationOutlined, ShopOutlined } from '@ant-design/icons';
+import { DesktopOutlined, ReconciliationOutlined, ShopOutlined, BranchesOutlined, LineChartOutlined, ProfileOutlined, ClusterOutlined, CompassOutlined } from '@ant-design/icons';
 
 // ... otros imports
 import useAuth from 'hooks/useAuth.js';
