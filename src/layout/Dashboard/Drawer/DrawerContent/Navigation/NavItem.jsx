@@ -73,6 +73,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   ReconciliationOutlined,
   ShopOutlined,
   DesktopOutlined,
+  BranchesOutlined, LineChartOutlined, ProfileOutlined, ClusterOutlined, CompassOutlined,
 };
 
   const Icon = iconMap[item.icon];

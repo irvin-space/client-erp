@@ -8,7 +8,7 @@ const useSQL = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const executeFetch = async (instruccionSQL, parametros) => {
+  const executeFetch = async (instruccionSQL, parametros, esAutorizacion) => {
     setLoading(true);
     setError(null);
     setData(null);
@@ -32,7 +32,13 @@ const useSQL = () => {
 
       // Lógica de validación de tu código original
       if (responseData[0] && responseData[0].length === 0) {
-        mensajes('error', 'Error durante registro de autorización');
+        if (esAutorizacion) {
+          mensajes('error', 'Error durante registro de autorización');
+          
+        }
+        else {  
+          mensajes('info', 'Consulta realizada');
+        }
         return { success: false, data: responseData }; // Devuelve un objeto con el estado
       }
 

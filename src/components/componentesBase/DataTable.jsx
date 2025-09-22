@@ -5,6 +5,56 @@ import Paper from '@mui/material/Paper';
 
 import { useState, useEffect } from 'react';
 import { bgcolor } from '@mui/system';
+// Asegúrate de que los íconos estén importados
+import Tooltip from '@mui/material/Tooltip';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PendingIcon from '@mui/icons-material/Pending';
+import ErrorIcon from '@mui/icons-material/Error';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import EditNoteIcon from '@mui/icons-material/EditNote'; // Agrega esta línea
+import PaidIcon from '@mui/icons-material/Paid'; // Agrega esta línea
+
+
+// Modifica la definición de la columna 'estatus' en columnsA y columnsB
+// Solo necesitas hacerlo en un solo lugar si es una columna compartida.
+const estatusColumn = {
+  field: 'estatus',
+  headerName: 'Estatus',
+  align: 'center',
+  flex: 0.8,
+  headerAlign: 'center',
+  // Aquí está la clave: renderCell
+  renderCell: (params) => {
+    // params.value contiene el valor de la celda ('estatus')
+    // puedes usarlo para decidir qué ícono mostrar
+    const status = params.value;
+    let icon;
+    let tooltipText;
+
+    if (status === 'No deducible') {
+      icon = <NotInterestedIcon  color="warning" />;
+      tooltipText = 'Concepto con gastos no deducibles.';
+    } else if (status === 'Autorizado') {
+      icon = <CheckCircleIcon color="default" />;
+      tooltipText = 'Este concepto está Autorizado.';
+    } else if (status === 'Facturado') {
+      icon = <PaidIcon color="success" />;
+      tooltipText = 'El concepto ha sido pagado.';
+    } else if (status === 'Capturado') {
+      icon = <EditNoteIcon color="info" />;
+      tooltipText = 'El concepto no ha tenido movimiento.';
+    }else{
+      icon = null; // En caso de que no haya un estatus definido
+      tooltipText = '';
+    }
+
+    return (
+      <Tooltip title={tooltipText} placement="top">
+        {icon}
+      </Tooltip>
+    );
+  },
+};
 
 const columnsA = [
   // { field: 'tramite_aduana', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
@@ -29,12 +79,13 @@ const columnsA = [
     headerAlign: 'right'
     // valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`
   },
-  { field: 'factura', headerName: 'Factura', align: 'right', flex: .8, headerAlign: 'right' }
+  { field: 'factura', headerName: 'Factura', align: 'right', flex: .8, headerAlign: 'right' },
+  estatusColumn
 ];
 
 
 const columnsB = [
-  { field: 'tramite_aduana', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
+  { field: 'concepto', headerName: 'Concepto', flex: .5, align: 'right', headerAlign: 'right' },
   { field: 'nombre_concepto', headerName: 'Nombre Concepto', flex: 1, align: 'left' },
   { field: 'moneda', headerName: 'Moneda', flex: .6, align: 'left', headerAlign: 'left' },
   {
@@ -54,7 +105,8 @@ const columnsB = [
     headerAlign: 'right'
     // valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`
   },
-  { field: 'factura', headerName: 'Factura', align: 'right', flex: .8, headerAlign: 'right' }
+  { field: 'factura', headerName: 'Factura', align: 'right', flex: .8, headerAlign: 'right' },
+  estatusColumn
 ];
 
 const rows = [
@@ -87,7 +139,10 @@ export default function DataTable({ datos, flag }) {
             ...item,
             importe_me: (Math.floor(item.importe_me * 100) / 100).toFixed(2),
             importe: (Math.floor(item.importe * 100) / 100).toFixed(2),
-            id: Math.floor(Math.random() * 100)
+            id: Math.floor(Math.random() * 100),
+            // Asegúrate de que tu origen de datos tenga un campo 'estatus'
+          // o agrégalo aquí de forma condicional
+          estatus: item.estatus // O tu lógica para determinar el estatus
           };
         });
         console.log('ingresos con id', ingresosConID);
@@ -113,7 +168,10 @@ export default function DataTable({ datos, flag }) {
             ...item,
             importe_me: (Math.floor(item.importe_me * 100) / 100).toFixed(2),
             importe: (Math.floor(item.importe * 100) / 100).toFixed(2),
-            id: Math.floor(Math.random() * 100)
+            id: Math.floor(Math.random() * 100),
+            // Asegúrate de que tu origen de datos tenga un campo 'estatus'
+          // o agrégalo aquí de forma condicional
+          estatus: item.estatus // O tu lógica para determinar el estatus
           }
         })
         setArregloIngresos(datosDeIngresosConID)

@@ -87,7 +87,7 @@ useEffect(() => {
       console.log('Proceso Autorizado');
 
       // 3. Usa executeFetch para registrar la autorización
-      const result = await executeFetch('Registra_Autorizacion_Web', Params);
+      const result = await executeFetch('Registra_Autorizacion_Web', Params, true);
 
       if (result.success) {
               mensajes('aviso', 'Autorización registrada con éxito.');
