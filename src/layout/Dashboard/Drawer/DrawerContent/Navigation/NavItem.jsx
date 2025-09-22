@@ -73,9 +73,11 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   ReconciliationOutlined,
   ShopOutlined,
   DesktopOutlined,
+  // BranchesOutlined,
+  LoadingOutlined
 };
 
-  const Icon = iconMap[item.icon];
+  const Icon = iconMap[item.icon] ?? LoadingOutlined;
   const itemIcon = item.icon ? (
     <Icon
       style={{

@@ -15,7 +15,8 @@ import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tr
 import EstDesktop from '../components/estaciones/est-desktop';
 
 //Pages
-import TrazabilidadDePagos from '../pages/extra-pages/trazabilidad-de-pagos';
+import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos';
+
 
 // pages routing
 const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));

@@ -4,42 +4,14 @@ import { useState, useEffect } from 'react';
 import { DataGrid, Toolbar, ToolbarButton, FilterPanelTrigger } from '@mui/x-data-grid';
 import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 
 //Idioma
 import { esES } from '@mui/x-data-grid/locales';
 
 //Ant Design
-import { FilterOutlined } from '@ant-design/icons';
-
-const columns = [
-  { field: 'cliente_documento', headerName: 'Cliente', flex: 2, height: 500 },
-  { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 0.5, align: 'right', headerAlign: 'right' },
-  { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1 },
-  {
-    field: 'importe_ficha_deposito',
-    headerName: 'Importe',
-    type: 'number',
-    flex: 1,
-    align: 'right',
-    headerAlign: 'right'
-  },
-  {
-    field: 'saldo_actual_ficha',
-    headerName: 'Saldo Actual',
-    type: 'number',
-    sortable: false,
-    flex: 1,
-    align: 'right',
-    headerAlign: 'right'
-  },
-  {
-    field: 'poliza_ficha',
-    headerName: 'Póliza',
-    flex: 1,
-    align: 'right',
-    headerAlign: 'right'
-  }
-];
+import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons';
 
 // const rows = [
 //   {
@@ -82,8 +54,83 @@ function CustomToolbar({ setFilterButton }) {
   );
 }
 
-export default function DataTable({ rowsArray }) {
+export default function DataTable({ rowsArray, onSelectRow }) {
   const [filterButton, setFilterButton] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState(null);
+
+  const columns = [
+    { field: 'cliente_documento', headerName: 'Cliente', flex: 2, height: 500 },
+    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 0.5, align: 'right', headerAlign: 'right' },
+    { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1 },
+    {
+      field: 'importe_ficha_deposito',
+      headerName: 'Importe',
+      type: 'number',
+      flex: 1,
+      align: 'right',
+      headerAlign: 'right'
+    },
+    {
+      field: 'saldo_actual_ficha',
+      headerName: 'Saldo Actual',
+      type: 'number',
+      sortable: false,
+      flex: 1,
+      align: 'right',
+      headerAlign: 'right'
+    },
+    {
+      field: 'poliza_ficha',
+      headerName: 'Póliza',
+      flex: 1,
+      align: 'right',
+      headerAlign: 'right'
+    },
+    {
+      field: 'sElEcCiOn',
+      headerName: 'Selección',
+      flex: 1,
+      align: 'center',
+      filterable: false, // usually you don't filter this column
+      sortable: false,
+      headerAlign: 'center',
+      renderCell: (params) => {
+        const isSelected = selectedRowId === params.row.id;
+
+        const handleSelect = () => {
+          setSelectedRowId(params.row.id); // Update local state for visual feedback
+          if (onSelectRow) {
+            onSelectRow(params.row); // Notify parent
+          }
+        };
+
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+              px: 0,
+              py: 0
+            }}
+          >
+            <IconButton
+              onClick={handleSelect}
+              aria-label={isSelected ? `Deseleccionar ${params.row.nombre_cliente}` : `Seleccionar ${params.row.nombre_cliente}`}
+              color="success"
+              size="medium"
+              sx={{ width: '100%', height: '100%' }}
+            >
+              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CheckCircleOutlined fontSize="large" />}
+            </IconButton>
+          </Box>
+        );
+      }
+    }
+  ];
+
   return (
     //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
     <Paper sx={{ height: '100%', width: '100%' }}>

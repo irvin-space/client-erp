@@ -35,8 +35,9 @@ import DataTable from '../componentesBase/DataTable.jsx';
 import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.jsx';
 
 //Modales
-import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
-import BusquedaDeClientes from './busqueda-de-clientes.jsx';
+// import BusquedaTramitesAduanales from './busqueda-tramites-aduanales.jsx';
+import BusquedaTramitesAduanales from '../servicios/busqueda-tramites-aduanales.jsx';
+import BusquedaDeClientes from '../servicios/busqueda-de-clientes.jsx';
 import AltaYCambiosAGastosNoDeducibles from './alta-y-cambios-a-gastos-no-deducibles.jsx';
 
 //Componentes Comunes
