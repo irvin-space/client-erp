@@ -12,7 +12,7 @@ import useAuth from '../../hooks/useAuth';
 //Componentes propios del proyecto
 import DataTable from '../../components/componentesBase/DataTable3';
 import ComponenteListaDinamica from '../../components/componentesBase/ComponenteListaDinamica';
-import BusquedaDeClientes from '../../components/estaciones/busqueda-de-clientes';
+import BusquedaDeClientes from '../servicios/busqueda-de-clientes';
 import FirstComponent from '../../components/componentesBase/FirstComponent';
 // import
 
@@ -22,8 +22,9 @@ import useSQL from '../../hooks/useSQL';
 
 //Componente
 const TrazabilidadDePagos = () => {
-  const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
-  console.log(useAuth());
+  const { user } = useAuth();
+  const [sucursal, setSucursal] = useState(user?.sucursal || '');
+  console.log(user);
 
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [clienteFolioPedimento, setClienteFolioPedimento] = useState(null);
@@ -53,7 +54,7 @@ const TrazabilidadDePagos = () => {
     // setIngresos([]);
     console.log('Esta es el numero de cliente:', row.cliente);
     setClienteFolioPedimento(folioYNombre);
-    setNombreDeCliente(nombreDeCliente);
+    setNombreDeCliente(folioYNombre);
     setNumeroDeCliente(numeroDeCliente);
   };
 
@@ -88,6 +89,23 @@ const TrazabilidadDePagos = () => {
     }
   };
 
+  const handleReiniciarValores = () => {
+    console.log('Se asignara la sucursal correspondiente del usuiario');
+    setSucursal(user?.sucursal || '');
+
+    console.log('Se limpiara el input cliente');
+    setNombreDeCliente('');
+
+    console.log('Se reestablecera la fecha desde ');
+    setDesdeFecha(dayjs().subtract(1, 'month'));
+
+    console.log('Se reestablecera la fecha hasta ');
+    setHastaFecha(dayjs());
+
+    console.log('Se limpiaran los valores de la tabla');
+    setArregloDeConsulta([]);
+  };
+
   return (
     <Box>
       <Box sx={{ marginBottom: '16px', backgroundColor: 'white' }}>
@@ -98,11 +116,6 @@ const TrazabilidadDePagos = () => {
       <Grid container spacing={2}>
         <Grid sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }} size={{ xs: 12, md: 12, lg: 12 }}>
           <Grid sx={{ height: '100%', backgroundColor: '', display: 'flex', alignItems: 'end' }} container spacing={3}>
-            <Grid size={{ md: 1, lg: 1 }}>
-              <Typography variant="h4" sx={{}}>
-                Filtros
-              </Typography>
-            </Grid>
             {/* Sucursales */}
             <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 2, lg: 2 }}>
               <ComponenteListaDinamica
@@ -118,7 +131,7 @@ const TrazabilidadDePagos = () => {
                 extraOption="Todos"
               />
             </Grid>
-            <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 3, lg: 3 }}>
+            <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 3, lg: 4 }}>
               <Box sx={{ height: '100%', display: 'flex' }}>
                 <TextField
                   sx={{ width: '80%' }}
@@ -149,18 +162,11 @@ const TrazabilidadDePagos = () => {
               <Typography variant="subtitle2">Hasta</Typography>
               <FirstComponent value={hastaFecha} onChange={setHastaFecha} />
             </Grid>
-            {/* Botones Aplicar,Reinicar */}
-            <Grid sx={{ display: 'flex', justifyContent: 'space-evenly' }} size={{ md: 2, lg: 2 }}>
-              <Button variant="outlined">Reiniciar</Button>
-              <Button variant="contained" onClick={handleAplicarFiltros}>
-                Aplicar
-              </Button>
-            </Grid>
           </Grid>
         </Grid>
         {/* Tabla */}
         <Grid
-          sx={{ marginTop: '16px', height: '65vh', backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'lightblue' } }}
+          sx={{ marginTop: '16px', height: '60vh', backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'lightblue' } }}
           size={{ xs: 12, md: 12, lg: 12 }}
         >
           <DataTable rowsArray={arregloDeConsulta} />
@@ -169,6 +175,16 @@ const TrazabilidadDePagos = () => {
           <p>Lorem Ipsum</p>
         </Grid> */}
       </Grid>
+      <br />
+      {/* Botones Aplicar,Reinicar */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Button variant="outlined" onClick={handleReiniciarValores}>
+          Cancelar
+        </Button>
+        <Button variant="contained" onClick={handleAplicarFiltros}>
+          Consultar
+        </Button>
+      </Box>
     </Box>
   );
 };

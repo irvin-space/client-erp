@@ -23,7 +23,17 @@ import useConfig from 'hooks/useConfig';
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
 //Ant design icons
-import { DesktopOutlined, ReconciliationOutlined, ShopOutlined, BranchesOutlined, LineChartOutlined, ProfileOutlined, ClusterOutlined, CompassOutlined } from '@ant-design/icons';
+import {
+  DesktopOutlined,
+  ReconciliationOutlined,
+  ShopOutlined,
+  BranchesOutlined,
+  LineChartOutlined,
+  ProfileOutlined,
+  ClusterOutlined,
+  CompassOutlined,
+  LoadingOutlined
+} from '@ant-design/icons';
 
 // ... otros imports
 import useAuth from 'hooks/useAuth.js';
@@ -39,7 +49,7 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
 
   const { mode, menuOrientation } = useConfig();
 
-   // 1. Llama a los hooks useAuth y useSQL
+  // 1. Llama a los hooks useAuth y useSQL
   const { user } = useAuth();
   const { executeFetch } = useSQL();
 
@@ -57,16 +67,15 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
     // 2. Agrega aquí la lógica de auditoría
     // Verificamos que el usuario esté logueado y que el item tenga un título para auditar
     if (user && item.title) {
-        // Llama a la función de auditoría
-        const params = {
-          sucursal: `'${user.sucursal}'`,
-          usuario: `'${user.id_persona}'`,
-          modulo: `'${item.title}'`,
-          evento: `'Inicio'`
-        };
-        executeFetch('Registra_Acceso_Modulo', params);
+      // Llama a la función de auditoría
+      const params = {
+        sucursal: `'${user.sucursal}'`,
+        usuario: `'${user.id_persona}'`,
+        modulo: `'${item.title}'`,
+        evento: `'Inicio'`
+      };
+      executeFetch('Registra_Acceso_Modulo', params);
     }
-
   };
 
   const iconMap = {
@@ -74,9 +83,10 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   ShopOutlined,
   DesktopOutlined,
   BranchesOutlined, LineChartOutlined, ProfileOutlined, ClusterOutlined, CompassOutlined,
+  LoadingOutlined
 };
 
-  const Icon = iconMap[item.icon];
+  const Icon = iconMap[item.icon] ?? LoadingOutlined;
   const itemIcon = item.icon ? (
     <Icon
       style={{
