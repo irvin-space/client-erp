@@ -55,7 +55,7 @@ const ComponenteListaDinamica = ({
             es_sucursal: false,
             nombre_sucursal: '*Todos*',
             rango_folios: false,
-            sucursal: 'Todos'
+            sucursal: '%'
           };
           setOptions([extraOptionObject, ...data[0]]);
         }

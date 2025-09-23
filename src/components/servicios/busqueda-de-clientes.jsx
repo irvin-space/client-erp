@@ -70,7 +70,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
             '@cOrden': orden,
             '@cTexto': texto,
             '@bPrincipio': principio == 'contiene' ? 0 : 1,
-            '@nSucursal': sucursal == 'Todos' ? '0' : sucursal
+            '@nSucursal': `'${sucursal}'`
           }
         })
       });
@@ -109,12 +109,18 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
   };
 
   const handleBusquedaSucursal = (e) => {
-    console.log(e);
-    if (e == 'Todos') {
-      setBusquedaSucursal('Todos');
-    } else {
-      setBusquedaSucursal(e);
+    let sucursalValue = e;
+
+    if (sucursalValue === '*Todos*' || sucursalValue === 'Todos') {
+      sucursalValue = '%';
     }
+    setBusquedaSucursal(sucursalValue);
+
+    // if (e == 'Todos' || e == '*Todos*') {
+    //   setBusquedaSucursal('%');
+    // } else {
+    //   setBusquedaSucursal(e);
+    // }
   };
 
   const handleRowSelect = (row) => {
@@ -150,7 +156,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
                   valueKey="sucursal"
                   value={busquedaSucursal}
                   labelKey="nombre_sucursal"
-                  extraOption="Todos"
+                  extraOption="*Todos*"
                   onChange={handleBusquedaSucursal}
                 />
               </Grid>

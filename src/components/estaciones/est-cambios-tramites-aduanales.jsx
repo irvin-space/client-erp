@@ -42,6 +42,8 @@ import AltaYCambiosAGastosNoDeducibles from './alta-y-cambios-a-gastos-no-deduci
 
 //Componentes Comunes
 import Autoriza from '../comun/autoriza.jsx';
+import { set } from 'lodash-es';
+import useSQL from 'hooks/useSQL.js';
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
@@ -49,6 +51,7 @@ const EstCambiosTramitesAduanales = () => {
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
   const [openAutoriza, setOpenAutoriza] = useState(false); // Seguimiento del estado del modal de autorizacion
   const [openAutorizaBorrar, setOpenAutorizaBorrar] = useState(false); // Seguimiento del estado del modal de autorizacion
+  const [openAutorizaBorrarTA, setOpenAutorizaBorrarTA] = useState(false); // Seguimiento del estado del modal de autorizacion
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes pedimento
   const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [openAltaYCambiosAGastosNoDeduciblesModal, setOpenAltaYCambiosAGastosNoDeduciblesModal] = useState(false); // Seguimiento del estado del modal de alta y cambios a gastos no deducibles
@@ -57,6 +60,7 @@ const EstCambiosTramitesAduanales = () => {
   const [ingresos, setIngresos] = useState(null);
   const [gastos, setGastos] = useState(null);
   const [clave_pedimento, setClave] = useState('');
+  const [chequera, setChequera] = useState('');
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
 
@@ -360,11 +364,63 @@ const EstCambiosTramitesAduanales = () => {
     setSucursal(value);
   };
 
+  const handleChequeraSelected = (value, objeto) => {
+    setChequera(value);
+  }
+
   const handleClaveSelected = (value, objeto) => {
     console.log('valueclave', value);
     console.log('objetodeclave', objeto);
     setClave(value);
   };
+
+  const handleProcesoPrevioBorrarTA = () => { 
+
+    const lnIngresos_Factura = (ingresos || []).filter(item => item.estatus_factura !== 'Capturado').length;
+    const lnIngresos_Proveedor = (ingresos || []).filter(item => item.estatus_proveedor !== 'Capturado').length;
+    const lnGastos_Factura = (gastos || []).filter(item => item.estatus_factura !== 'Capturado').length;
+    const lnGastos_Proveedor = (gastos || []).filter(item => item.estatus_proveedor !== 'Capturado').length;
+
+    if ((folio == 0) || (folio == '') || (folio == 'undefined')){ 
+      mensajes('error', 'No hay un trámite seleccionado');
+      return false;
+    }
+    else {
+      if (lnIngresos_Factura == 0 && lnIngresos_Proveedor == 0 && lnGastos_Factura == 0 && lnGastos_Proveedor == 0) {
+        return true;
+      }
+      else {
+        mensajes('error', 'No se puede borrar el trámite');
+        return false;
+      }
+    }
+   
+  }
+
+  const handleProcesoPosteriorBorrarTA = async () => {
+    const Params = {
+      sucursal: `'${sucursal}'`,
+      solicita: `'${usuarioLogged}'`,
+      autoriza: `'${usuario}'`,
+      operacion: `'${FolioAutorizacion}'`,
+      componente: `'${Componente}'`,
+      tabla: `'${Tabla}'`,
+      folio: `'${Folio}'`,
+      justificacion: `''`
+    };
+
+    const result = await executeFetch('BORRA_TRAMITE_ADUANAL', Params, true);
+    
+    if (result.success) {
+            mensajes('aviso', 'Trámite eliminado de la BD.');
+
+      if (onProcesoPosteriorBorrarTA) {
+        onProcesoPosteriorBorrarTA();
+      }
+      onClose();
+    }
+    
+  }
 
   return (
     <div>
@@ -556,7 +612,7 @@ const EstCambiosTramitesAduanales = () => {
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
                           <TextField
                             id="standard-basic"
-                            label="Fólio - Pedimento"
+                            label="Cliente - Pedimento"
                             variant="standard"
                             value={
                               selectedTramite?.ctePedimento
@@ -597,7 +653,7 @@ const EstCambiosTramitesAduanales = () => {
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
                           <TextField
                             id="standard-multiline-flexible"
-                            label="Fólio - Facturación"
+                            label="Cliente - Facturación"
                             multiline
                             maxRows={2}
                             variant="standard"
@@ -726,7 +782,21 @@ const EstCambiosTramitesAduanales = () => {
                   <Grid size={12}>
                     {/* Chequera*/}
                     <Grid container spacing={2}>
-                      <Grid size={12}>{/* <ComponenteLista titulo="Chequera" /> */}</Grid>
+                      <Grid size={12}>
+                        <br></br>
+                        <ComponenteListaDinamica
+                          label="Chequera"
+                          onChange={handleChequeraSelected}
+                          instruccionSQL="Combo_Chequeras"
+                          value={selectedTramite?.chequera ? selectedTramite?.chequera : chequera}
+                          valueKey="chequera"
+                          labelKey="nombre_chequera"
+                          retornaObjeto={false}
+                          parametros={{
+                            '@cCondicion ': "' WHERE es_fiscal = 1 '"
+                          }}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
@@ -831,6 +901,34 @@ const EstCambiosTramitesAduanales = () => {
             <Button variant="text" onClick={handleVerHistoria} color="success">
               Ver Historia
             </Button>
+          </Box>
+        </Box>
+      </Stack>
+      <br/>
+      <Stack direction="row">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex' }}>
+            <Autoriza
+              txtBoton="Borrar Trámite Aduanal"
+              FolioAutorizacion="861"
+              Tabla="Tramites_Aduanales"
+              Folio={folio}
+              Componente="est-cambios-tramites-aduanales"
+              Color="error"
+              onSelectRow={handleRowSelect}
+              open={openAutorizaBorrarTA}
+              onClose={() => {
+                setOpenAutorizaBorrarTA(false);
+              }}
+              onOpen={() => {
+                // La validación previa va aquí, justo antes de abrir la modal
+                if (handleProcesoPrevioBorrarTA()) {
+                  setOpenAutorizaBorrarTA(true); // Solo abre el modal si la validación es exitosa
+                }
+              }}
+              onProcesoPosterior={handleProcesoPosteriorBorrarTA}
+            />
+            
           </Box>
         </Box>
       </Stack>

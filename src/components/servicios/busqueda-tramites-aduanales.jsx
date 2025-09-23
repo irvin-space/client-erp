@@ -92,6 +92,16 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
     }
   };
 
+  const handleSucursalSelected = (event) => {
+
+    let sucursalValue = event;
+
+    if (sucursalValue === '*Todos*' || sucursalValue === 'Todos') {
+      sucursalValue = '%';
+    }
+    setSucursal(sucursalValue);
+  }
+
   const handleFetch = async (parametros) => {
     try {
       setIsLoading(true); // Comenzar a cargar
@@ -164,7 +174,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
 
                   <ComponenteListaDinamica
                     label=""
-                    onChange={setSucursal}
+                    onChange={handleSucursalSelected}
                     instruccionSQL="combo_sucursales"
                     value={sucursal}
                     valueKey="sucursal"

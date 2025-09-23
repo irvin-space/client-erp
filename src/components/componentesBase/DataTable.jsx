@@ -33,16 +33,16 @@ const estatusColumn = {
 
     if (status === 'No deducible') {
       icon = <NotInterestedIcon  color="warning" />;
-      tooltipText = 'Concepto con gastos no deducibles.';
+      tooltipText = 'No Deducible';
     } else if (status === 'Autorizado') {
       icon = <CheckCircleIcon color="default" />;
-      tooltipText = 'Este concepto está Autorizado.';
+      tooltipText = 'Autorizado';
     } else if (status === 'Facturado') {
       icon = <PaidIcon color="success" />;
-      tooltipText = 'El concepto ha sido pagado.';
+      tooltipText = 'Facturado';
     } else if (status === 'Capturado') {
       icon = <EditNoteIcon color="info" />;
-      tooltipText = 'El concepto no ha tenido movimiento.';
+      tooltipText = 'Capturado';
     }else{
       icon = null; // En caso de que no haya un estatus definido
       tooltipText = '';
