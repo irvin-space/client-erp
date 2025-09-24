@@ -16,6 +16,7 @@ import EstDesktop from '../components/estaciones/est-desktop';
 
 //Pages
 import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos';
+import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-trazabilidad-pagos';
 
 
 // pages routing
@@ -59,6 +60,10 @@ const MainRoutes = {
         {
           path: 'trazabilidad-de-pagos',
           element: <TrazabilidadDePagos/>
+        },
+        {
+          path: 'dashboard-trazabilidad-pagos',
+          element: <DashboardTrazabilidadPagos/>
         },
         {
           path: 'sample-page2', 
