@@ -39,11 +39,13 @@ import ComponenteListaDinamica from '../componentesBase/ComponenteListaDinamica.
 import BusquedaTramitesAduanales from '../servicios/busqueda-tramites-aduanales.jsx';
 import BusquedaDeClientes from '../servicios/busqueda-de-clientes.jsx';
 import AltaYCambiosAGastosNoDeducibles from './alta-y-cambios-a-gastos-no-deducibles.jsx';
+import HistoriaTramites from '../servicios/historia-tramites.jsx';
 
 //Componentes Comunes
 import Autoriza from '../comun/autoriza.jsx';
 import { set } from 'lodash-es';
 import useSQL from 'hooks/useSQL.js';
+
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
@@ -55,6 +57,7 @@ const EstCambiosTramitesAduanales = () => {
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes pedimento
   const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [openAltaYCambiosAGastosNoDeduciblesModal, setOpenAltaYCambiosAGastosNoDeduciblesModal] = useState(false); // Seguimiento del estado del modal de alta y cambios a gastos no deducibles
+  const [openHistoriaTramitesModal, setOpenHistoriaTramitesModal] = useState(false); // Seguimiento del estado del modal de historia de tramites
   const [selectedTramite, setSelectedTramite] = useState(null);
   const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
   const [ingresos, setIngresos] = useState(null);
@@ -63,6 +66,7 @@ const EstCambiosTramitesAduanales = () => {
   const [chequera, setChequera] = useState('');
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
+  const [gastosRowSelected, setGastosRowSelected] = useState(null);
 
   const [esHabilitadoIniciar, setEsHabilitadoIniciar] = useState(true);
   const [esHabilitadoGuardar, setEsHabilitadoGuardar] = useState(false);
@@ -421,7 +425,23 @@ const EstCambiosTramitesAduanales = () => {
     }
     
   }
+  const handleOpenHistoriaTramitesModal = () => {
+    
+    setOpenHistoriaTramitesModal(true);
+  };
 
+  const handleCloseHistoriaTramitesModal = () => {
+    setOpenHistoriaTramitesModal(false);
+  };
+
+  // Cerrar modal y enviar data hacia arriba
+  const handleRowSelectGastos = (row) => {
+    console.log('row seleccionado en historia de tramites', row);
+    setGastosRowSelected(row);
+    // Aquí puedes hacer lo que necesites con los datos de la fila
+    // como actualizar el estado de la pantalla padre o llamar a otra función
+  };
+  
   return (
     <div>
       <Typography variant="h2">Modificación de Trámites Aduanales</Typography>
@@ -827,7 +847,7 @@ const EstCambiosTramitesAduanales = () => {
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
         {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
-        <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} />
+        <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} onRowSelect={handleRowSelectGastos}/>
       </Box>
       // Debajo de tus tablas de ingresos y gastos, agrega un nuevo contenedor:
 <br />
@@ -893,14 +913,15 @@ const EstCambiosTramitesAduanales = () => {
               onOpen={() => setOpenAutorizaBorrar(true)}
               onProcesoPosterior={handleProcesoPosterior}
             />
-            {/* <Button variant="outlined" onClick={handleBorrar} color="error">
-              Borrar Gasto
-            </Button> */}
           </Box>
           <Box>
-            <Button variant="text" onClick={handleVerHistoria} color="success">
-              Ver Historia
-            </Button>
+              {/* ⭐️ ESTE ES EL BOTÓN CORRECTO PARA ABRIR EL MODAL */}
+              <Button variant="text" onClick={handleOpenHistoriaTramitesModal}  color="success">
+                Historia Trámite
+              </Button>
+              {/* ⭐️ ESTA ES LA LLAMADA CORRECTA AL COMPONENTE */}
+              <HistoriaTramites open={openHistoriaTramitesModal} onClose={handleCloseHistoriaTramitesModal} gastosRow={gastosRowSelected} idTramite={folio}/>
+            
           </Box>
         </Box>
       </Stack>

@@ -124,7 +124,7 @@ const rows = [
 
 const paginationModel = { page: 0, pageSize: 5 };
 
-export default function DataTable({ datos, flag }) {
+export default function DataTable({ datos, flag, onRowSelect }) {
   const [arregloIngresos, setArregloIngresos] = useState([]);
 
   useEffect(() => {
@@ -179,6 +179,11 @@ export default function DataTable({ datos, flag }) {
     }
   }, [datos]);
 
+  const handleRowClick = (params) => {
+    // Llama a la función `onRowSelect` con los datos de la fila
+    onRowSelect(params.row);
+  };
+
   return (
     <Paper sx={{ height: 400, width: '100%' }}>
       <DataGrid
@@ -188,6 +193,7 @@ export default function DataTable({ datos, flag }) {
         pageSizeOptions={[5, 10]}
         // checkboxSelection
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
+        onRowClick={handleRowClick}
         sx={{
           border: 0,
           '& .MuiDataGrid-cell': {
