@@ -12,6 +12,12 @@ import QuestionCircleOutlined from '@ant-design/icons/QuestionCircleOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import UnorderedListOutlined from '@ant-design/icons/UnorderedListOutlined';
 
+import CambioTema from 'utils/CambioTema';
+
+const cuentaOnClick = () => {
+  alert('Cambiar tema a oscuro');
+}
+
 // ==============================|| HEADER PROFILE - SETTING TAB ||============================== //
 
 export default function SettingTab() {
@@ -29,7 +35,8 @@ export default function SettingTab() {
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
-        <ListItemText primary="Account Settings" />
+        <ListItemText primary="Account Settings" onClick={cuentaOnClick}/>
+        <CambioTema />
       </ListItemButton>
       <ListItemButton>
         <ListItemIcon>

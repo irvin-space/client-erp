@@ -15,9 +15,12 @@ import componentsOverride from './overrides';
 // ==============================|| DEFAULT THEME - MAIN ||============================== //
 
 export default function ThemeCustomization({ children }) {
+  
   const { themeDirection, mode, presetColor, fontFamily } = useConfig();
 
   const theme = useMemo(() => Palette(mode, presetColor), [mode, presetColor]);
+  //const theme = useMemo(() => Palette('dark', presetColor), [presetColor]);
+
 
   const themeTypography = useMemo(() => Typography(fontFamily), [fontFamily]);
 
