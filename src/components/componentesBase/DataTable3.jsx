@@ -87,7 +87,7 @@ export default function DataTable({ rowsArray, onSelectRow }) {
       headerAlign: 'right'
     },
     {
-      field: 'sElEcCiOn',
+      field: 'seleccion',
       headerName: 'Selección',
       flex: 1,
       align: 'center',
@@ -95,10 +95,10 @@ export default function DataTable({ rowsArray, onSelectRow }) {
       sortable: false,
       headerAlign: 'center',
       renderCell: (params) => {
-        const isSelected = selectedRowId === params.row.id;
+        const isSelected = selectedRowId === params.row.documento;
 
         const handleSelect = () => {
-          setSelectedRowId(params.row.id); // Update local state for visual feedback
+          setSelectedRowId(params.row.documento); // Update local state for visual feedback
           if (onSelectRow) {
             onSelectRow(params.row); // Notify parent
           }
@@ -144,7 +144,7 @@ export default function DataTable({ rowsArray, onSelectRow }) {
           },
           toolbar: { setFilterButton }
         }}
-        rows={rowsArray[0]}
+        rows={rowsArray}
         getRowId={(row) => `${row.documento}`}
         columns={columns}
         rowHeight={52} //valor default 52

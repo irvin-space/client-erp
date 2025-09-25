@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+//React Router
+import { useNavigate } from 'react-router';
+
 //MUI
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -25,6 +28,8 @@ const TrazabilidadDePagos = () => {
   const { user } = useAuth();
   const [sucursal, setSucursal] = useState(user?.sucursal || '');
   console.log(user);
+
+  const navigate = useNavigate()
 
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [clienteFolioPedimento, setClienteFolioPedimento] = useState(null);
@@ -83,9 +88,10 @@ const TrazabilidadDePagos = () => {
 
     const { data, success } = await executeFetch('Trazabilidad_Pagos', objetoParametros);
     console.log(success);
+    console.log('resultado despues de presionar consultar')
     console.log(data);
     if (success) {
-      setArregloDeConsulta(data);
+      setArregloDeConsulta(data[0]);
     }
   };
 
@@ -105,6 +111,11 @@ const TrazabilidadDePagos = () => {
     console.log('Se limpiaran los valores de la tabla');
     setArregloDeConsulta([]);
   };
+
+  const handleRowSelect = (rowInfo) => {
+    console.log(rowInfo)
+
+  }
 
   return (
     <Box>
@@ -169,7 +180,7 @@ const TrazabilidadDePagos = () => {
           sx={{ marginTop: '16px', height: '60vh', backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'lightblue' } }}
           size={{ xs: 12, md: 12, lg: 12 }}
         >
-          <DataTable rowsArray={arregloDeConsulta} />
+          <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} />
         </Grid>
         {/* <Grid sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }} size={{ xs: 12, md: 8, lg: 12 }}>
           <p>Lorem Ipsum</p>
@@ -177,12 +188,12 @@ const TrazabilidadDePagos = () => {
       </Grid>
       <br />
       {/* Botones Aplicar,Reinicar */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'l' }}>
+        <Button sx={{marginRight:'8px'}} variant="contained" onClick={handleAplicarFiltros}>
+          Consultar
+        </Button>
         <Button variant="outlined" onClick={handleReiniciarValores}>
           Cancelar
-        </Button>
-        <Button variant="contained" onClick={handleAplicarFiltros}>
-          Consultar
         </Button>
       </Box>
     </Box>

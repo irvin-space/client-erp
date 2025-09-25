@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 // material-ui
 import { styled } from '@mui/material/styles';
 import MuiAvatar from '@mui/material/Avatar';
+import TimelineDot from '@mui/lab/TimelineDot';
 
 // project imports
 import getColors from 'utils/getColors';

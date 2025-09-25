@@ -1,7 +1,7 @@
 import React from 'react';
 
 //MUI
-import Divider  from '@mui/material/Divider';
+import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -23,6 +23,8 @@ import MainCard from '../MainCard.jsx';
 import ReportCard from '../cards/estadisticas/ReportCard.jsx';
 import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
 import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
+import LineaDelTiempo from '../componentesBase/LineaDelTiempo.jsx';
+import DataTable from '../componentesBase/DataTable3.jsx';
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -30,14 +32,18 @@ const DashboardTrazabilidadPagos = () => {
     <Box sx={{ backgroundColor: '' }}>
       <Typography variant="h2">Dashboard de Trazabilidad</Typography>
       <br />
-      <Divider/>
+      <Divider />
       <br />
       {/* Reporte */}
       <Stack sx={{ backgroundColor: '' }} spacing={4}>
         {/* Encabezado */}
         <Box>
-          <Typography variant="h3" align='center'>Trazabilidad de Depósito #167957</Typography>
-          <Typography variant="h5" align='center'>Cliente: YOUR EXPERT SOLUTION YES | Fecha: 08/08/2025</Typography>
+          <Typography variant="h3" align="center">
+            Trazabilidad de Depósito #167957
+          </Typography>
+          <Typography variant="h5" align="center">
+            Cliente: YOUR EXPERT SOLUTION YES | Fecha: 08/08/2025
+          </Typography>
         </Box>
         {/* Cards */}
         <Box sx={{ backgroundColor: '', height: '52vh' }} component="section">
@@ -77,12 +83,7 @@ const DashboardTrazabilidadPagos = () => {
                 <Stack spacing={1}>
                   <ReportCard primary="279766" secondary="Documento cliente" color="secondary.main" iconPrimary={FileTextOutlined} />
                   <ReportCard primary="2144331" secondary="Póliza ContPaq" color="secondary.main" iconPrimary={ProfileOutlined} />
-                  <ReportCard
-                    primary="$7,727 MXN"
-                    secondary="Folio CONTPAQ"
-                    color="secondary.main"
-                    iconPrimary={DatabaseOutlined}
-                  />
+                  <ReportCard primary="$7,727 MXN" secondary="Folio CONTPAQ" color="secondary.main" iconPrimary={DatabaseOutlined} />
                 </Stack>
               </MainCard>
             </Grid>
@@ -93,11 +94,12 @@ const DashboardTrazabilidadPagos = () => {
           <Box>
             <Typography variant="h3">Análisis de Consistencia</Typography>
           </Box>
+          <br />
           <Grid container spacing={2}>
             <Grid size={12}>
               <GraficoDeBarras />
             </Grid>
-            <Grid size={8}>...</Grid>
+            {/* <Grid size={8}>...</Grid> */}
           </Grid>
         </Box>
         {/* Documentos Relacionados */}
@@ -105,9 +107,19 @@ const DashboardTrazabilidadPagos = () => {
           <Box>
             <Typography variant="h3">Documentos Relacionados</Typography>
           </Box>
+          <br />
           <Grid container spacing={2}>
-            <Grid size={4}>...</Grid>
-            <Grid size={8}>...</Grid>
+            <Grid size={12}>
+              <Box sx={{ backgroundColor: 'yellow' }}>
+                <DataTable rowsArray={[]} />
+              </Box>
+            </Grid>
+            {/* <Grid size={12}>
+              <Typography>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus neque atque beatae itaque placeat dicta ullam laboriosam
+                aliquid voluptatum quaerat saepe, excepturi sequi repudiandae debitis deleniti molestias eum ratione sunt.
+              </Typography>
+            </Grid> */}
           </Grid>
         </Box>
         {/* Secuencia de Eventos */}
@@ -115,10 +127,20 @@ const DashboardTrazabilidadPagos = () => {
           <Box>
             <Typography variant="h3">Secuencia de Eventos</Typography>
           </Box>
+          <br />
           <Grid container spacing={2}>
-            <Grid size={4}>...</Grid>
-            <Grid size={8}>...</Grid>
+            <Grid size={6}>
+              <LineaDelTiempo />
+            </Grid>
+            {/* <Grid size={6}>...</Grid> */}
           </Grid>
+        </Box>
+        <br />
+        {/* Fecha de Reporte */}
+        <Box>
+          <Typography variant="h5" align="center" color="secondary">
+            Reporte generado el 13/08/2025 | Sistema de Auditoría SpaceAduanas
+          </Typography>
         </Box>
       </Stack>
     </Box>
