@@ -9,6 +9,7 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
+import { toLower } from 'lodash-es';
 
 // Definición del tipo de las props para mayor claridad
 // En TypeScript podrías usar una interfaz, pero para JS es un buen comentario.
@@ -39,14 +40,16 @@ const TablaBase = ({ data, columnsConfig }) => {
     );
   }
 
+  const colorAzulMarino = '#00345D'; 
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="custom table">
-        <TableHead>
+        <TableHead sx={{ backgroundColor: colorAzulMarino }}>
           <TableRow>
             {columnsConfig.map((col, index) => (
-              <TableCell key={index}>
-                <Typography variant="subtitle1" fontWeight="bold">
+              <TableCell key={index} align="center" sx={{ color: 'white', borderBottom: '1px solid ${colorAzulMarino}', textTransform: 'none' }}>
+                <Typography variant="subtitle1" >
                   {col.headerName}
                 </Typography>
               </TableCell>

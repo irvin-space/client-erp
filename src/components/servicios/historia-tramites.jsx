@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//MUI
-import Modal from '@mui/material/Modal';
+//import Modal from '@mui/material/Modal';
 
 import {
   Button,
@@ -27,6 +26,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth.js';
 import DataTable from '../componentesBase/DataTable2';
 import TablaBase from '../componentesBase/TablaBase.jsx';
+import useSQL from 'hooks/useSQL.js';
 
 const style = {
   position: 'absolute',
@@ -46,8 +46,6 @@ const style = {
 };
 
 const HistoriaTramites = ({ open, onClose, onOpen, gastosRow, idTramite }) => {
-  // const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Cargando
  
 	const [misDatos, setMisDatos] = useState([]); // Tus datos del resultSet
 	const [tramite, setTramite] = useState(''); // Trámite
@@ -58,73 +56,73 @@ const HistoriaTramites = ({ open, onClose, onOpen, gastosRow, idTramite }) => {
 	const [importeMN, setImporteMN] = useState(''); // Importe MN
 	const [importeME, setImporteME] = useState(''); // Importe ME
 
+  const { loading, error, executeFetch } = useSQL();
+
   // Cerrar modal y enviar data hacia arriba
   const handleRowSelect = (row) => {
     console.log('row seleccionado estamos en historia de tramites', row);
     
   };
 
-    const handleConsultar = () => {
-        console.log('Consultar historia de tramites');
-			mensajes('success', 'Consulta realizada');
+    	
+  // Define la configuración de las columnas que quieres mostrar
+  // const misDatosColumns = [
+  // 	{ field: 'id_gasto', headerName: 'ID de Gasto' },
+  // 	{ field: 'concepto_gasto', headerName: 'Concepto' },
+  // 	{ field: 'importe', headerName: 'Importe ($)' }
+  // ];
+  const misDatosColumns = [
+    { field: 'movimiento', headerName: 'Movimiento' }
+  ];
+
+  useEffect(() => {
+    //if (open) {
+      if(gastosRow){
+        
+        setTramite(idTramite);
+        setConcepto(gastosRow.concepto);
+        setDescripcion(gastosRow.descripcion);
+        setMoneda(gastosRow.moneda);
+        setCantidad(gastosRow.cantidad);
+        setImporteMN(gastosRow.importe);
+        setImporteME(gastosRow.importe_me);
+        
+        const numeroLinea = gastosRow.numero;
+        
+        const Params = {
+          tramite: `'${idTramite}'`,
+          numeroLinea: `'${numeroLinea}'`
+        }
+
+        handleFetch(Params);
+      }
+      else{
+        setTramite('');
+        setConcepto('');
+        setDescripcion('');
+        setMoneda('');
+        setCantidad('');
+        setImporteMN('');
+        setImporteME('');
+        setMisDatos([]);
+      };
+    
+    //}
+  }, [gastosRow]);
+
+  const handleFetch = async (parametros) => {
+    // Usa executeFetch para la llamada inicial
+    const result = await executeFetch('[Trae_Historia_Gasto_Cuenta_Cliente]', parametros);
+      
+      if (result.success && result.data && result.data[0] && result.data[0].length > 0) {
+        // const fetchedData = [
+        //   result.data[0]
+        // ];
+      setMisDatos(result.data[0]);
+      } else {
+        setMisDatos([]);
+      }
   };
-
-	const llenarDatos = () => {	
-		
-			setConcepto(gastosRow.concepto);
-			setDescripcion(gastosRow.descripcion);
-			setMoneda(gastosRow.moneda);
-			setCantidad(gastosRow.cantidad);
-			setImporteMN(gastosRow.importe);
-			setImporteME(gastosRow.importe_me);
-
-			const fetchedData = [
-				{ movimiento: 'Ingreso Capturado' },
-				{ movimiento: 'Ingreso facturado al cliente. Factura #616775'},
-				{ movimiento: 'Pago recibido del cliente. Recibo #123456'},
-				{ movimiento: 'Pago aplicado a la factura. Factura #616775' }
-			];
-			setMisDatos(fetchedData);
-	}
-
-	
-		// Define la configuración de las columnas que quieres mostrar
-		// const misDatosColumns = [
-		// 	{ field: 'id_gasto', headerName: 'ID de Gasto' },
-		// 	{ field: 'concepto_gasto', headerName: 'Concepto' },
-		// 	{ field: 'importe', headerName: 'Importe ($)' }
-		// ];
-		const misDatosColumns = [
-			{ field: 'movimiento', headerName: 'Movimiento' }
-		];
-	
-		useEffect(() => {
-
-			if(gastosRow){
-				setTramite(idTramite);
-				setConcepto(gastosRow.concepto);
-				setDescripcion(gastosRow.descripcion);
-				setMoneda(gastosRow.moneda);
-				setCantidad(gastosRow.cantidad);
-				setImporteMN(gastosRow.importe);
-				setImporteME(gastosRow.importe_me);
-
-				const fetchedData = [
-					{ movimiento: 'Ingreso Capturado' },
-					{ movimiento: 'Ingreso facturado al cliente. Factura #616775'},
-					{ movimiento: 'Pago recibido del cliente. Recibo #123456'},
-					{ movimiento: 'Pago aplicado a la factura. Factura #616775' }
-				];
-
-				setMisDatos(fetchedData);
-
-			}else{
-				setMisDatos([]);
-			}
-
-			
-		}, [gastosRow]);
-
 
   return (
     <div>
@@ -235,16 +233,16 @@ const HistoriaTramites = ({ open, onClose, onOpen, gastosRow, idTramite }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} variant="text">
-            Cerrar
+            Continuar
           </Button>
-          <Button
+          {/* <Button
             onClick={llenarDatos}
             variant="contained"
             // disabled={isLoading}
             // startIcon={isLoading ? <CircularProgress size={20} /> : null}
           >
             Consultar
-          </Button>
+          </Button> */}
         </DialogActions>
       </Dialog>
     </div>

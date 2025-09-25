@@ -991,9 +991,9 @@ const EstCambiosTramitesAduanales = () => {
           </Box>
           <Box>
             {/* <Button onClick={handleClick} variant="contained"> */}
-            <Button onClick={handleImprimir} variant="contained">
+            {/* <Button onClick={handleImprimir} variant="contained">
               Imprimir
-            </Button>
+            </Button> */}
           </Box>
         </Box>
       </Stack>
