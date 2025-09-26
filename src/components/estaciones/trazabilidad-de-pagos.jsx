@@ -114,7 +114,7 @@ const TrazabilidadDePagos = () => {
 
   const handleRowSelect = (rowInfo) => {
     console.log(rowInfo)
-
+    navigate("/dashboard-trazabilidad-pagos",{state:{rowInfo}})
   }
 
   return (

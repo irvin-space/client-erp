@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+import { useLocation } from 'react-router-dom';
+
+import useSQL from '../../hooks/useSQL.js';
 
 //MUI
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -26,8 +31,120 @@ import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
 import LineaDelTiempo from '../componentesBase/LineaDelTiempo.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
 
+import { mensajes } from '../../utils/mensajes.js';
+
 //Componente
 const DashboardTrazabilidadPagos = () => {
+  const [cargandoIA, setCargandoIA] = useState(false);
+  const [analisisIA, setAnalisisIA] = useState('');
+
+  const [folioDepositoAConsultar, setFolioDepostioAConsultar] = useState(0);
+  const [facturasRelacionadasUnicas, setFacturasRelacionadasUnicas] = useState(0);
+  const [totalDistribuido, setTotalDistribuido] = useState(0);
+  const [informacionDelDeposito, setInformacionDelDeposito] = useState({});
+
+  const location = useLocation();
+
+  const { executeFetch, data, loading, error } = useSQL();
+
+  const traerInfoDeDeposito = async () => {
+    const objetoParametros = {
+      '@nFicha_Deposito': `'${folioDepositoAConsultar}'` //167443 `'${folioDepositoAConsultar}'`
+    };
+
+    const { data, success } = await executeFetch('Trazabilidad_Pagos2', objetoParametros);
+    console.log(success);
+    if (success) {
+      // console.log(data[0][0]);
+      console.log('facturas relacionadas');
+      console.log(data[0]);
+      let cantidadesTotalDistribuido = data[0].map((item) => {
+        return item.total_movimiento;
+      });
+      console.log('sumatoria = ', cantidadesTotalDistribuido);
+      const sumatoriaCantidadTotalDistribuido = cantidadesTotalDistribuido.reduce((acumulador, sigValor) => acumulador + sigValor, 0);
+      console.log('sumatoria', sumatoriaCantidadTotalDistribuido);
+      setTotalDistribuido(sumatoriaCantidadTotalDistribuido);
+      let totalFacturasRelacionadasEncontradas = data[0].map((item) => {
+        return item.factura;
+      });
+      console.log(totalFacturasRelacionadasEncontradas);
+      const facturasNoRepetidas = [...new Set(totalFacturasRelacionadasEncontradas)];
+      const cantidadFacturasNoRepetidas = facturasNoRepetidas.length;
+      console.log(facturasNoRepetidas.length);
+      setFacturasRelacionadasUnicas(cantidadFacturasNoRepetidas);
+      setInformacionDelDeposito(data[0][0]);
+    }
+  };
+
+  //useEffect al montarse el componente
+  useEffect(() => {
+    const { rowInfo } = location.state || {};
+
+    console.log('Received rowInfo:', rowInfo);
+    setFolioDepostioAConsultar(rowInfo.ficha_deposito);
+  }, []);
+
+  //useEffect al montarse el componente
+  useEffect(() => {
+    if (folioDepositoAConsultar) {
+      traerInfoDeDeposito();
+    }
+  }, [folioDepositoAConsultar]);
+
+  const formatFecha = (isoString) => {
+    if (!isoString) return '';
+    const [year, month, day] = isoString.split('T')[0].split('-');
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleAnalisisIA = async (servicio) => {
+    if (!folioDepositoAConsultar) {
+      mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
+      return;
+    }
+
+    // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
+    setCargandoIA(true);
+    console.log('iaiaia', folioDepositoAConsultar);
+    const Params = {
+      ficha_deposito: folioDepositoAConsultar
+    };
+    const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
+    const parametros = Params; // Usa el folio del trámite seleccionado
+    const promptAI =
+      'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
+
+    // Elige la URL del endpoint según el servicio que se le pasó como argumento
+    const endpointURL = servicio === 'gemini' ? 'http://localhost:3001/analisis-ia' : 'http://localhost:3001/analisis-ia-gpt';
+
+    try {
+      const response = await fetch(endpointURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instruccionSQL: instruccionSQL,
+          parametros: parametros,
+          promptAI: promptAI
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setAnalisisIA(data.analisis);
+      mensajes('success', `Análisis de ${servicio} completado`);
+    } catch (error) {
+      console.error(`Error al realizar el análisis con ${servicio}:`, error);
+      mensajes('error', `Error al realizar el análisis con ${servicio}: ${error.message}`);
+      setAnalisisIA('No se pudo realizar el análisis. Intenta de nuevo más tarde.');
+    } finally {
+      setCargandoIA(false);
+    }
+  };
+
   return (
     <Box sx={{ backgroundColor: '' }}>
       <Typography variant="h2">Dashboard de Trazabilidad</Typography>
@@ -39,55 +156,119 @@ const DashboardTrazabilidadPagos = () => {
         {/* Encabezado */}
         <Box>
           <Typography variant="h3" align="center">
-            Trazabilidad de Depósito #167957
+            Trazabilidad de Depósito #<span>{informacionDelDeposito?.ficha_deposito}</span>
           </Typography>
           <Typography variant="h5" align="center">
-            Cliente: YOUR EXPERT SOLUTION YES | Fecha: 08/08/2025
+            Cliente: <span>{informacionDelDeposito?.cliente_factura}</span> | Fecha:{' '}
+            <span>{formatFecha(informacionDelDeposito?.fecha_deposito_documento)}</span>
           </Typography>
         </Box>
         {/* Cards */}
-        <Box sx={{ backgroundColor: '', height: '52vh' }} component="section">
+        <Box sx={{ backgroundColor: '', height: '100%' }} component="section">
           <Grid sx={{ height: '100%' }} container spacing={2}>
-            <Grid sx={{ height: '100%' }} size={4}>
+            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
               {/* Card 1 */}
-              <MainCard sx={{ height: '100%', '&:hover': { backgroundColor: 'white', boxShadow: 15 } }} title="Resumen del Depósito">
+              <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Resumen del Depósito">
                 <Stack spacing={1}>
                   <ReportCard
-                    primary="$370,896 MXN"
+                    primary={`$${informacionDelDeposito?.importe_ficha_deposito} MXN`}
                     secondary="Importe total depositado"
                     color="secondary.main"
                     iconPrimary={DollarOutlined}
                   />
-                  <ReportCard primary="48" secondary="Facturas relacionadas" color="secondary.main" iconPrimary={NumberOutlined} />
                   <ReportCard
-                    primary="$7,727 MXN"
-                    secondary="Importe total depositado"
+                    primary={facturasRelacionadasUnicas}
+                    secondary="Facturas relacionadas"
                     color="secondary.main"
-                    iconPrimary={UnorderedListOutlined}
-                    bgColoR={'#2636eaff'} // Added prop
+                    iconPrimary={NumberOutlined}
+                  />
+                  <ReportCard
+                    primary={`$${informacionDelDeposito?.saldo_actual} MXN`}
+                    secondary="Saldo actual"
+                    color="secondary.main"
+                    iconPrimary={DollarOutlined}
+                    bgColoR={'#2636eaff'}
                   />
                 </Stack>
               </MainCard>
             </Grid>
-            <Grid style={{ height: '100%' }} size={4}>
+            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
               {/* Card 2 */}
-              <MainCard sx={{ height: '100%', '&:hover': { backgroundColor: 'white', boxShadow: 15 } }} title="Distribución">
+              <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Distribución">
                 <Stack spacing={1}>
-                  <GraficoDePastel />
+                  <GraficoDePastel cantidad1={totalDistribuido} cantidad2={informacionDelDeposito?.importe_ficha_deposito} />
                 </Stack>
               </MainCard>
             </Grid>
-            <Grid size={4}>
+            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
               {/* Card 3 */}
-              <MainCard sx={{ height: '100%', '&:hover': { backgroundColor: 'white', boxShadow: 15 } }} title="Documentos Clave">
+              <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Documentos Clave">
                 <Stack spacing={1}>
-                  <ReportCard primary="279766" secondary="Documento cliente" color="secondary.main" iconPrimary={FileTextOutlined} />
-                  <ReportCard primary="2144331" secondary="Póliza ContPaq" color="secondary.main" iconPrimary={ProfileOutlined} />
-                  <ReportCard primary="$7,727 MXN" secondary="Folio CONTPAQ" color="secondary.main" iconPrimary={DatabaseOutlined} />
+                  <ReportCard
+                    primary={informacionDelDeposito?.anticipo_cliente ? informacionDelDeposito?.anticipo_cliente : 'N/A'}
+                    secondary="Documento cliente"
+                    color="secondary.main"
+                    iconPrimary={FileTextOutlined}
+                  />
+                  <ReportCard
+                    primary={informacionDelDeposito?.poliza ? informacionDelDeposito?.poliza : 'N/A'}
+                    secondary="Póliza ContPaq"
+                    color="secondary.main"
+                    iconPrimary={ProfileOutlined}
+                  />
+                  <ReportCard
+                    primary={
+                      informacionDelDeposito?.numero_exportado_poliza_factura
+                        ? informacionDelDeposito?.numero_exportado_poliza_factura
+                        : 'N/A'
+                    }
+                    secondary="Folio CONTPAQ"
+                    color="secondary.main"
+                    iconPrimary={DatabaseOutlined}
+                  />
                 </Stack>
               </MainCard>
             </Grid>
           </Grid>
+        </Box>
+        <Box align="center" component={'section'}>
+          {/* <Button
+    variant="outlined"
+    sx={{
+      position: 'relative',
+      overflow: 'hidden',
+      backgroundColor: 'primary',
+      boxShadow: '0 0 10px primary',
+      animation: 'glowWave 2s infinite ease-in-out',
+      '@keyframes glowWave': {
+        '0%': {
+          boxShadow: '0 0 10px #6692da',
+        },
+        '50%': {
+          boxShadow: '0 0 20px  #6692da',
+        },
+        '100%': {
+          boxShadow: '0 0 10px #6692da',
+        },
+      },
+    }}
+  >
+    Analizar con IA
+  </Button> */}
+
+          <Button variant="contained" onClick={() => handleAnalisisIA('gemini')} disabled={cargandoIA} color="primary">
+            {cargandoIA ? 'Analizando...' : 'Analizar con IA'}
+          </Button>
+
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h4">Análisis de IA</Typography>
+            <br />
+            {cargandoIA ? (
+              <Typography>Cargando análisis, por favor espera...</Typography>
+            ) : (
+              <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
+            )}
+          </Box>
         </Box>
         {/* Analisis de consistencia */}
         <Box sx={{ backgroundColor: '' }} component="section">

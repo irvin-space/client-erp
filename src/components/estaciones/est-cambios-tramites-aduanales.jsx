@@ -46,7 +46,6 @@ import Autoriza from '../comun/autoriza.jsx';
 import { set } from 'lodash-es';
 import useSQL from 'hooks/useSQL.js';
 
-
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
   //const { data, setData } = useContext(MyContext);
@@ -82,53 +81,51 @@ const EstCambiosTramitesAduanales = () => {
   const [cargandoIA, setCargandoIA] = useState(false);
 
   const handleAnalisisIA = async (servicio) => {
-  if (!selectedTramite) {
-    mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
-    return;
-  }
-  
-  // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
-  setCargandoIA(true);
-
-  const Params = {
-        ficha_deposito: `'167230'`
-      };
-    const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
-    const parametros = Params; // Usa el folio del trámite seleccionado
-    const promptAI = "Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.";
-
-  // Elige la URL del endpoint según el servicio que se le pasó como argumento
-  const endpointURL = servicio === 'gemini' 
-    ? 'http://localhost:3001/analisis-ia' 
-    : 'http://localhost:3001/analisis-ia-gpt';
-
-  try {
-    const response = await fetch(endpointURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        instruccionSQL: instruccionSQL,
-        parametros: parametros,
-        promptAI: promptAI,
-      }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Error en la solicitud: ${response.statusText}`);
+    if (!selectedTramite) {
+      mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
+      return;
     }
 
-    const data = await response.json();
-    setAnalisisIA(data.analisis);
-    mensajes('success', `Análisis de ${servicio} completado`);
+    // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
+    setCargandoIA(true);
 
-  } catch (error) {
-    console.error(`Error al realizar el análisis con ${servicio}:`, error);
-    mensajes('error', `Error al realizar el análisis con ${servicio}: ${error.message}`);
-    setAnalisisIA('No se pudo realizar el análisis. Intenta de nuevo más tarde.');
-  } finally {
-    setCargandoIA(false);
-  }
-};
+    const Params = {
+      ficha_deposito: `'167230'`
+    };
+    const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
+    const parametros = Params; // Usa el folio del trámite seleccionado
+    const promptAI =
+      'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
+
+    // Elige la URL del endpoint según el servicio que se le pasó como argumento
+    const endpointURL = servicio === 'gemini' ? 'http://localhost:3001/analisis-ia' : 'http://localhost:3001/analisis-ia-gpt';
+
+    try {
+      const response = await fetch(endpointURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          instruccionSQL: instruccionSQL,
+          parametros: parametros,
+          promptAI: promptAI
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setAnalisisIA(data.analisis);
+      mensajes('success', `Análisis de ${servicio} completado`);
+    } catch (error) {
+      console.error(`Error al realizar el análisis con ${servicio}:`, error);
+      mensajes('error', `Error al realizar el análisis con ${servicio}: ${error.message}`);
+      setAnalisisIA('No se pudo realizar el análisis. Intenta de nuevo más tarde.');
+    } finally {
+      setCargandoIA(false);
+    }
+  };
 
   const handleFetch = async (parametros) => {
     try {
@@ -347,7 +344,7 @@ const EstCambiosTramitesAduanales = () => {
     }
 
     if (registrosGastos === 0) {
-        pasaValidacion = false;
+      pasaValidacion = false;
     }
 
     if (!pasaValidacion) {
@@ -370,7 +367,7 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleChequeraSelected = (value, objeto) => {
     setChequera(value);
-  }
+  };
 
   const handleClaveSelected = (value, objeto) => {
     console.log('valueclave', value);
@@ -378,28 +375,24 @@ const EstCambiosTramitesAduanales = () => {
     setClave(value);
   };
 
-  const handleProcesoPrevioBorrarTA = () => { 
+  const handleProcesoPrevioBorrarTA = () => {
+    const lnIngresos_Factura = (ingresos || []).filter((item) => item.estatus_factura !== 'Capturado').length;
+    const lnIngresos_Proveedor = (ingresos || []).filter((item) => item.estatus_proveedor !== 'Capturado').length;
+    const lnGastos_Factura = (gastos || []).filter((item) => item.estatus_factura !== 'Capturado').length;
+    const lnGastos_Proveedor = (gastos || []).filter((item) => item.estatus_proveedor !== 'Capturado').length;
 
-    const lnIngresos_Factura = (ingresos || []).filter(item => item.estatus_factura !== 'Capturado').length;
-    const lnIngresos_Proveedor = (ingresos || []).filter(item => item.estatus_proveedor !== 'Capturado').length;
-    const lnGastos_Factura = (gastos || []).filter(item => item.estatus_factura !== 'Capturado').length;
-    const lnGastos_Proveedor = (gastos || []).filter(item => item.estatus_proveedor !== 'Capturado').length;
-
-    if ((folio == 0) || (folio == '') || (folio == 'undefined')){ 
+    if (folio == 0 || folio == '' || folio == 'undefined') {
       mensajes('error', 'No hay un trámite seleccionado');
       return false;
-    }
-    else {
+    } else {
       if (lnIngresos_Factura == 0 && lnIngresos_Proveedor == 0 && lnGastos_Factura == 0 && lnGastos_Proveedor == 0) {
         return true;
-      }
-      else {
+      } else {
         mensajes('error', 'No se puede borrar el trámite');
         return false;
       }
     }
-   
-  }
+  };
 
   const handleProcesoPosteriorBorrarTA = async () => {
     const Params = {
@@ -414,19 +407,17 @@ const EstCambiosTramitesAduanales = () => {
     };
 
     const result = await executeFetch('BORRA_TRAMITE_ADUANAL', Params, true);
-    
+
     if (result.success) {
-            mensajes('aviso', 'Trámite eliminado de la BD.');
+      mensajes('aviso', 'Trámite eliminado de la BD.');
 
       if (onProcesoPosteriorBorrarTA) {
         onProcesoPosteriorBorrarTA();
       }
       onClose();
     }
-    
-  }
+  };
   const handleOpenHistoriaTramitesModal = () => {
-    
     setOpenHistoriaTramitesModal(true);
   };
 
@@ -441,12 +432,11 @@ const EstCambiosTramitesAduanales = () => {
     // Aquí puedes hacer lo que necesites con los datos de la fila
     // como actualizar el estado de la pantalla padre o llamar a otra función
   };
-  
+
   return (
     <div>
       <Typography variant="h2">Modificación de Trámites Aduanales</Typography>
       <Divider sx={{ my: 2 }} />
-
       <Box component="form" className="base" sx={{ flexGrow: 1 }}>
         <Grid container spacing={1}>
           {/* Tramite, Fecha */}
@@ -827,9 +817,7 @@ const EstCambiosTramitesAduanales = () => {
 
         <br />
       </Box>
-
       <br />
-
       {/* Tabla Ingreso Aduanal */}
       <Box>
         <Typography variant="h4">Ingresos Agencia Aduanal</Typography>
@@ -840,27 +828,30 @@ const EstCambiosTramitesAduanales = () => {
           flag={selectedTramite?.history ? 'Ingresos' : ''}
         />
       </Box>
-
       <br />
       {/* Tabla gastos por Cuenta del Cliente */}
       <Box>
         <Typography variant="h4">Gastos por Cuenta del Cliente</Typography>
         <br />
         {/* <DataTable datos={selectedTramite?.history} flag={'Gastos'}></DataTable> */}
-        <DataTable datos={selectedTramite?.history ? selectedTramite?.history : gastos} flag={selectedTramite?.history ? 'Gastos' : ''} onRowSelect={handleRowSelectGastos}/>
+        <DataTable
+          datos={selectedTramite?.history ? selectedTramite?.history : gastos}
+          flag={selectedTramite?.history ? 'Gastos' : ''}
+          onRowSelect={handleRowSelectGastos}
+        />
       </Box>
       // Debajo de tus tablas de ingresos y gastos, agrega un nuevo contenedor:
-<br />
-<Divider sx={{ my: 2 }} />
-<Box sx={{ mt: 2 }}>
-  <Typography variant="h4">Análisis de IA</Typography>
-  <br />
-  {cargandoIA ? (
-    <Typography>Cargando análisis, por favor espera...</Typography>
-  ) : (
-    <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
-  )}
-</Box>
+      <br />
+      <Divider sx={{ my: 2 }} />
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="h4">Análisis de IA</Typography>
+        <br />
+        {cargandoIA ? (
+          <Typography>Cargando análisis, por favor espera...</Typography>
+        ) : (
+          <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
+        )}
+      </Box>
       <br />
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
@@ -889,10 +880,11 @@ const EstCambiosTramitesAduanales = () => {
             {/* <Button variant="outlined" onClick={handleNuevo} color="primary">
               Nuevo Gasto
             </Button> */}
-            <AltaYCambiosAGastosNoDeducibles 
-              open={openAltaYCambiosAGastosNoDeduciblesModal} 
-              onOpen={()=>setOpenAltaYCambiosAGastosNoDeduciblesModal(true)}
-              onClose={()=>setOpenAltaYCambiosAGastosNoDeduciblesModal(false)}  />
+            <AltaYCambiosAGastosNoDeducibles
+              open={openAltaYCambiosAGastosNoDeduciblesModal}
+              onOpen={() => setOpenAltaYCambiosAGastosNoDeduciblesModal(true)}
+              onClose={() => setOpenAltaYCambiosAGastosNoDeduciblesModal(false)}
+            />
             &nbsp;
             <Button variant="outlined" onClick={handleCambiar} color="warning">
               Cambiar Gasto
@@ -915,17 +907,21 @@ const EstCambiosTramitesAduanales = () => {
             />
           </Box>
           <Box>
-              {/* ⭐️ ESTE ES EL BOTÓN CORRECTO PARA ABRIR EL MODAL */}
-              <Button variant="text" onClick={handleOpenHistoriaTramitesModal}  color="success">
-                Historia Trámite
-              </Button>
-              {/* ⭐️ ESTA ES LA LLAMADA CORRECTA AL COMPONENTE */}
-              <HistoriaTramites open={openHistoriaTramitesModal} onClose={handleCloseHistoriaTramitesModal} gastosRow={gastosRowSelected} idTramite={folio}/>
-            
+            {/* ⭐️ ESTE ES EL BOTÓN CORRECTO PARA ABRIR EL MODAL */}
+            <Button variant="text" onClick={handleOpenHistoriaTramitesModal} color="success">
+              Historia Trámite
+            </Button>
+            {/* ⭐️ ESTA ES LA LLAMADA CORRECTA AL COMPONENTE */}
+            <HistoriaTramites
+              open={openHistoriaTramitesModal}
+              onClose={handleCloseHistoriaTramitesModal}
+              gastosRow={gastosRowSelected}
+              idTramite={folio}
+            />
           </Box>
         </Box>
       </Stack>
-      <br/>
+      <br />
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Box sx={{ display: 'flex' }}>
@@ -949,13 +945,10 @@ const EstCambiosTramitesAduanales = () => {
               }}
               onProcesoPosterior={handleProcesoPosteriorBorrarTA}
             />
-            
           </Box>
         </Box>
       </Stack>
-
       <Divider sx={{ my: 2 }} />
-
       {/* Botones */}
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
@@ -967,24 +960,19 @@ const EstCambiosTramitesAduanales = () => {
               Guardar
             </Button>
             {/* Botón de Gemini */}
-        <Button
-          variant="contained"
-          onClick={() => handleAnalisisIA('gemini')}
-          disabled={cargandoIA || !selectedTramite}
-          color="primary"
-        >
-          {cargandoIA ? 'Analizando...' : 'Analizar con Gemini'}
-        </Button>
-        &nbsp;
-        {/* Nuevo botón de ChatGPT */}
-        <Button
-          variant="contained"
-          onClick={() => handleAnalisisIA('gpt')}
-          disabled={cargandoIA || !selectedTramite}
-          color="primary"
-        >
-          {cargandoIA ? 'Analizando...' : 'Analizar con ChatGPT'}
-        </Button>
+            <Button
+              variant="contained"
+              onClick={() => handleAnalisisIA('   gemini')}
+              disabled={cargandoIA || !selectedTramite}
+              color="primary"
+            >
+              {cargandoIA ? 'Analizando...' : 'Analizar con Gemini'}
+            </Button>
+            &nbsp;
+            {/* Nuevo botón de ChatGPT */}
+            <Button variant="contained" onClick={() => handleAnalisisIA('gpt')} disabled={cargandoIA || !selectedTramite} color="primary">
+              {cargandoIA ? 'Analizando...' : 'Analizar con ChatGPT'}
+            </Button>
             <Button variant="contained" disabled={!esHabilitadoCancelar} onClick={handleCancelar} color="secondary">
               Cancelar
             </Button>

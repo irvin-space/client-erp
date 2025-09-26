@@ -19,7 +19,7 @@ import MoreOutlined from '@ant-design/icons/MoreOutlined';
 
 // ==============================|| INVOICE - PIE CHART ||============================== //
 
-export default function GraficoDePastel() {
+export default function GraficoDePastel({ cantidad1, cantidad2 }) {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,10 +32,11 @@ export default function GraficoDePastel() {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+  const total = cantidad1 + cantidad2;
 
   const data = [
-    { value: 30, label: 'Monto distribuido', color: theme.palette.primary.main },
-    { value: 28, label: 'Total depósito', color: theme.palette.secondary.main }
+    { value: cantidad1, label: 'Total distribuido', color: theme.palette.secondary.main },
+    { value: cantidad2, label: 'Importe total depositado', color: theme.palette.primary.main }
   ];
 
   //sx style
@@ -49,6 +50,15 @@ export default function GraficoDePastel() {
           hideLegend
           height={247}
           margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+          slotProps={{
+            legend: { hidden: false },
+            tooltip: {
+              formatter: (params) => {
+                const percentage = ((params.value / total) * 100).toFixed(2);
+                return `${params.label}: ${percentage}%`;
+              }
+            }
+          }}
           series={[
             {
               data,
@@ -56,7 +66,11 @@ export default function GraficoDePastel() {
               outerRadius: 100,
               type: 'pie',
               highlightScope: { highlight: 'item' },
-              valueFormatter: (value) => `${value.value}%`
+              // valueFormatter: (value) => `${value.value}`
+              valueFormatter: (params) => {
+                const percentage = ((params.value / total) * 100).toFixed(2);
+                return `${percentage}%`;
+              }
             }
           ]}
         />
@@ -67,10 +81,12 @@ export default function GraficoDePastel() {
           <Grid sx={DotSize} size="grow">
             <Dot color="primary" size={12} />
             <Typography variant="subtitle1" color="text.secondary">
-              Monto distribuido
+              Importe total depositado
             </Typography>
           </Grid>
-          <Grid sx={ExpenseSize}>$3,202</Grid>
+          <Grid sx={ExpenseSize}>
+            $<span>{cantidad2}</span>{' '}
+          </Grid>
         </Grid>
       </Grid>
       <Grid size={12}>
@@ -79,10 +95,12 @@ export default function GraficoDePastel() {
           <Grid sx={DotSize} size="grow">
             <Dot color="secondary" size={12} />
             <Typography variant="subtitle1" color="text.secondary">
-              Monto distribuido
+              Total distribuido
             </Typography>
           </Grid>
-          <Grid sx={ExpenseSize}>$45,050</Grid>
+          <Grid sx={ExpenseSize}>
+            $<span>{cantidad1}</span>{' '}
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
