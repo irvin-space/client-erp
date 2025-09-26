@@ -45,24 +45,24 @@ export default function Theme9test(colors, mode) {
   let successColors = ['#E0F5EA', '#26B56E', '#00A854', '#00A04D', '#008D3A'];
 
   if (mode === ThemeMode.DARK) {
-    // primaryColors = ['#1a2524', '#173331', '#15423e', '#11544e', '#0b6c63', '#058478', '#1a9686', '#37a996', '#59b8a5', '#7fc6b6'];
-    primaryColors = [
-    '#001324', // 50 - Dark base tint (was 900 in light)
-    '#001a33', // 100
-    '#002242', // 200
-    '#002b51', // 300
-    '#003058', // 400 - Close to main, but softer
-    '#00345D', // 500 - Brand color (main)
-    '#1a4a75', // 600 - Slightly brighter for contrast
-    '#33628c', // 700
-    '#4d7ab3', // 800
-    '#6692da'  // 900 - Accent highlight (hover, focus)
-  ];
-    errorColors = ['#321d1d', '#7d2e28', '#d13c31', '#e66859', '#f8baaf'];
-    warningColors = ['#342c1a', '#836611', '#dda705', '#e9bf28', '#f8e577'];
-    infoColors = ['#1a2628', '#11595f', '#058e98', '#1ea6aa', '#64cfcb'];
-    successColors = ['#1a2721', '#115c36', '#05934c', '#1da65d', '#61ca8b'];
-  }
+      // primaryColors = ['#1a2524', '#173331', '#15423e', '#11544e', '#0b6c63', '#058478', '#1a9686', '#37a996', '#59b8a5', '#7fc6b6'];
+     primaryColors = [
+  '#121212', // Fondo Principal
+  '#494747ff', // Fondo de Paneles
+  '#95caf1ff', // Azul Marino (Fondo de Headers)
+  '#058478', // Acento Azul Rey Alternativo
+  '#E0E0E0', // Texto Principal
+  '#3ab8eeff', // Bordes
+  '#00508C', // Selección/Hover
+  '#353535', // Fondo Secundario
+  '#9E9E9E', // Texto Secundario
+  '#6490dbff'  // Fondo Terciario
+];
+      errorColors = ['#321d1d', '#7d2e28', '#d13c31', '#e66859', '#f8baaf'];
+      warningColors = ['#342c1a', '#836611', '#dda705', '#e9bf28', '#f8e577'];
+      infoColors = ['#1a2628', '#11595f', '#058e98', '#1ea6aa', '#64cfcb'];
+      successColors = ['#1a2721', '#115c36', '#05934c', '#1da65d', '#61ca8b'];
+    }
 
   return {
     primary: {

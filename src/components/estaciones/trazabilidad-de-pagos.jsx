@@ -119,13 +119,13 @@ const TrazabilidadDePagos = () => {
 
   return (
     <Box>
-      <Box sx={{ marginBottom: '16px', backgroundColor: 'white' }}>
+      <Box sx={{ marginBottom: '16px'/*, backgroundColor: 'white'*/ }}>
         <Typography sx={{ verticalAlign: 'baseline' }} variant="h2">
           Trazabilidad de Pagos
         </Typography>
       </Box>
       <Grid container spacing={2}>
-        <Grid sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }} size={{ xs: 12, md: 12, lg: 12 }}>
+        <Grid /*sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }}*/ size={{ xs: 12, md: 12, lg: 12 }}>
           <Grid sx={{ height: '100%', backgroundColor: '', display: 'flex', alignItems: 'end' }} container spacing={3}>
             {/* Sucursales */}
             <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 2, lg: 2 }}>

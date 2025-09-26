@@ -43,7 +43,7 @@ export default function DashboardLayout() {
         flexGrow: 1,
         p: { xs: 2, sm: 3 },
         backgroundImage: `url(${spaceBg})`,
-        backgroundColor: 'white',
+        //backgroundColor: 'white',
         backgroundSize: 'cover',       // 👈 este cambio
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center'

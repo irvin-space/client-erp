@@ -47,7 +47,7 @@ export default function DashboardLayout() {
             flexGrow: 1,
             p: { xs: 2, sm: 3 },
             // backgroundImage: 'url("https://picsum.photos/1400/900")',
-            backgroundColor: 'white'
+            //backgroundColor: 'white'
             // backgroundSize: 'cover',
           }}
         >

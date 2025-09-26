@@ -155,8 +155,14 @@ export default function DataTable({ rowsArray, onSelectRow }) {
           '& .MuiDataGrid-columnHeader': {
             py: 0.5,
             px: 1,
-            backgroundColor: 'primary.dark',
-            color: 'primary.lighter'
+            backgroundColor: 'primary.dark', // Usa el color primario de tu tema para el fondo
+            color: 'primary.contrastText',   // Usa el color de texto que contrasta (blanco/negro)
+          },
+          // ⭐️ Opcional: Asegurar que la barra de herramientas también respete el tema
+          '& .MuiDataGrid-toolbarContainer': {
+             backgroundColor: 'background.paper', // Usa el color de la superficie del tema
+             borderBottom: '1px solid',
+             borderColor: 'divider',
           }
         }}
       />

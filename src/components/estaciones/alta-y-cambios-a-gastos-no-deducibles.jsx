@@ -26,7 +26,7 @@ const style = {
   display: 'flex',
   justifyContent: 'center',
   //   bgcolor: 'background.paper',
-  backgroundColor: 'white',
+  //backgroundColor: 'white',
   border: '8px solid #00345D',
   boxShadow: 24,
   p: 4,

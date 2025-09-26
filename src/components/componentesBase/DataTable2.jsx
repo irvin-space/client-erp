@@ -146,15 +146,15 @@ export default function DataTable({ datos, onSelectRow }) {
           '& .MuiDataGrid-columnHeader': {
             py: 0.5,
             px: 1,
-            backgroundColor: 'primary.dark',
-            color: 'primary.lighter'
+            backgroundColor: 'primary.dark', // Usa el color primario de tu tema para el fondo
+            color: 'primary.contrastText',   // Usa el color de texto que contrasta (blanco/negro)
           },
           '& .MuiDataGrid-menuIconButton': {
-            color: 'primary.light',
+            //color: 'primary.light',
             opacity: 1
           },
           '&.MuiDataGrid-root .MuiDataGrid-sortIcon': {
-            color: 'primary.light',
+          //  color: 'primary.light',
             opacity: 1
           },
           '& .no-padding-cell': {

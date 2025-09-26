@@ -11,11 +11,12 @@ import LockOutlined from '@ant-design/icons/LockOutlined';
 import QuestionCircleOutlined from '@ant-design/icons/QuestionCircleOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import UnorderedListOutlined from '@ant-design/icons/UnorderedListOutlined';
+import { SunOutlined } from '@ant-design/icons';
 
 import CambioTema from 'utils/CambioTema';
 
 const cuentaOnClick = () => {
-  alert('Cambiar tema a oscuro');
+  alert('Configuración de Cuenta');
 }
 
 // ==============================|| HEADER PROFILE - SETTING TAB ||============================== //
@@ -33,10 +34,16 @@ export default function SettingTab() {
       </Link>
       <ListItemButton>
         <ListItemIcon>
+          <SunOutlined />
+        </ListItemIcon>
+        <ListItemText primary="Light / Dark Mode" />
+        <CambioTema />
+      </ListItemButton>
+      <ListItemButton>
+        <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
         <ListItemText primary="Account Settings" onClick={cuentaOnClick}/>
-        <CambioTema />
       </ListItemButton>
       <ListItemButton>
         <ListItemIcon>

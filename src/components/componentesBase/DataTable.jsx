@@ -203,8 +203,8 @@ export default function DataTable({ datos, flag, onRowSelect }) {
           '& .MuiDataGrid-columnHeader': {
             py: 0.5, // Reduce vertical padding in header
             px: 1, // Reduce horizontal padding in header,
-            backgroundColor: "#00345D",
-            color: 'primary.lighter'
+            backgroundColor: 'primary.dark', // Usa el color primario de tu tema para el fondo
+            color: 'primary.contrastText',   // Usa el color de texto que contrasta (blanco/negro)
           }
         }}
       />

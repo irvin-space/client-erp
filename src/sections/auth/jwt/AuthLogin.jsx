@@ -87,7 +87,7 @@ const AuthLogin = () => {
                   Usuario
                 </InputLabel>
                 <OutlinedInput
-                  sx={{ backgroundColor: 'white' }}
+                  /*sx={{ backgroundColor: 'white' }}*/
                   fullWidth
                   id="email-login"
                   type="text"
@@ -111,7 +111,7 @@ const AuthLogin = () => {
                   Contraseña
                 </InputLabel>
                 <OutlinedInput
-                  sx={{ backgroundColor: 'white' }}
+                  /*sx={{ backgroundColor: 'white' }}*/
                   fullWidth
                   id="password-login"
                   type={showPassword ? 'text' : 'password'}

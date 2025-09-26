@@ -39,8 +39,8 @@ const style = {
   display: 'flex',
   justifyContent: 'center',
   //   height: '70vh',
-  //   bgcolor: 'background.paper',
-  bgcolor: 'white',
+  bgcolor: 'background.paper',
+  //bgcolor: 'white',
   border: '8px solid #00345D',
   boxShadow: 24,
   p: 4,
@@ -156,7 +156,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   return (
     <div style={{ height: '100%' }}>
       {/* <Button onClick={handleOpen}>Abrir modal</Button> */}
-      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%', backgroundColor: 'white' }}>
+      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%'/*, backgroundColor: 'white'*/ }}>
         <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
       </Button>
       <Modal open={open} onClose={onClose}>
@@ -169,7 +169,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
             <FormControl fullWidth>
               <Grid container spacing={2}>
                 {/* Sucursal */}
-                <Grid size={3} sx={{ backgroundColor: 'white' }}>
+                <Grid size={3} /*sx={{ backgroundColor: 'white' }}*/>
                   <Typography variant="subtitle2">Sucursal</Typography>
 
                   <ComponenteListaDinamica
@@ -186,17 +186,17 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                   />
                 </Grid>
                 {/* Desde fecha */}
-                <Grid size={2} sx={{ backgroundColor: 'white' }}>
+                <Grid size={2} /*sx={{ backgroundColor: 'white' }}*/>
                   <Typography variant="subtitle2">Desde</Typography>
                   <FirstComponent value={desdeFecha} onChange={setDesdeFecha} />
                 </Grid>
                 {/* Hasta fecha */}
-                <Grid size={2} sx={{ backgroundColor: 'white' }}>
+                <Grid size={2} /*sx={{ backgroundColor: 'white' }}*/>
                   <Typography variant="subtitle2">Hasta</Typography>
                   <FirstComponent value={hastaFecha} onChange={setHastaFecha} />
                 </Grid>
                 {/* Tipo */}
-                <Grid size={4} sx={{ backgroundColor: 'white' }}>
+                <Grid size={4} /*sx={{ backgroundColor: 'white' }}*/>
                   <Typography variant="subtitle2">Tipo</Typography>
                   <RowRadioButtonsGroup
                     titulo=""

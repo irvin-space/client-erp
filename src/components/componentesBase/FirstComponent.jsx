@@ -14,7 +14,7 @@ export default function FirstComponent({label, value, onChange}) {
           textField: {
             sx: {
               width: '100%',
-              backgroundColor: 'white'
+              //backgroundColor: 'white'
             }
           }
         }}

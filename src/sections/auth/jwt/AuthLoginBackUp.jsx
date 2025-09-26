@@ -161,7 +161,7 @@ export default function AuthLogin({ isDemo = false }) {
                   </InputLabel>
                   {/* <InputLabel htmlFor="email-login">Email Address</InputLabel> */}
                   <OutlinedInput
-                    sx={{ backgroundColor: 'white' }}
+                    // sx={{ backgroundColor: 'white' }}
                     id="email-login"
                     type="email"
                     value={values.email}
@@ -186,7 +186,7 @@ export default function AuthLogin({ isDemo = false }) {
                     Password
                   </InputLabel>
                   <OutlinedInput
-                    sx={{ backgroundColor: 'white' }}
+                    // sx={{ backgroundColor: 'white' }}
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
                     id="-password-login"
