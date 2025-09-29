@@ -27,6 +27,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 // import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DownOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
+import ReactMarkdown from 'react-markdown';
 
 // Componentes propios del proyecto
 import FirstComponent from '../componentesBase/FirstComponent';
@@ -94,8 +95,35 @@ const EstCambiosTramitesAduanales = () => {
     };
     const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
     const parametros = Params; // Usa el folio del trámite seleccionado
-    const promptAI =
-      'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
+    // const promptAI =
+    //   'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, ' +
+    //   'y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
+    const promptAI = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
+
+                  'Analiza detalladamente los datos de este trámite aduanal. Revisa exhaustivamente los **ingresos y gastos**.' +
+
+                  '**Objetivos del Análisis:**' +
+                  '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
+                  '2.  **Discrepancias:** Señala gastos que sean inusualmente altos o bajos en comparación con la media, o discrepancias en las fechas de registro.' +
+
+                  '**FORMATO DE SALIDA REQUERIDO:**' +
+                  'Tu respuesta debe ser estructurada usando **Markdown** estricto para asegurar un formato profesional y legible.' +
+
+                  '--- '+
+                  '# 📊 [NOMBRE O FOLIO DEL TRÁMITE] - Resumen de Auditoría Aduanal' +
+                  '---' +
+
+                  '## 🔍 Hallazgos Clave'+
+                  '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. '+
+                  '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
+
+                  '## 📈 Análisis Financiero y de Consistencia'+
+                  '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
+                  '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
+
+                  '## ✅ Recomendación y Siguiente Paso'+
+                  '* **Título Principal:** Usa **Markdown** para un título claro.' +
+                  '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
     // Elige la URL del endpoint según el servicio que se le pasó como argumento
     const endpointURL = servicio === 'gemini' ? 'http://localhost:3001/analisis-ia' : 'http://localhost:3001/analisis-ia-gpt';
@@ -849,7 +877,10 @@ const EstCambiosTramitesAduanales = () => {
         {cargandoIA ? (
           <Typography>Cargando análisis, por favor espera...</Typography>
         ) : (
-          <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
+          // <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
+          <ReactMarkdown>
+            {analisisIA}
+          </ReactMarkdown>
         )}
       </Box>
       <br />
@@ -962,7 +993,7 @@ const EstCambiosTramitesAduanales = () => {
             {/* Botón de Gemini */}
             <Button
               variant="contained"
-              onClick={() => handleAnalisisIA('   gemini')}
+              onClick={() => handleAnalisisIA('gemini')}
               disabled={cargandoIA || !selectedTramite}
               color="primary"
             >
