@@ -1,7 +1,9 @@
 import { RouterProvider } from 'react-router-dom';
 
+import { ThemeModeProvider } from './contexts/ThemeModeContext.jsx'; 
+
 //Provider
-import {  MyProvider } from './context';
+import {  MyProvider } from './context';
 
 // project imports
 import router from 'routes';
@@ -15,34 +17,35 @@ import Notistack from 'components/third-party/Notistack';
 
 // auth-provider
 import { JWTProvider as AuthProvider } from 'contexts/JWTContext';
-// import { FirebaseProvider as AuthProvider } from 'contexts/FirebaseContext';
-// import { Auth0Provider as AuthProvider } from 'contexts/Auth0Context';
-// import { AWSCognitoProvider as AuthProvider } from 'contexts/AWSCognitoContext';
-// import { SupabseProvider as AuthProvider } from 'contexts/SupabaseContext';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
 
 export default function App() {
-  return (
-    <>
-    <MyProvider>
-      <ThemeCustomization>
-        <RTLLayout>
-          <Locales>
-            <ScrollTop>
-              <AuthProvider>
-                <>
-                  <Notistack>
-                    <RouterProvider router={router} />
-                    <Snackbar />
-                  </Notistack>
-                </>
-              </AuthProvider>
-            </ScrollTop>
-          </Locales>
-        </RTLLayout>
-      </ThemeCustomization>
-      </MyProvider>
-    </>
-  );
+  return (
+    <>
+      {/* 1. EL PROVEEDOR LIGERO DEL MODO ENVUELVE TODO, YA QUE ES LA INFORMACIÓN MÁS BÁSICA */}
+      <ThemeModeProvider> 
+        {/* 2. ThemeCustomization CONSUME el modo y APLICA el MUI ThemeProvider a todo lo de abajo */}
+        <ThemeCustomization>
+          {/* 3. MyProvider (con useConfig) y AuthProvider están AHORA dentro del ThemeProvider de MUI */}
+          <MyProvider>
+            <RTLLayout>
+              <Locales>
+                <ScrollTop>
+                  <AuthProvider>
+                    <>
+                      <Notistack>
+                        <RouterProvider router={router} />
+                        <Snackbar />
+                      </Notistack>
+                    </>
+                  </AuthProvider>
+                </ScrollTop>
+              </Locales>
+            </RTLLayout>
+          </MyProvider>
+        </ThemeCustomization>
+      </ThemeModeProvider>
+    </>
+  );
 }
