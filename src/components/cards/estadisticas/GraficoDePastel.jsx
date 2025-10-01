@@ -85,7 +85,7 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
             </Typography>
           </Grid>
           <Grid sx={ExpenseSize}>
-            $<span>{cantidad2}</span>{' '}
+            $<span>{cantidad2 ? cantidad2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ''}</span>{' '}
           </Grid>
         </Grid>
       </Grid>
@@ -99,7 +99,7 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
             </Typography>
           </Grid>
           <Grid sx={ExpenseSize}>
-            $<span>{cantidad1}</span>{' '}
+            $<span>{cantidad1 ? cantidad1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ''}</span>{' '}
           </Grid>
         </Grid>
       </Grid>

@@ -40,6 +40,7 @@ const TablaBase = ({ data, columnsConfig }) => {
     );
   }
 
+  console.log('data',data)
   const colorAzulMarino = '#00345D'; 
 
   return (

@@ -31,8 +31,12 @@ import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
 import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
 import LineaDelTiempo from '../componentesBase/LineaDelTiempo.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
+import TablaBase from '../componentesBase/TablaBase.jsx';
 
 import { mensajes } from '../../utils/mensajes.js';
+
+//React MarkDoown
+import ReactMarkdown from 'react-markdown';
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -43,6 +47,7 @@ const DashboardTrazabilidadPagos = () => {
   const [facturasRelacionadasUnicas, setFacturasRelacionadasUnicas] = useState(0);
   const [totalDistribuido, setTotalDistribuido] = useState(0);
   const [informacionDelDeposito, setInformacionDelDeposito] = useState({});
+  const [filasDocumentosRelacionados,setFilasDocumentosRelacionados] = useState([])
 
   const location = useLocation();
 
@@ -58,7 +63,9 @@ const DashboardTrazabilidadPagos = () => {
     if (success) {
       // console.log(data[0][0]);
       console.log('facturas relacionadas');
+      console.log('abcabc',data)
       console.log(data[0]);
+      setFilasDocumentosRelacionados(data[1])
       let cantidadesTotalDistribuido = data[0].map((item) => {
         return item.total_movimiento;
       });
@@ -197,19 +204,21 @@ const DashboardTrazabilidadPagos = () => {
               <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Resumen del Depósito">
                 <Stack spacing={1}>
                   <ReportCard
-                    primary={`$${informacionDelDeposito?.importe_ficha_deposito} MXN`}
+                    primary={
+                      informacionDelDeposito?.importe_ficha_deposito ? `$${informacionDelDeposito?.importe_ficha_deposito.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} MXN` : 'N/A'
+                    }
                     secondary="Importe total depositado"
                     color="secondary.main"
                     iconPrimary={DollarOutlined}
                   />
                   <ReportCard
-                    primary={facturasRelacionadasUnicas}
+                    primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A' }
                     secondary="Facturas relacionadas"
                     color="secondary.main"
                     iconPrimary={NumberOutlined}
                   />
                   <ReportCard
-                    primary={`$${informacionDelDeposito?.saldo_actual} MXN`}
+                    primary={ informacionDelDeposito?.importe_ficha_deposito ?`$${informacionDelDeposito?.saldo_actual.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} MXN` : 'N/A'}
                     secondary="Saldo actual"
                     color="secondary.main"
                     iconPrimary={DollarOutlined}
@@ -257,6 +266,73 @@ const DashboardTrazabilidadPagos = () => {
             </Grid>
           </Grid>
         </Box>
+        {/* Analisis de consistencia */}
+        <Box sx={{ backgroundColor: '' }} component="section">
+          <Box>
+            <Typography variant="h3">Análisis de Consistencia</Typography>
+          </Box>
+          <br />
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <GraficoDeBarras
+                data={[
+                  informacionDelDeposito?.saldo_actual,
+                  facturasRelacionadasUnicas,
+                  totalDistribuido,
+                  informacionDelDeposito?.importe_ficha_deposito
+                ]}
+              />
+            </Grid>
+            {/* <Grid size={8}>...</Grid> */}
+          </Grid>
+        </Box>
+        {/* Documentos Relacionados */}
+        <Box component="section">
+          <Box>
+            <Typography variant="h3">Documentos Relacionados</Typography>
+          </Box>
+          <br />
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <Box sx={{ backgroundColor: 'yellow' }}>
+                {/* <DataTable rowsArray={[]} /> */}
+                <TablaBase
+                  columnsConfig={[
+                    { headerName: 'Folio', field: 'factura' },
+                    { headerName: 'Fiscal', field: 'fiscal' },
+                    { headerName: 'Fecha', field: 'fecha_factura' },
+                    { headerName: 'UUID', field: 'uuid_funcion' },
+                    { headerName: 'Importe de Factura', field: 'total_factura' },
+                    { headerName: 'Saldo actual de Factura', field: 'saldo_actual_factura', },
+                    { headerName: 'Póliza', field: 'poliza' }
+                  ]}
+                  data={filasDocumentosRelacionados}
+                />
+              </Box>
+            </Grid>
+            {/* <Grid size={12}>
+              <Typography>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus neque atque beatae itaque placeat dicta ullam laboriosam
+                aliquid voluptatum quaerat saepe, excepturi sequi repudiandae debitis deleniti molestias eum ratione sunt.
+              </Typography>
+            </Grid> */}
+          </Grid>
+        </Box>
+        {/* Secuencia de Eventos */}
+        <Box component="section">
+          <Box>
+            <Typography variant="h3">Secuencia de Eventos</Typography>
+          </Box>
+          <br />
+          <Grid container spacing={2}>
+            <Grid size={6}>
+              <LineaDelTiempo />
+            </Grid>
+            {/* <Grid size={6}>...</Grid> */}
+          </Grid>
+        </Box>
+        <br />
+        {/* Analisis IA */}
         <Box align="center" component={'section'}>
           {/* <Button
     variant="outlined"
@@ -298,59 +374,6 @@ const DashboardTrazabilidadPagos = () => {
               </ReactMarkdown>
             )}
           </Box>
-        </Box>
-        {/* Analisis de consistencia */}
-        <Box sx={{ backgroundColor: '' }} component="section">
-          <Box>
-            <Typography variant="h3">Análisis de Consistencia</Typography>
-          </Box>
-          <br />
-          <Grid container spacing={2}>
-            <Grid size={12}>
-              <GraficoDeBarras />
-            </Grid>
-            {/* <Grid size={8}>...</Grid> */}
-          </Grid>
-        </Box>
-        {/* Documentos Relacionados */}
-        <Box component="section">
-          <Box>
-            <Typography variant="h3">Documentos Relacionados</Typography>
-          </Box>
-          <br />
-          <Grid container spacing={2}>
-            <Grid size={12}>
-              <Box sx={{ backgroundColor: 'yellow' }}>
-                <DataTable rowsArray={[]} />
-              </Box>
-            </Grid>
-            {/* <Grid size={12}>
-              <Typography>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus neque atque beatae itaque placeat dicta ullam laboriosam
-                aliquid voluptatum quaerat saepe, excepturi sequi repudiandae debitis deleniti molestias eum ratione sunt.
-              </Typography>
-            </Grid> */}
-          </Grid>
-        </Box>
-        {/* Secuencia de Eventos */}
-        <Box component="section">
-          <Box>
-            <Typography variant="h3">Secuencia de Eventos</Typography>
-          </Box>
-          <br />
-          <Grid container spacing={2}>
-            <Grid size={6}>
-              <LineaDelTiempo />
-            </Grid>
-            {/* <Grid size={6}>...</Grid> */}
-          </Grid>
-        </Box>
-        <br />
-        {/* Fecha de Reporte */}
-        <Box>
-          <Typography variant="h5" align="center" color="secondary">
-            Reporte generado el 13/08/2025 | Sistema de Auditoría SpaceAduanas
-          </Typography>
         </Box>
       </Stack>
     </Box>
