@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  DataGrid,
+  DataGrid
   // We avoid GridToolbar and all deprecated toolbar helpers
 } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
@@ -18,13 +18,13 @@ import { esES } from '@mui/x-data-grid/locales';
  *
  * @param {{ rows: object[], columns: object[], onSelectRow?: Function, enableFiltering?: boolean, pageSize?: number, pageSizeOptions?: number[] }} props
  */
-export default function DataTable({
+export default function MuiTablaBase({
   rows = [],
   columns,
   onSelectRow = null,
   enableFiltering = true,
   pageSize = 50,
-  pageSizeOptions = [50, 100],
+  pageSizeOptions = [50, 100]
 }) {
   const [selectedRowId, setSelectedRowId] = React.useState(null);
   const [quickFilterValue, setQuickFilterValue] = React.useState('');
@@ -63,15 +63,10 @@ export default function DataTable({
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: '100%',
+                height: '100%'
               }}
             >
-              <IconButton
-                onClick={handleSelect}
-                aria-label={isSelected ? 'Deselect row' : 'Select row'}
-                color="success"
-                size="small"
-              >
+              <IconButton onClick={handleSelect} aria-label={isSelected ? 'Deselect row' : 'Select row'} color="success" size="small">
                 {isSelected ? (
                   <img src="/icons/check-circle-filled.svg" alt="" style={{ fontSize: '20px' }} />
                 ) : (
@@ -81,8 +76,8 @@ export default function DataTable({
               </IconButton>
             </Box>
           );
-        },
-      },
+        }
+      }
     ];
   }, [columns, onSelectRow, selectedRowId]);
 
@@ -104,8 +99,8 @@ export default function DataTable({
         // ✅ Correct way to set initial pagination in v7+
         initialState={{
           pagination: {
-            paginationModel: { page: 0, pageSize },
-          },
+            paginationModel: { page: 0, pageSize }
+          }
         }}
         pageSizeOptions={pageSizeOptions}
         onRowSelectionModelChange={(newSelection) => {
@@ -125,8 +120,8 @@ export default function DataTable({
             backgroundColor: 'primary.dark',
             color: 'primary.contrastText',
             py: 0.5,
-            px: 1,
-          },
+            px: 1
+          }
         }}
         // 🔍 Manual Toolbar (no GridToolbar used)
         slots={{
@@ -139,9 +134,7 @@ export default function DataTable({
                     startIcon={<FilterListIcon />}
                     variant="outlined"
                     size="small"
-                    onClick={() =>
-                      setFilterButtonEl((prev) => prev || document.activeElement)
-                    }
+                    onClick={() => setFilterButtonEl((prev) => prev || document.activeElement)}
                   >
                     Filters
                   </Button>
@@ -165,26 +158,26 @@ export default function DataTable({
                   )}
                 </div>
               )
-            : null,
+            : null
         }}
         slotProps={{
           panel: {
             // For filter panel anchor
             anchorEl: filterButtonEl,
             placement: 'bottom-start',
-            onExited: () => setFilterButtonEl(null),
+            onExited: () => setFilterButtonEl(null)
           },
           baseButton: {
             size: 'small',
-            variant: 'outlined',
+            variant: 'outlined'
           },
           // Apply quick filter logic manually
-          toolbar: {},
+          toolbar: {}
         }}
         // Pass external filter value
         filterModel={{
           items: [],
-          quickFilterValues: quickFilterValue ? [quickFilterValue] : [],
+          quickFilterValues: quickFilterValue ? [quickFilterValue] : []
         }}
         onFilterModelChange={(model) => {
           // Optional: sync with state or URL
@@ -195,7 +188,7 @@ export default function DataTable({
         {...(!enableFiltering && {
           disableColumnFilter: true,
           disableColumnSelector: true,
-          disableDensitySelector: true,
+          disableDensitySelector: true
         })}
       />
     </Paper>

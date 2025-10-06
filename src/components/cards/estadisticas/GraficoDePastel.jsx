@@ -16,6 +16,7 @@ import Dot from 'components/@extended/Dot';
 
 // assets
 import MoreOutlined from '@ant-design/icons/MoreOutlined';
+import MonedaFormatoMiles from '../../componentesBase/MonedaFormatoMiles';
 
 // ==============================|| INVOICE - PIE CHART ||============================== //
 
@@ -33,7 +34,7 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
     setAnchorEl(null);
   };
   const total = cantidad1 + cantidad2;
-
+  console.log(cantidad1);
   const data = [
     { value: cantidad1, label: 'Total distribuido', color: theme.palette.secondary.main },
     { value: cantidad2, label: 'Importe total depositado', color: theme.palette.primary.main }
@@ -84,9 +85,7 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
               Importe total depositado
             </Typography>
           </Grid>
-          <Grid sx={ExpenseSize}>
-            $<span>{cantidad2 ? cantidad2.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ''}</span>{' '}
-          </Grid>
+          <Grid sx={ExpenseSize}>{cantidad2 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad2} etiquetaHTML={'h5'} /> : ''}</Grid>
         </Grid>
       </Grid>
       <Grid size={12}>
@@ -98,9 +97,7 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
               Total distribuido
             </Typography>
           </Grid>
-          <Grid sx={ExpenseSize}>
-            $<span>{cantidad1 ? cantidad1.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ''}</span>{' '}
-          </Grid>
+          <Grid sx={ExpenseSize}>{cantidad1 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad1} etiquetaHTML={'h5'} /> : ''}</Grid>
         </Grid>
       </Grid>
     </Grid>

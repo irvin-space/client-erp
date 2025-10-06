@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import useSQL from '../../hooks/useSQL.js';
 
@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
-import ReactMarkdown from 'react-markdown';
 
 //Ant design
 import {
@@ -29,23 +28,29 @@ import MainCard from '../MainCard.jsx';
 import ReportCard from '../cards/estadisticas/ReportCard.jsx';
 import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
 import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
-import LineaDelTiempo from '../componentesBase/LineaDelTiempo.jsx';
+import LineaDelTiempo2 from '../componentesBase/LineaDelTiempo2.jsx';
+import LineaDelTiempo3 from '../componentesBase/LineaDelTiempo3.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
 import TablaBase from '../componentesBase/TablaBase.jsx';
+
+import MonedaFormatoMiles from '../componentesBase/MonedaFormatoMiles.jsx';
 
 import { mensajes } from '../../utils/mensajes.js';
 
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
+  const navigate = useNavigate();
   const [cargandoIA, setCargandoIA] = useState(false);
+  const [jsonIA, setJsonIA] = useState(true);
   const [analisisIA, setAnalisisIA] = useState('');
+  const [eventos, setEventos] = useState([]);
 
   const [folioDepositoAConsultar, setFolioDepostioAConsultar] = useState(0);
   const [facturasRelacionadasUnicas, setFacturasRelacionadasUnicas] = useState(0);
   const [totalDistribuido, setTotalDistribuido] = useState(0);
   const [informacionDelDeposito, setInformacionDelDeposito] = useState({});
-  const [filasDocumentosRelacionados,setFilasDocumentosRelacionados] = useState([])
+  const [filasDocumentosRelacionados, setFilasDocumentosRelacionados] = useState([]);
 
   const location = useLocation();
 
@@ -61,9 +66,15 @@ const DashboardTrazabilidadPagos = () => {
     if (success) {
       // console.log(data[0][0]);
       console.log('facturas relacionadas');
-      console.log('abcabc',data)
+      console.log('RESPUESTA DEL BACKEND', data);
       console.log(data[0]);
-      setFilasDocumentosRelacionados(data[1])
+      console.log(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      setFilasDocumentosRelacionados(data[1]);
+      console.log('eventos para timeline', data[3]);
+
+      setEventos(data[3]);
+
       let cantidadesTotalDistribuido = data[0].map((item) => {
         return item.total_movimiento;
       });
@@ -88,7 +99,12 @@ const DashboardTrazabilidadPagos = () => {
     const { rowInfo } = location.state || {};
 
     console.log('Received rowInfo:', rowInfo);
-    setFolioDepostioAConsultar(rowInfo.ficha_deposito);
+    if (rowInfo?.ficha_deposito) {
+      setFolioDepostioAConsultar(rowInfo.ficha_deposito);
+    } else {
+      //No existe ficha de deposito,redirecciona a pantalla trazabilidad de pagos
+      navigate('/trazabilidad-de-pagos');
+    }
   }, []);
 
   //useEffect al montarse el componente
@@ -203,26 +219,36 @@ const DashboardTrazabilidadPagos = () => {
         {/* Cards */}
         <Box sx={{ backgroundColor: '', height: '100%' }} component="section">
           <Grid sx={{ height: '100%' }} container spacing={2}>
-            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
+            <Grid sx={{ height: '100%', width: '100%' }} size={{ sm: 12, md: 12, lg: 4 }}>
               {/* Card 1 */}
               <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Resumen del Depósito">
                 <Stack spacing={1}>
                   <ReportCard
                     primary={
-                      informacionDelDeposito?.importe_ficha_deposito ? `$${informacionDelDeposito?.importe_ficha_deposito.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} MXN` : 'N/A'
+                      informacionDelDeposito?.importe_ficha_deposito ? (
+                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.importe_ficha_deposito} etiquetaHTML={'h4'} />
+                      ) : (
+                        'N/A'
+                      )
                     }
                     secondary="Importe total depositado"
                     color="secondary.main"
                     iconPrimary={DollarOutlined}
                   />
                   <ReportCard
-                    primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A' }
+                    primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A'}
                     secondary="Facturas relacionadas"
                     color="secondary.main"
                     iconPrimary={NumberOutlined}
                   />
                   <ReportCard
-                    primary={ informacionDelDeposito?.importe_ficha_deposito ?`$${informacionDelDeposito?.saldo_actual.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")} MXN` : 'N/A'}
+                    primary={
+                      informacionDelDeposito?.importe_ficha_deposito ? (
+                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.saldo_actual} etiquetaHTML={'h4'} />
+                      ) : (
+                        'N/A'
+                      )
+                    }
                     secondary="Saldo actual"
                     color="secondary.main"
                     iconPrimary={DollarOutlined}
@@ -231,7 +257,7 @@ const DashboardTrazabilidadPagos = () => {
                 </Stack>
               </MainCard>
             </Grid>
-            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
+            <Grid sx={{ height: '100%', width: '100%' }} size={{ sm: 12, lg: 4 }}>
               {/* Card 2 */}
               <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Distribución">
                 <Stack spacing={1}>
@@ -239,13 +265,13 @@ const DashboardTrazabilidadPagos = () => {
                 </Stack>
               </MainCard>
             </Grid>
-            <Grid sx={{ height: '100%' }} size={{ sm: 12, lg: 4 }}>
+            <Grid sx={{ height: '100%', width: '100%' }} size={{ sm: 12, md: 12, lg: 4 }}>
               {/* Card 3 */}
               <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Documentos Clave">
                 <Stack spacing={1}>
                   <ReportCard
                     primary={informacionDelDeposito?.anticipo_cliente ? informacionDelDeposito?.anticipo_cliente : 'N/A'}
-                    secondary="Documento cliente"
+                    secondary="Anticipo de Cliente"
                     color="secondary.main"
                     iconPrimary={FileTextOutlined}
                   />
@@ -270,6 +296,7 @@ const DashboardTrazabilidadPagos = () => {
             </Grid>
           </Grid>
         </Box>
+        <Divider />
         {/* Analisis de consistencia */}
         <Box sx={{ backgroundColor: '' }} component="section">
           <Box>
@@ -277,19 +304,23 @@ const DashboardTrazabilidadPagos = () => {
           </Box>
           <br />
           <Grid container spacing={2}>
-            <Grid size={12}>
-              <GraficoDeBarras
-                data={[
-                  informacionDelDeposito?.saldo_actual,
-                  facturasRelacionadasUnicas,
-                  totalDistribuido,
-                  informacionDelDeposito?.importe_ficha_deposito
-                ]}
-              />
+            <Grid sx={{ overflow: 'visible' }} size={12}>
+              {typeof informacionDelDeposito?.importe_ficha_deposito === 'number' && (
+                <GraficoDeBarras
+                  data={[
+                    facturasRelacionadasUnicas,
+                    informacionDelDeposito.saldo_actual,
+                    totalDistribuido,
+                    informacionDelDeposito.importe_ficha_deposito
+                  ]}
+                  valorMaximoEjeY={Number(informacionDelDeposito.importe_ficha_deposito)}
+                />
+              )}
             </Grid>
             {/* <Grid size={8}>...</Grid> */}
           </Grid>
         </Box>
+        <Divider />
         {/* Documentos Relacionados */}
         <Box component="section">
           <Box>
@@ -298,7 +329,7 @@ const DashboardTrazabilidadPagos = () => {
           <br />
           <Grid container spacing={2}>
             <Grid size={12}>
-              <Box sx={{ backgroundColor: 'yellow' }}>
+              <Box sx={{ backgroundColor: 'gray' }}>
                 {/* <DataTable rowsArray={[]} /> */}
                 <TablaBase
                   columnsConfig={[
@@ -306,9 +337,12 @@ const DashboardTrazabilidadPagos = () => {
                     { headerName: 'Fiscal', field: 'fiscal' },
                     { headerName: 'Fecha', field: 'fecha_factura' },
                     { headerName: 'UUID', field: 'uuid_funcion' },
-                    { headerName: 'Importe de Factura', field: 'total_factura' },
-                    { headerName: 'Saldo actual de Factura', field: 'saldo_actual_factura', },
-                    { headerName: 'Póliza', field: 'poliza' }
+                    { headerName: 'Total', field: 'total_factura' },
+                    { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
+                    { headerName: 'Moneda', field: 'moneda' },
+                    { headerName: 'Póliza', field: 'poliza' },
+                    { headerName: 'Número Exportado', field: 'poliza' },
+                    { headerName: 'Total Movimiento', field: 'total_movimiento' }
                   ]}
                   data={filasDocumentosRelacionados}
                 />
@@ -322,6 +356,7 @@ const DashboardTrazabilidadPagos = () => {
             </Grid> */}
           </Grid>
         </Box>
+        <Divider />
         {/* Secuencia de Eventos */}
         <Box component="section">
           <Box>
@@ -329,13 +364,16 @@ const DashboardTrazabilidadPagos = () => {
           </Box>
           <br />
           <Grid container spacing={2}>
-            <Grid size={6}>
-              <LineaDelTiempo />
+            <Grid sx={{ alignItems: 'left', backgroundColor: '' }} size={12}>
+              {/* <LineaDelTiempo />*/}
+              {/* <LineaDelTiempo2 events={eventos} />  */}
+              <LineaDelTiempo3 events={eventos} />
             </Grid>
             {/* <Grid size={6}>...</Grid> */}
           </Grid>
         </Box>
         <br />
+        <Divider />
         {/* Analisis IA */}
         <Box align="center" component={'section'}>
           {/* <Button
@@ -373,9 +411,7 @@ const DashboardTrazabilidadPagos = () => {
               <Typography>Cargando análisis, por favor espera...</Typography>
             ) : (
               // <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
-              <ReactMarkdown>
-                {analisisIA}
-              </ReactMarkdown>
+              <ReactMarkdown>{analisisIA}</ReactMarkdown>
             )}
           </Box>
         </Box>

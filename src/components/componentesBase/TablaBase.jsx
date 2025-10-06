@@ -1,15 +1,8 @@
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-} from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { toLower } from 'lodash-es';
+
+import MonedaFormatoMiles from './MonedaFormatoMiles';
 
 // Definición del tipo de las props para mayor claridad
 // En TypeScript podrías usar una interfaz, pero para JS es un buen comentario.
@@ -40,8 +33,8 @@ const TablaBase = ({ data, columnsConfig }) => {
     );
   }
 
-  console.log('data',data)
-  const colorAzulMarino = '#00345D'; 
+  console.log('data', data);
+  const colorAzulMarino = '#00345D';
 
   return (
     <TableContainer component={Paper}>
@@ -49,10 +42,12 @@ const TablaBase = ({ data, columnsConfig }) => {
         <TableHead sx={{ backgroundColor: colorAzulMarino }}>
           <TableRow>
             {columnsConfig.map((col, index) => (
-              <TableCell key={index} align="center" sx={{ color: 'white', borderBottom: '1px solid ${colorAzulMarino}', textTransform: 'none' }}>
-                <Typography variant="subtitle1" >
-                  {col.headerName}
-                </Typography>
+              <TableCell
+                key={index}
+                align="center"
+                sx={{ color: 'white', borderBottom: '1px solid ${colorAzulMarino}', textTransform: 'none' }}
+              >
+                <Typography variant="subtitle1">{col.headerName}</Typography>
               </TableCell>
             ))}
           </TableRow>
@@ -60,11 +55,30 @@ const TablaBase = ({ data, columnsConfig }) => {
         <TableBody>
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              {columnsConfig.map((col, colIndex) => (
-                <TableCell key={colIndex}>
-                  {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}
-                </TableCell>
-              ))}
+              {columnsConfig.map((col, colIndex) => {
+                console.log('column here', col.field);
+                if (col.field == 'total_movimiento' || col.field == 'total_factura' || col.field == 'saldo_actual_factura') {
+                  console.log('abcabc', row[col.field]);
+                  return (
+                    <TableCell key={colIndex}>
+                      {<MonedaFormatoMiles cantidad={row[col.field]} etiquetaHTML={'p'} /> ?? 'N/A'}{' '}
+                      {/* Accede al valor por el nombre del campo */}
+                    </TableCell>
+                  );
+                } else {
+                  console.log('abcabc', row[col.field]);
+                  return (
+                    <TableCell key={colIndex}>
+                      {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}
+                    </TableCell>
+                  );
+                }
+                // return (
+                //   <TableCell key={colIndex}>
+                //     {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}
+                //   </TableCell>
+                // );
+              })}
             </TableRow>
           ))}
         </TableBody>

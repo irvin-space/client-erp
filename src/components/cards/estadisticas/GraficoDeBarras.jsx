@@ -5,14 +5,22 @@ import { fontWeight } from '@mui/system';
 import { BarChart } from '@mui/x-charts/BarChart';
 
 // const data = [7727, 10, 370896];
-const xLabels = ['Saldo Actual', 'Número de Facturas', 'Total Distribuido', 'Importe Depositado'];
+const xLabels = ['Número de Facturas', 'Saldo Actual', 'Total Distribuido', 'Importe Depositado'];
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-export default function GraficoDeBarras({ data }) {
+export default function GraficoDeBarras({ data, valorMaximoEjeY }) {
+  console.log('yvalue', valorMaximoEjeY);
+  console.log('datra', data);
+  console.log(typeof valorMaximoEjeY);
   const theme = useTheme();
-  const axisFonstyle = { fontSize: 14, fill: theme.palette.text.secondary, fontWeight: '600', color: 'black' };
+  const axisFonstyle = {
+    fontSize: 14,
+    fill: theme.palette.text.secondary,
+    fontWeight: '600',
+    color: 'black',
 
+  };
   return (
     <BarChart
       hideLegend
@@ -37,24 +45,37 @@ export default function GraficoDeBarras({ data }) {
       //     { data: [null, null, 370896], label: xLabels[2], color: '#388e3c' } // Green
       //   ]}
 
-      xAxis={[{ data: xLabels, scaleType: 'band', disableLine: true, disableTicks: true, tickLabelStyle: axisFonstyle }]}
+      xAxis={[{ data: xLabels, scaleType: 'band', disableLine: false, disableTicks: true, tickLabelStyle: axisFonstyle }]}
       //   yAxis={[{ position: 'none' }]}
       yAxis={[
         {
           min: 0,
-          max: 1500000,
-          tickMinStep: 100000,
+          max: valorMaximoEjeY + valorMaximoEjeY * 0.15,
+          tickMinStep:
+            valorMaximoEjeY < 11
+              ? 1
+              : valorMaximoEjeY < 51
+                ? 10
+                : valorMaximoEjeY < 101
+                  ? 10
+                  : valorMaximoEjeY < 501
+                    ? 10
+                    : valorMaximoEjeY < 1001
+                      ? 100
+                      : 1,
           labelStyle: axisFonstyle,
           tickLabelStyle: axisFonstyle,
-          tickInterval: 200000,
+          tickInterval: Math.ceil(valorMaximoEjeY / 5),
           valueFormatter: (value) => {
-            return value >= 1000000 ? `${value / 1000000}M` : `${value / 1000}K`;
+            if (value !== 0) {
+              if (value > 999) return value >= 1000000 ? `${value / 1000000}M` : `${value / 1000}K`;
+            }
           }
         }
       ]}
       slotProps={{ bar: { rx: 5, ry: 5 } }}
       axisHighlight={{ x: 'none' }}
-      margin={{ left: 20, right: 0, bottom: 80 }}
+      margin={{ left: 20, right: 0, bottom: 10 }}
       colors={[theme.palette.primary.main]}
       //   sx={{ '& .MuiBarElement-root:hover': { opacity: 0.6 } }}
       sx={{
@@ -62,10 +83,10 @@ export default function GraficoDeBarras({ data }) {
           opacity: 1
         },
         '& .MuiBarElement-root:nth-of-type(1)': {
-          fill: '#d32f2f' //red Blue
+          fill: 'primary.main' //red Blue
         },
         '& .MuiBarElement-root:nth-of-type(2)': {
-          fill: '#d32f2f' // red
+          fill: 'primary.main' // red
         },
         '& .MuiBarElement-root:nth-of-type(3)': {
           fill: 'primary.main' // primary.main
