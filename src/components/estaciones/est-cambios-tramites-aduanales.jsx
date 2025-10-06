@@ -46,6 +46,7 @@ import HistoriaTramites from '../servicios/historia-tramites.jsx';
 import Autoriza from '../comun/autoriza.jsx';
 import { set } from 'lodash-es';
 import useSQL from 'hooks/useSQL.js';
+import { m } from 'framer-motion';
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
@@ -76,16 +77,23 @@ const EstCambiosTramitesAduanales = () => {
   const [clienteFolioFacturacion, setClienteFolioFacturacion] = useState('');
 
   const [folio, setFolio] = useState('');
+  const [formaPago, setFormaPago] = useState('');
 
   // Estado para guardar el resultado del análisis
   const [analisisIA, setAnalisisIA] = useState('');
   const [cargandoIA, setCargandoIA] = useState(false);
+
+  const [lEditando, setLEditando] = useState(false);
+    // 1. Use el hook useSQL
+  const { loading, error, executeFetch } = useSQL();
 
   const handleAnalisisIA = async (servicio) => {
     if (!selectedTramite) {
       mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
       return;
     }
+
+
 
     // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
     setCargandoIA(true);
@@ -179,6 +187,14 @@ const EstCambiosTramitesAduanales = () => {
         } // este es sweetalert2
       }
 
+      const FormaPago = data[0][0].forma_pago.trim();
+
+      if (FormaPago === 'Propio') {  
+        setFormaPago('Transferencia de Cuenta');
+      } else if (FormaPago === 'Cheque') {
+        setFormaPago('Cheque');
+      }
+
       setSelectedTramite(data[0][0]);
       setIngresos(data[1]);
       setGastos(data[2]);
@@ -255,6 +271,7 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleIniciar = () => {
     console.log('El boton Iniciar se presiono');
+    setLEditando(true);
     // Si no se ha cargado informacion del pedimento ingresando el folio y presionando enter o buscando y seleccionandolo por medio del modal,
     // al presionarlo se desabilita el mismo boton(iniciar) y se habilita el boton de guardar
     // al presinarlo se habilita el boton cancelar
@@ -265,26 +282,29 @@ const EstCambiosTramitesAduanales = () => {
     //   setEsHabilitadoCancelar(true)
     // }
 
-    setEsHabilitadoGuardar(true);
-    setEsHabilitadoIniciar(false);
-    setEsHabilitadoCancelar(true);
+    // setEsHabilitadoGuardar(true);
+    // setEsHabilitadoIniciar(false);
+    // setEsHabilitadoCancelar(true);
   };
 
   const handleGuardar = () => {
     console.log('El boton guardar se presiono');
+    setLEditando(false);
   };
 
   const handleCancelar = () => {
     console.log('El boton cancelar se presiono');
+    setLEditando(false);
     //Si esta habilitado el propio boton(cancelar) y se presiona el boton iniciar se habilita el boton iniciar
     //y el boton guardar se desabilita
-    setEsHabilitadoIniciar(true);
-    setEsHabilitadoGuardar(false);
-    setEsHabilitadoCancelar(false);
+    // setEsHabilitadoIniciar(true);
+    // setEsHabilitadoGuardar(false);
+    // setEsHabilitadoCancelar(false);
     setSelectedTramite(null);
     setIngresos([]);
     setGastos([]);
     setFolio('');
+    setClienteFolioPedimento
   };
 
   const handleImprimir = () => {
@@ -366,7 +386,7 @@ const EstCambiosTramitesAduanales = () => {
     if (Array.isArray(dataToFilter)) {
       const filteredRecords = dataToFilter.filter((gasto) => {
         // Apply all three conditions from your FoxPro query
-        return gasto.gasto_no_deducible > 0 && gasto.estado_gasto_nd === 'Capturado' && gasto.estatus_proveedor === 'Pagado';
+        return gasto.gasto_no_deducible > 0 && gasto.estado_gasto_nd.trim() === 'Capturado' && gasto.estatus_proveedor.trim() === 'Pagado';
       });
       registrosGastos = filteredRecords.length;
     }
@@ -377,15 +397,36 @@ const EstCambiosTramitesAduanales = () => {
 
     if (!pasaValidacion) {
       mensajes('error', 'No hay gastos no deducibles a autorizar.');
-      return false;
+      //return false;  comentado par pruebas
+      return true;
     }
     return true;
   };
 
   // Lógica de acción final después de la autorización exitosa
-  const handleProcesoPosterior = () => {
-    mensajes('aviso', '¡Autorización exitosa! Continuando con las acciones del padre...');
-    // Por ejemplo, enviar un formulario, recargar datos, etc.
+  const handleProcesoPosterior = async () => {
+    let datosFiltrar = selectedTramite?.history || gastos;
+
+    if (Array.isArray(datosFiltrar)) {
+      const registrosFiltrados = datosFiltrar.filter((gasto) => {
+
+        return gasto.gasto_no_deducible > 0 && gasto.estado_gasto_nd.trim() === 'Capturado';
+      });
+      
+      const gastosJson = JSON.stringify(registrosFiltrados);
+
+      const Params = {
+        nTramite: `'${folio}'`,
+        cjSon: `'${gastosJson}'`
+      };
+
+      const result = await executeFetch('Autoriza_Gasto_Tramite_Web', Params, true);
+
+      if (result.success) {
+        mensajes('aviso', 'Tramite Guardado');
+      }
+    }
+        
   };
 
   const handleSucursalSelected = (value, objeto) => {
@@ -461,6 +502,51 @@ const EstCambiosTramitesAduanales = () => {
     // como actualizar el estado de la pantalla padre o llamar a otra función
   };
 
+  const handleFormaPago = (value) => {
+    console.log('Forma de pago seleccionada:', value);
+  }
+
+  const handleProcesoPrevioBorrarGasto = async () => {
+    let pasaValidacion = true;
+    let registrosGastos = 0;
+    mensajes('aviso', GastosRowSelected);
+  // PRIVATE pnGasto , ;
+  // pnFolio , ;
+  // pnTramite , ;
+  // pnConcepto , ;
+  // pnLinea	
+
+  // LOCAL lnImporte, ;
+  // lcEstado_Gasto
+
+  // WITH THISFORM
+  //   pnGasto 	   = Gastos.gasto_no_deducible
+  //   lcEstado_Gasto = Gastos.estado_gasto_nd
+
+  //   IF pnGasto > 0 AND lcEstado_Gasto = 'Capturado'
+  //     IF THISFORM.Puede_Borrar()  && hd 21316  validamos que este detalle de tramite no tenga una factura asociada
+  //       IF PREGUNTA( '¿ Seguro que desea elimar el Gastos No Deducible ?')
+  //         pnFolio = 0
+          
+  //         XSQL( 'UPDATE Detalles_Tramites_Aduanales SET ' + ;
+  //               'gasto_no_deducible = ?pnFolio ' + ;
+  //             'WHERE  gasto_no_deducible = ?pnGasto ')
+
+  //         SELECT Gastos
+  //         REPLACE gasto_no_deducible WITH 0 FOR gasto_no_deducible = pnGasto
+          
+  //         .grdGastos.Refresh()
+  //       ENDIF
+
+  //     ENDIF
+  //   ELSE
+  //     _ERROR( 'El gasto ya esta pagado')
+  //   ENDIF
+
+  // ENDWITH
+
+  };
+
   return (
     <div>
       <Typography variant="h2">Modificación de Trámites Aduanales</Typography>
@@ -470,7 +556,7 @@ const EstCambiosTramitesAduanales = () => {
           {/* Tramite, Fecha */}
           <Grid size={4}>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-              <TextField
+              {/* <TextField
                 id="standard-basic"
                 label="Trámite aduana"
                 variant="standard"
@@ -478,7 +564,8 @@ const EstCambiosTramitesAduanales = () => {
                 onKeyDown={(e) => handleEnterButton(e)}
                 fullWidth
                 value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
-              />
+                disabled={lEditando}
+              /> */}
 
               <BusquedaTramitesAduanales
                 onSelectRow={handleRowSelect}
@@ -488,6 +575,12 @@ const EstCambiosTramitesAduanales = () => {
                   setOpenModal(false);
                 }}
                 onOpen={() => setOpenModal(true)}
+                editando={lEditando}
+
+                onChange={handleFolio}
+                onKeyDown={(e) => handleEnterButton(e)}
+                value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
+
               />
             </Box>
           </Grid>
@@ -513,6 +606,7 @@ const EstCambiosTramitesAduanales = () => {
               parametros={{
                 '@cCentro': "'      1'"
               }}
+              lEditando={!lEditando}
             />
           </Grid>
           <Grid size={4}>
@@ -600,6 +694,7 @@ const EstCambiosTramitesAduanales = () => {
                           value={selectedTramite?.clave_pedimento ? selectedTramite?.clave_pedimento : clave_pedimento}
                           valueKey="clave_pedimento"
                           labelKey="nombre_clave"
+                          lEditando={!lEditando}
                         />
                       </Grid>
                     </Grid>
@@ -612,6 +707,7 @@ const EstCambiosTramitesAduanales = () => {
                           id="standard-basic"
                           label="Número de pedimento"
                           variant="standard"
+                          disabled={!lEditando}
                           // value={selectedTramite?.pedimento ? selectedTramite.pedimento : ''}
                           // value={selectedTramite?.pedimento.length > 0 ? selectedTramite.pedimento[0] : ''}
                           value={
@@ -648,7 +744,7 @@ const EstCambiosTramitesAduanales = () => {
                     <Grid container spacing={2}>
                       <Grid size={12}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-                          <TextField
+                          {/* <TextField
                             id="standard-basic"
                             label="Cliente - Pedimento"
                             variant="standard"
@@ -662,13 +758,23 @@ const EstCambiosTramitesAduanales = () => {
                                     : ''
                             }
                             fullWidth
-                          />
+                          /> */}
 
                           <BusquedaDeClientes
                             open={openBusquedaClientePedimentoModal}
                             onClose={() => setOpenBusquedaClientePedimentoModal(false)}
                             onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
                             onSelectedRow={handleRowSelectClientePedimento}
+                            value={selectedTramite?.ctePedimento
+                                ? `${selectedTramite?.id_cliente_pedimento}-${selectedTramite.ctePedimento}`
+                                : selectedTramite?.nombre_cliente_pedimento
+                                  ? `${selectedTramite?.cliente_pedimento} - ${selectedTramite?.nombre_cliente_pedimento}`
+                                  : clienteFolioPedimento != ''
+                                    ? clienteFolioPedimento
+                                    : ''
+                            }
+                            editando={!lEditando}
+                            label="Cliente - Pedimento"
                             //
                             //
                             //
@@ -689,7 +795,7 @@ const EstCambiosTramitesAduanales = () => {
                     <Grid container spacing={2}>
                       <Grid size={12}>
                         <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-                          <TextField
+                          {/* <TextField
                             id="standard-multiline-flexible"
                             label="Cliente - Facturación"
                             multiline
@@ -705,7 +811,7 @@ const EstCambiosTramitesAduanales = () => {
                                     : ''
                             }
                             fullWidth
-                          />
+                          /> */}
 
                           {/* <Button variant="outlined" sx={{ height: '100%' }}>
                             <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
@@ -716,6 +822,18 @@ const EstCambiosTramitesAduanales = () => {
                             onClose={() => setOpenBusquedaClienteFacturaModal(false)}
                             onOpen={() => setOpenBusquedaClienteFacturaModal(true)}
                             onSelectedRow={handleRowSelectClienteFacturacion}
+                            
+                            value={
+                              selectedTramite?.cteFacturacion
+                                ? `${selectedTramite?.id_cliente_factura} - ${selectedTramite.cteFacturacion}`
+                                : selectedTramite?.nombre_cliente_factura
+                                  ? `${selectedTramite?.cliente_factura} - ${selectedTramite?.nombre_cliente_factura}`
+                                  : clienteFolioFacturacion != ''
+                                    ? clienteFolioFacturacion
+                                    : ''
+                            }
+                            editando={!lEditando}
+                            label="Cliente - Factura"
                             //
                             //
                             //
@@ -782,7 +900,7 @@ const EstCambiosTramitesAduanales = () => {
                   <Grid size={12}>
                     <Grid container spacing={3}>
                       <Grid size={12}>
-                        <RowRadioButtonsGroup titulo="Forma de Pago" valor1="Transferencia de Cuenta" valor2="Cheque" />
+                        <RowRadioButtonsGroup titulo="Forma de Pago" valor1="Transferencia de Cuenta" valor2="Cheque" value={formaPago} onChange={handleFormaPago}/>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -830,6 +948,7 @@ const EstCambiosTramitesAduanales = () => {
                           valueKey="chequera"
                           labelKey="nombre_chequera"
                           retornaObjeto={false}
+                          lEditando={!lEditando}
                           parametros={{
                             '@cCondicion ': "' WHERE es_fiscal = 1 '"
                           }}
@@ -923,17 +1042,23 @@ const EstCambiosTramitesAduanales = () => {
             &nbsp;
             <Autoriza
               txtBoton="Borrar Gasto"
-              FolioAutorizacion="801"
+              FolioAutorizacion="1190"
               Tabla="Tramites_Aduanales"
               Folio={folio}
               Componente="est-cambios-tramites-aduanales"
               Color="error"
               onSelectRow={handleRowSelect}
               open={openAutorizaBorrar}
+              onOpen={() => {
+                // La validación previa va aquí, justo antes de abrir la modal
+                if (handleProcesoPrevioBorrarGasto()) {
+                  setOpenAutorizaBorrar(true); // Solo abre el modal si la validación es exitosa
+                }
+              }}
               onClose={() => {
                 setOpenAutorizaBorrar(false);
               }}
-              onOpen={() => setOpenAutorizaBorrar(true)}
+              //onOpen={() => setOpenAutorizaBorrar(true)}
               onProcesoPosterior={handleProcesoPosterior}
             />
           </Box>
@@ -984,14 +1109,14 @@ const EstCambiosTramitesAduanales = () => {
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <Box>
-            <Button variant="contained" disabled={!esHabilitadoIniciar} onClick={handleIniciar}>
+            <Button variant="contained" disabled={lEditando} onClick={handleIniciar}>
               Iniciar
             </Button>
-            <Button variant="contained" disabled={!esHabilitadoGuardar} onClick={handleGuardar}>
+            <Button variant="contained" disabled={!lEditando} onClick={handleGuardar}>
               Guardar
             </Button>
             {/* Botón de Gemini */}
-            <Button
+            {/* <Button
               variant="contained"
               onClick={() => handleAnalisisIA('gemini')}
               disabled={cargandoIA || !selectedTramite}
@@ -999,20 +1124,16 @@ const EstCambiosTramitesAduanales = () => {
             >
               {cargandoIA ? 'Analizando...' : 'Analizar con Gemini'}
             </Button>
-            &nbsp;
+            &nbsp; */}
             {/* Nuevo botón de ChatGPT */}
-            <Button variant="contained" onClick={() => handleAnalisisIA('gpt')} disabled={cargandoIA || !selectedTramite} color="primary">
+            {/* <Button variant="contained" onClick={() => handleAnalisisIA('gpt')} disabled={cargandoIA || !selectedTramite} color="primary">
               {cargandoIA ? 'Analizando...' : 'Analizar con ChatGPT'}
-            </Button>
-            <Button variant="contained" disabled={!esHabilitadoCancelar} onClick={handleCancelar} color="secondary">
+            </Button> */}
+            <Button variant="contained" disabled={!lEditando} onClick={handleCancelar} color="secondary">
               Cancelar
             </Button>
           </Box>
           <Box>
-            {/* <Button onClick={handleClick} variant="contained"> */}
-            {/* <Button onClick={handleImprimir} variant="contained">
-              Imprimir
-            </Button> */}
           </Box>
         </Box>
       </Stack>

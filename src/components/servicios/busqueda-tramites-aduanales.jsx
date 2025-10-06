@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress'; // 👈 Loader
+import TextField from '@mui/material/TextField';
 
 import FormControl from '@mui/material/FormControl';
 
@@ -48,7 +49,7 @@ const style = {
   overflow: 'hidden'
 };
 
-const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
+const BusquedaTramitesAduanales = ({ onSelectRow, onChange, onKeyDown,onClose, onOpen, open, editando, value }) => {
   // const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Cargando
   // const handleOpen = () => {
@@ -135,12 +136,6 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   };
 
   const handleConsultar = () => {
-    // console.log({
-    //   sucursal,
-    //   tipo: tipo === 'Todos' ? '%' : tipo,
-    //   desdeFecha: desdeFecha?.format('YYYY-MM-DD') || null,
-    //   hastaFecha: hastaFecha?.format('YYYY-MM-DD') || null
-    // });
 
     const objetoDeBusqueda = {
       sucursal: `'${sucursal}'`,
@@ -154,11 +149,26 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
   };
 
   return (
-    <div style={{ height: '100%' }}>
-      {/* <Button onClick={handleOpen}>Abrir modal</Button> */}
-      <Button onClick={onOpen} variant="outlined" sx={{ height: '100%'/*, backgroundColor: 'white'*/ }}>
-        <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
-      </Button>
+    <div style={{ height: '100%', width: '100%' }}> {/* <-- Asegura que el div principal tome todo el ancho */}
+
+      <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%', width:'100%', gap:1 }}>
+        <TextField
+          id="standard-basic"
+          label="Trámite aduana"
+          variant="standard"
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          fullWidth
+          value={value}
+          disabled={editando}
+          sx={{flexGrow: 1}}
+        />
+
+        <Button onClick={onOpen} variant="outlined" disabled={editando} sx={{ height: '56px', minWidth: '48px', p: 1.5,flexShink: 0 }}>
+          <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
+        </Button>
+      </Box>
+
       <Modal open={open} onClose={onClose}>
         <Box sx={style}>
           <Box sx={{ width: '95%', height: '100%'}}>
@@ -180,6 +190,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, open, onClose, onOpen }) => {
                     valueKey="sucursal"
                     labelKey="nombre_sucursal"
                     extraOption={'*Todos*'}
+                    editando={false}
                     parametros={{
                       '@cCentro': "'      1'"
                     }}

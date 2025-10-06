@@ -35,8 +35,6 @@ import TablaBase from '../componentesBase/TablaBase.jsx';
 
 import { mensajes } from '../../utils/mensajes.js';
 
-//React MarkDoown
-import ReactMarkdown from 'react-markdown';
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -125,6 +123,11 @@ const DashboardTrazabilidadPagos = () => {
     const promptAI = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
 
                   'Analiza detalladamente los datos de este trámite aduanal. Revisa exhaustivamente los **ingresos y gastos**.' +
+                  'PREMISAS ' + 
+                  '1.- Tener en cuenta que el total distribuído es la sumatoria de total_movimiento, está indicada en pesos. ' +
+                  ' La comparación de ingresos y gastos se debe basar en unicamente en importe_ficha_deposito como el unico importe de ingresos, '+
+                  'y la sumatoria de total_movimiento es el unico elemento a considerar como gasto.  Los otros elementos con importes son solamente referencias. ' +
+                  '2.- Los elementos folio_CONTPAQ y fecha_CONTPAQ son elementos que no se deben contemplar por el momento, ya que estamos en fase de pruebas con estos elementos' +
 
                   '**Objetivos del Análisis:**' +
                   '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
@@ -148,7 +151,8 @@ const DashboardTrazabilidadPagos = () => {
                   '## ✅ Recomendación y Siguiente Paso'+
                   '* **Título Principal:** Usa **Markdown** para un título claro.' +
                   '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
-    // Elige la URL del endpoint según el servicio que se le pasó como argumento
+
+                  // Elige la URL del endpoint según el servicio que se le pasó como argumento
     const endpointURL = servicio === 'gemini' ? 'http://localhost:3001/analisis-ia' : 'http://localhost:3001/analisis-ia-gpt';
 
     try {

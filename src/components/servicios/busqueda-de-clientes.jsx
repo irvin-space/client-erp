@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Grid from '@mui/material/Grid';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { TextField } from '@mui/material';
 
 //Ant Design
 import { SearchOutlined } from '@ant-design/icons';
@@ -49,7 +50,7 @@ const style = {
   overflow: 'hidden'
 };
 
-const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
+const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow, editando, label, value }) => {
   const { data, loading, error, executeFetch } = useSQL();
 
   const [isLoading, setIsLoading] = useState(false); // Cargando
@@ -131,10 +132,24 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow }) => {
   };
 
   return (
-    <div style={{ height: '100%' }}>
-      <Button onClick={onOpen} variant="outlined" sx={{height:'100%' }}>
-        <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
-      </Button>
+    <div style={{ height: '100%', width: '100%' }}> {/* <-- Asegura que el div principal tome todo el ancho */}
+      
+      <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%', width:'100%', gap:1 }}>
+        <TextField
+          id="standard-basic"
+          label={label||"Cliente"}
+          variant="standard"
+          fullWidth
+          value={value}
+          disabled={editando}
+          sx={{flexGrow: 1}}
+        />
+
+        <Button onClick={onOpen} variant="outlined" disabled ={editando} sx={{ height: '56px', minWidth: '48px', p: 1.5,flexShink: 0 }}>
+          <SearchOutlined style={{ fontSize: '1.5em', color: '#00345D' }} />
+        </Button>
+      </Box>
+
       <Modal open={open} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
           <Box sx={{ width: '95%', height: '100%' }}>

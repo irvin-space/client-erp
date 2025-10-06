@@ -54,7 +54,7 @@ export default function Theme9test(colors, mode) {
   '#E0E0E0', // Texto Principal
   '#3ab8eeff', // Bordes
   '#00508C', // Selección/Hover
-  '#353535', // Fondo Secundario
+  '#353535ff', // Fondo Secundario
   '#9E9E9E', // Texto Secundario
   '#6490dbff'  // Fondo Terciario
 ];

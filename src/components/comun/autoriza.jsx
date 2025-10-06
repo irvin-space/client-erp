@@ -90,7 +90,7 @@ useEffect(() => {
       const result = await executeFetch('Registra_Autorizacion_Web', Params, true);
 
       if (result.success) {
-              mensajes('aviso', 'Autorización registrada con éxito.');
+              //mensajes('aviso', 'Autorización registrada con éxito.');
               // Ejecuta el proceso posterior si existe
         if (onProcesoPosterior) {
           onProcesoPosterior();
@@ -147,6 +147,8 @@ useEffect(() => {
                   }}
                   valueKey="persona"
                   labelKey="nombre"
+                  retornaObjeto={false}
+                  lEditando= {false}
                />
             </Box>
             <br />

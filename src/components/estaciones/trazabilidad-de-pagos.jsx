@@ -144,18 +144,20 @@ const TrazabilidadDePagos = () => {
             </Grid>
             <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 3, lg: 4 }}>
               <Box sx={{ height: '100%', display: 'flex' }}>
-                <TextField
+                {/* <TextField
                   sx={{ width: '80%' }}
                   id="standard-basic"
                   label="Cliente"
                   variant="standard"
                   value={nombreDeCliente ? nombreDeCliente : ''}
-                />
+                /> */}
                 <BusquedaDeClientes
                   open={openBusquedaClientePedimentoModal}
                   onClose={() => setOpenBusquedaClientePedimentoModal(false)}
                   onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
                   onSelectedRow={handleRowSelectClientePedimento}
+
+                  value={nombreDeCliente ? nombreDeCliente : ''}
                   //
                   //
                   //

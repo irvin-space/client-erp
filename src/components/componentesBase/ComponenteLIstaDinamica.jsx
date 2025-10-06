@@ -18,7 +18,8 @@ const ComponenteListaDinamica = ({
   value,
   onChange,
   extraOption,
-  retornaObjeto
+  retornaObjeto,
+  lEditando = false,
 }) => {
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
@@ -77,7 +78,7 @@ const ComponenteListaDinamica = ({
   useEffect(() => {
     console.log('✅ Opciones actualizadas:', options);
   }, [options]);
- 
+
   const handleChange = (event) => {
     console.log(options);
     console.log(event);
@@ -89,6 +90,23 @@ const ComponenteListaDinamica = ({
     onChange(event.target.value, opcionSeleccionada);
   };
  
+  // const handleChange = (event) => {
+  //   console.log(options);
+  //   console.log(event);
+  //   console.log(event.target);
+
+  //   if (!lEditando) {
+  //     const opcionSeleccionada = options.find((opt) => opt[valueKey] == event.target.value);
+
+  //     if(retornaObjeto){
+  //       onChange(event.target.value, opcionSeleccionada);
+  //     }else{
+  //       onChange(event.target.value);
+  //     }
+  //   }
+ 
+  // };
+ 
   return (
     <FormControl fullWidth>
       <InputLabel id="dinamic-simple-select-label">{label}</InputLabel>
@@ -99,6 +117,7 @@ const ComponenteListaDinamica = ({
         label={label}
         onChange={handleChange}
         displayEmpty
+        disabled={lEditando||loading}
       >
         {loading ? (
           <MenuItem disabled>
