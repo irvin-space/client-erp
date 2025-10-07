@@ -37,6 +37,8 @@ import MonedaFormatoMiles from '../componentesBase/MonedaFormatoMiles.jsx';
 
 import { mensajes } from '../../utils/mensajes.js';
 
+import ReactMarkdown from 'react-markdown';
+
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -236,8 +238,9 @@ const DashboardTrazabilidadPagos = () => {
                     iconPrimary={DollarOutlined}
                   />
                   <ReportCard
-                    primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A'}
-                    secondary="Facturas relacionadas"
+                    //primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A'}
+                    primary={informacionDelDeposito?.cntDoctos}
+                    secondary="Documentos relacionados"
                     color="secondary.main"
                     iconPrimary={NumberOutlined}
                   />
@@ -276,15 +279,15 @@ const DashboardTrazabilidadPagos = () => {
                     iconPrimary={FileTextOutlined}
                   />
                   <ReportCard
-                    primary={informacionDelDeposito?.poliza ? informacionDelDeposito?.poliza : 'N/A'}
+                    primary={informacionDelDeposito?.poliza_ficha ? informacionDelDeposito?.poliza_ficha : 'N/A'}
                     secondary="Póliza ContPaq"
                     color="secondary.main"
                     iconPrimary={ProfileOutlined}
                   />
                   <ReportCard
                     primary={
-                      informacionDelDeposito?.numero_exportado_poliza_factura
-                        ? informacionDelDeposito?.numero_exportado_poliza_factura
+                      informacionDelDeposito?.numero_exportado_ficha
+                        ? informacionDelDeposito?.numero_exportado_ficha
                         : 'N/A'
                     }
                     secondary="Folio CONTPAQ"

@@ -19,7 +19,9 @@ import {
   LinkOutlined,
   ExportOutlined,
   FileProtectOutlined,
-  FileExcelOutlined
+  FileExcelOutlined,
+  CreditCardOutlined
+  
 } from '@ant-design/icons';
 
 // DotIcon Component (unchanged, perfect!)
@@ -78,6 +80,9 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
       case 'Documento de Cliente':
         icon = <ProfileOutlined />;
         break;
+      case 'Pago de Cliente':
+        icon = <CreditCardOutlined />;
+        break;
       case 'Factura de cliente':
         icon = <FileTextOutlined />;
         break;
@@ -100,9 +105,12 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
 
   switch (titulo) {
     case 'Anticipo de cliente':
-    case 'Ficha de depósito':
-    case 'Factura de cliente':
       return { dotColor: '#00A854', icon, isDisabled: false };
+    case 'Ficha de depósito':
+      return { dotColor: '#277018ff', icon, isDisabled: false };
+      
+    case 'Factura de cliente':
+      return { dotColor: '#2d82b3ff', icon, isDisabled: false };
 
     case 'Creación de póliza de la ficha':
     case 'Creación de póliza de factura':
@@ -115,8 +123,11 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
     case 'Documento de Cliente':
       return { dotColor: '#00345D', icon, isDisabled: false };
 
+    case 'Pago de Cliente':
+      return { dotColor: '#3a8dc4ff', icon, isDisabled: false };
+
     default:
-      return { dotColor: '#7D8FA4', icon, isDisabled: true };
+      return { dotColor: '#8b8c8dd8', icon, isDisabled: true };
   }
 };
 
