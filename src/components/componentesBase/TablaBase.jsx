@@ -33,7 +33,6 @@ const TablaBase = ({ data, columnsConfig }) => {
     );
   }
 
-  console.log('data', data);
   const colorAzulMarino = '#00345D';
 
   return (
@@ -56,9 +55,7 @@ const TablaBase = ({ data, columnsConfig }) => {
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {columnsConfig.map((col, colIndex) => {
-                console.log('column here', col.field);
                 if (col.field == 'total_movimiento' || col.field == 'total_factura' || col.field == 'saldo_actual_factura') {
-                  console.log('abcabc', row[col.field]);
                   return (
                     <TableCell key={colIndex}>
                       {<MonedaFormatoMiles cantidad={row[col.field]} etiquetaHTML={'p'} /> ?? 'N/A'}{' '}
@@ -66,7 +63,6 @@ const TablaBase = ({ data, columnsConfig }) => {
                     </TableCell>
                   );
                 } else {
-                  console.log('abcabc', row[col.field]);
                   return (
                     <TableCell key={colIndex}>
                       {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}

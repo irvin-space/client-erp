@@ -34,7 +34,6 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
     setAnchorEl(null);
   };
   const total = cantidad1 + cantidad2;
-  console.log(cantidad1);
   const data = [
     { value: cantidad1, label: 'Total distribuido', color: theme.palette.secondary.main },
     { value: cantidad2, label: 'Importe total depositado', color: theme.palette.primary.main }

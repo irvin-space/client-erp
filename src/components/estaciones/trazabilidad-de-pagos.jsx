@@ -40,10 +40,18 @@ const TrazabilidadDePagos = () => {
   const [desdeFecha, setDesdeFecha] = useState(dayjs().subtract(1, 'month'));
   const [hastaFecha, setHastaFecha] = useState(dayjs());
 
+  const [columnaSucursal,setColumnaSucursal] = useState(null)
+
   const { executeFetch } = useSQL();
 
   const handleSucursalSelected = (value, objeto) => {
     console.log('Sucursal seleccionada:', value);
+    if(value == '%'){
+      console.log("Se selecciono todo")
+      setColumnaSucursal({ field: 'sucursal', headerName: 'Sucursal', flex: 1, height: 500 })
+    }else{
+      setColumnaSucursal(null)
+    }
     setSucursal(value);
   };
 
@@ -79,6 +87,7 @@ const TrazabilidadDePagos = () => {
     console.log('Desde Fecha', desdeFecha.format('YYYY-MM-DD').replaceAll('-', ''));
     console.log('Hasta Fecha', hastaFecha.format('YYYY-MM-DD').replaceAll('-', ''));
 
+    console.log("ZUCURZAL",sucursal)
     const objetoParametros = {
       '@cSucursal': sucursal == 'Todos' ? "'%'" : `'${sucursal}'`,
       '@nCliente': numeroCliente,
@@ -182,7 +191,7 @@ const TrazabilidadDePagos = () => {
           sx={{ marginTop: '16px', height: '60vh', backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'lightblue' } }}
           size={{ xs: 12, md: 12, lg: 12 }}
         >
-          <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} />
+          <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} sucursalColumna={columnaSucursal}/>
         </Grid>
         {/* <Grid sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }} size={{ xs: 12, md: 8, lg: 12 }}>
           <p>Lorem Ipsum</p>
