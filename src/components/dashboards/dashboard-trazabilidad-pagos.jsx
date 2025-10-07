@@ -228,7 +228,7 @@ const DashboardTrazabilidadPagos = () => {
                   <ReportCard
                     primary={
                       informacionDelDeposito?.importe_ficha_deposito ? (
-                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.importe_ficha_deposito} etiquetaHTML={'h4'} />
+                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.importe_ficha_deposito} etiquetaHTML={'h3'} />
                       ) : (
                         'N/A'
                       )
@@ -247,7 +247,7 @@ const DashboardTrazabilidadPagos = () => {
                   <ReportCard
                     primary={
                       informacionDelDeposito?.importe_ficha_deposito ? (
-                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.saldo_actual} etiquetaHTML={'h4'} />
+                        <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.saldo_actual} etiquetaHTML={'h3'} />
                       ) : (
                         'N/A'
                       )

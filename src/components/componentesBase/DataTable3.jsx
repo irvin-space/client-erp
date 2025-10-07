@@ -54,13 +54,15 @@ function CustomToolbar({ setFilterButton }) {
   );
 }
 
-export default function DataTable({ rowsArray, onSelectRow }) {
+export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
   const [filterButton, setFilterButton] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
   const columns = [
+    ...(sucursalColumna ? [sucursalColumna] : []),
     { field: 'cliente_documento', headerName: 'Cliente', flex: 2, height: 500 },
-    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 0.5, align: 'right', headerAlign: 'right' },
+    { field: 'anticipo', headerName: 'Anticipo', flex: 1, height: 500 },
+    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2, align: 'right', headerAlign: 'right' },
     { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1 },
     {
       field: 'importe_ficha_deposito',
@@ -156,13 +158,13 @@ export default function DataTable({ rowsArray, onSelectRow }) {
             py: 0.5,
             px: 1,
             backgroundColor: 'primary.dark', // Usa el color primario de tu tema para el fondo
-            color: 'primary.contrastText',   // Usa el color de texto que contrasta (blanco/negro)
+            color: 'primary.contrastText' // Usa el color de texto que contrasta (blanco/negro)
           },
           // ⭐️ Opcional: Asegurar que la barra de herramientas también respete el tema
           '& .MuiDataGrid-toolbarContainer': {
-             backgroundColor: 'background.paper', // Usa el color de la superficie del tema
-             borderBottom: '1px solid',
-             borderColor: 'divider',
+            backgroundColor: 'background.paper', // Usa el color de la superficie del tema
+            borderBottom: '1px solid',
+            borderColor: 'divider'
           }
         }}
       />

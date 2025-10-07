@@ -10,9 +10,6 @@ const xLabels = ['Número de Facturas', 'Saldo Actual', 'Total Distribuido', 'Im
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
 export default function GraficoDeBarras({ data, valorMaximoEjeY }) {
-  console.log('yvalue', valorMaximoEjeY);
-  console.log('datra', data);
-  console.log(typeof valorMaximoEjeY);
   const theme = useTheme();
   const axisFonstyle = {
     fontSize: 14,
