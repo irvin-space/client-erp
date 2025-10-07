@@ -311,7 +311,7 @@ const DashboardTrazabilidadPagos = () => {
               {typeof informacionDelDeposito?.importe_ficha_deposito === 'number' && (
                 <GraficoDeBarras
                   data={[
-                    facturasRelacionadasUnicas,
+                    informacionDelDeposito.cntDoctos,
                     informacionDelDeposito.saldo_actual,
                     totalDistribuido,
                     informacionDelDeposito.importe_ficha_deposito

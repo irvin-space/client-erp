@@ -108,7 +108,6 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
       return { dotColor: '#00A854', icon, isDisabled: false };
     case 'Ficha de depósito':
       return { dotColor: '#277018ff', icon, isDisabled: false };
-      
     case 'Factura de cliente':
       return { dotColor: '#2d82b3ff', icon, isDisabled: false };
 
