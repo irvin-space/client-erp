@@ -1,5 +1,8 @@
 import { useRef, useState } from 'react';
 
+//React Router
+import { useNavigate } from 'react-router';
+
 // material-ui
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Avatar from '@mui/material/Avatar';
@@ -51,7 +54,7 @@ export default function Notification() {
   const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
 
   const anchorRef = useRef(null);
-  const [read, setRead] = useState(2);
+  const [read, setRead] = useState(4);
   const [open, setOpen] = useState(false);
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -63,6 +66,39 @@ export default function Notification() {
     }
     setOpen(false);
   };
+
+  const navigate = useNavigate()
+
+  const clickAlerta = () => {
+    setRead(read - 1); 
+    alert('Desplegar aqui modal de la alerta'); 
+  }
+
+  const clickAlertaDashboard = () => {
+    setRead(read - 1); 
+    
+    const rowInfo =  {
+      "nombre_tipo": "Ancipo de Cliente",
+      "sucursal": "Chihuahua",
+      "cliente_documento": "INNOVATIVE RECYCLING SOLUTIONS                                                  ",
+      "anticipo": 73301,
+      "ficha_deposito": 167131,
+      "fecha_confirmacion": "2025-07-10T10:17:57.000Z",
+      "importe_ficha_deposito": 35218,
+      "saldo_actual_ficha": 18387,
+      "poliza_ficha": 2133874,
+      "numero_exportado_poliza_ficha": 566554,
+      "fecha_exportada_poliza_ficha": "2025-07-18T08:56:04.490Z",
+      "folio_CONTPAQ": 0,
+      "fecha_CONTPAQ": "",
+      "valor": 169173,
+      "fecha_valor": "2025-07-10T10:17:57.000Z",
+      "importe_valor": 35218,
+      "documento": 278478,
+      "fecha_deposito_documento": "2025-07-10T10:17:57.000Z"
+  }
+    navigate("/dashboard-trazabilidad-pagos",{state:{rowInfo}})
+  }
 
   return (
     <Box sx={{ flexShrink: 0, ml: 0.75 }}>
@@ -80,7 +116,7 @@ export default function Notification() {
         aria-haspopup="true"
         onClick={handleToggle}
       >
-        <Badge badgeContent={read} color="primary">
+        <Badge badgeContent={read} color="warning">
           <BellOutlined />
         </Badge>
       </IconButton>
@@ -98,14 +134,14 @@ export default function Notification() {
             <Paper sx={(theme) => ({ boxShadow: theme.customShadows.z1, width: '100%', minWidth: 285, maxWidth: { xs: 285, md: 420 } })}>
               <ClickAwayListener onClickAway={handleClose}>
                 <MainCard
-                  title="Notification"
+                  title="Alertas"
                   elevation={0}
                   border={false}
                   content={false}
                   secondary={
                     <>
                       {read > 0 && (
-                        <Tooltip title="Mark as all read">
+                        <Tooltip title="Marcar todas como Leído">
                           <IconButton color="success" size="small" onClick={() => setRead(0)}>
                             <CheckCircleOutlined style={{ fontSize: '1.15rem' }} />
                           </IconButton>
@@ -133,9 +169,10 @@ export default function Notification() {
                       selected={read > 0}
                       secondaryAction={
                         <Typography variant="caption" noWrap>
-                          3:00 AM
+                          5:00 AM
                         </Typography>
                       }
+                      onClick={clickAlerta}
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ color: 'success.main', bgcolor: 'success.lighter' }}>
@@ -145,14 +182,14 @@ export default function Notification() {
                       <ListItemText
                         primary={
                           <Typography variant="h6">
-                            It&apos;s{' '}
+                            
                             <Typography component="span" variant="subtitle1">
-                              Cristina danny&apos;s
+                              Camilo Canasto
                             </Typography>{' '}
-                            birthday today.
+                            cumpleaños Hoy.
                           </Typography>
                         }
-                        secondary="2 min ago"
+                        secondary="43 años"
                       />
                     </ListItem>
                     <ListItem
@@ -160,9 +197,10 @@ export default function Notification() {
                       divider
                       secondaryAction={
                         <Typography variant="caption" noWrap>
-                          6:00 AM
+                          10:05 AM
                         </Typography>
                       }
+                      onClick={clickAlerta}
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ color: 'primary.main', bgcolor: 'primary.lighter' }}>
@@ -173,12 +211,12 @@ export default function Notification() {
                         primary={
                           <Typography variant="h6">
                             <Typography component="span" variant="subtitle1">
-                              Aida Burg
+                              Juan Camaney
                             </Typography>{' '}
-                            commented your post.
+                            Escribió una queja.
                           </Typography>
                         }
-                        secondary="5 August"
+                        secondary="Buzón de quejas y sugerencias"
                       />
                     </ListItem>
                     <ListItem
@@ -190,6 +228,7 @@ export default function Notification() {
                           2:45 PM
                         </Typography>
                       }
+                      onClick={clickAlerta}
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ color: 'error.main', bgcolor: 'error.lighter' }}>
@@ -199,13 +238,13 @@ export default function Notification() {
                       <ListItemText
                         primary={
                           <Typography variant="h6">
-                            Your Profile is Complete &nbsp;
+                            Aviso &nbsp;
                             <Typography component="span" variant="subtitle1">
-                              60%
+                              Lentitud HSBC
                             </Typography>{' '}
                           </Typography>
                         }
-                        secondary="7 hours ago"
+                        secondary="Reporte de lentitud en la plataforma HSBC"
                       />
                     </ListItem>
                     <ListItem
@@ -213,9 +252,10 @@ export default function Notification() {
                       divider
                       secondaryAction={
                         <Typography variant="caption" noWrap>
-                          9:10 PM
+                          4:13 PM
                         </Typography>
                       }
+                      onClick={clickAlertaDashboard}
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ color: 'primary.main', bgcolor: 'primary.lighter' }}>C</Avatar>
@@ -224,15 +264,15 @@ export default function Notification() {
                         primary={
                           <Typography variant="h6">
                             <Typography component="span" variant="subtitle1">
-                              Cristina Danny
+                              Ficha de Depóstito
                             </Typography>{' '}
-                            invited to join{' '}
+                            Confirmada {' '}
                             <Typography component="span" variant="subtitle1">
-                              Meeting.
+                              Folio 167131
                             </Typography>
                           </Typography>
                         }
-                        secondary="Daily scrum meeting time"
+                        secondary="Click para ver el Dashboard"
                       />
                     </ListItem>
                     <ListItemButton sx={{ textAlign: 'center', py: `${12}px !important` }}>
