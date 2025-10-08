@@ -30,6 +30,7 @@ import CheckCircleOutlined from '@ant-design/icons/CheckCircleOutlined';
 import GiftOutlined from '@ant-design/icons/GiftOutlined';
 import MessageOutlined from '@ant-design/icons/MessageOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import { BellFilled, EditOutlined,FileDoneOutlined, DeliveredProcedureOutlined, ExportOutlined } from '@ant-design/icons';
 
 import useSQL from 'hooks/useSQL2.js'; //Empleamos useSQL2 para no mostrar mensajes
 import useAuth from 'hooks/useAuth.js';
@@ -137,6 +138,9 @@ export default function Notification() {
   const getIcon = (tipo) => {
       switch (tipo) {
           case 'Cumpleaños de Contactos': return <GiftOutlined />;
+          case 'Cancelación de Factura': return <FileDoneOutlined />;
+          case 'Cancelación de Cheque': return <EditOutlined />;
+          case 'Eliminación de Trámite': return <DeliveredProcedureOutlined />;
           case 'Queja': return <MessageOutlined />;
           case 'Aviso': return <SettingOutlined />;
           case 'Anticipo': return <CheckCircleOutlined />;
@@ -145,12 +149,20 @@ export default function Notification() {
       }
   };
 
-  const getColor = (tipo) => {
-      switch (tipo) {
-          case 'Cumpleaños de Contactos': return { color: 'success.main', bgcolor: 'success.lighter' };
-          case 'Queja': return { color: 'primary.main', bgcolor: 'primary.lighter' };
-          case 'Aviso': return { color: 'error.main', bgcolor: 'error.lighter' };
-          case 'Anticipo': return { color: 'warning.main', bgcolor: 'warning.lighter' };
+  const getColor = (prioridad) => {
+      // switch (tipo) {
+      //     case 'Cumpleaños de Contactos': return { color: 'success.main', bgcolor: 'success.lighter' };
+      //     case 'Cancelación de Factura': return { color: 'error.main', bgcolor: 'error.lighter' };
+      //     case 'Cancelación de Cheque': return { color: 'warning.main', bgcolor: 'warning.lighter' };
+      //     case 'Queja': return { color: 'primary.main', bgcolor: 'primary.lighter' };
+      //     case 'Aviso': return { color: 'error.main', bgcolor: 'error.lighter' };
+      //     case 'Anticipo': return { color: 'warning.main', bgcolor: 'warning.lighter' };
+      //     default: return { color: 'secondary.main', bgcolor: 'secondary.lighter' };
+      // }
+      switch (prioridad) {
+          case 'Baja': return { color: 'success.main', bgcolor: 'success.lighter' };
+          case 'Media': return { color: 'warning.main', bgcolor: 'warning.lighter' };
+          case 'Alta': return { color: 'error.main', bgcolor: 'error.lighter' };
           default: return { color: 'secondary.main', bgcolor: 'secondary.lighter' };
       }
   };
@@ -288,7 +300,7 @@ export default function Notification() {
                                         {misAlertas.map((alerta, index) => {
                                             
                                             // Asumiendo campos del SP
-                                            const { titulo, mensaje_principal, subtitulo, fecha, tipo_alerta, is_leida } = alerta;
+                                            const { titulo, mensaje_principal, subtitulo, fecha, tipo_alerta, is_leida, prioridad } = alerta;
                                             // Si tu SP no devuelve 'is_leida', asume true o false según tu lógica
                                             const isSelected = !is_leida; 
 
@@ -310,7 +322,7 @@ export default function Notification() {
                                                     onClick={() => handleAlertClick(alerta)} 
                                                 >
                                                     <ListItemAvatar>
-                                                        <Avatar sx={getColor(tipo_alerta.trim())}>
+                                                        <Avatar sx={getColor(prioridad.trim())}>
                                                             {getIcon(tipo_alerta.trim())}
                                                         </Avatar>
                                                     </ListItemAvatar>
@@ -318,9 +330,9 @@ export default function Notification() {
                                                         primary={
                                                             <Typography variant="h6">
                                                                 <Typography component="span" variant="subtitle1">
-                                                                    {mensaje_principal || 'Evento'}
+                                                                    {titulo || 'Evento'}
                                                                 </Typography>
-                                                                {' '} {titulo || 'No hay título'}
+                                                                {'  :  '} {mensaje_principal || 'Sin mensaje'}
                                                             </Typography>
                                                         }
                                                         secondary={subtitulo || 'Detalles no disponibles'}
