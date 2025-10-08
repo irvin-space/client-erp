@@ -10,7 +10,7 @@ import {
 } from '@mui/lab';
 import { Box, Typography, Paper } from '@mui/material';
 
-// Ant Design Icons
+// ant design
 import {
   DollarOutlined,
   WalletOutlined,
@@ -21,10 +21,8 @@ import {
   FileProtectOutlined,
   FileExcelOutlined,
   CreditCardOutlined
-  
 } from '@ant-design/icons';
 
-// DotIcon Component (unchanged, perfect!)
 const DotIcon = ({ children, color = 'primary.main', size = 16, iconColor }) => (
   <Box
     sx={{
@@ -39,7 +37,7 @@ const DotIcon = ({ children, color = 'primary.main', size = 16, iconColor }) => 
       position: 'relative',
       '& > *': {
         fontSize: size * 0.6,
-        color: iconColor || 'white' // use custom icon color if provided
+        color: iconColor || 'white'
       }
     }}
   >
@@ -47,17 +45,17 @@ const DotIcon = ({ children, color = 'primary.main', size = 16, iconColor }) => 
   </Box>
 );
 
-// Semantic Color Mapping by Title
-const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
+// Mapeo de colores por titulo
+const getEventStyle = (titulo, { folio }) => {
   const isComplete = folio != null && folio !== '';
 
-  // Normalize: split by '|' and trim each segment
+  // Normalizar y cortar
   const titleParts = titulo.split('|').map((t) => t.trim());
 
-  // Check if ANY part is "Aplicación de Anticipos a Facturas"
+  // Revisar si alguna parte es igual a Aplicacion de Anticipos a Facturas
   const isAplicacionAnticipo = titleParts.some((t) => t === 'Aplicación de Anticipos a Facturas');
 
-  // Determine icon based on main logic (can now include special case)
+  // Determinar el icono
   let icon;
   if (isAplicacionAnticipo) {
     icon = <LinkOutlined />;
@@ -93,7 +91,7 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
 
   if (!isComplete) {
     return {
-      dotColor: '#7D8FA4',
+      dotColor: '#a4acb61a',
       icon,
       isDisabled: true
     };
@@ -126,15 +124,16 @@ const getEventStyle = (titulo, { folio, fecha, comentarios }) => {
       return { dotColor: '#3a8dc4ff', icon, isDisabled: false };
 
     default:
-      return { dotColor: '#8b8c8dd8', icon, isDisabled: true };
+      return { dotColor: '#8c8d8b86', icon, isDisabled: true };
   }
 };
 
 const LineaDelTiempo2 = ({ events }) => {
   return (
-    <Box sx={{ py: 4, px: 0, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ py: 4, px: 0, maxWidth: 900, mx: 'auto', backgroundColor: { xs: '', sm: '' } }}>
       <Timeline
         sx={{
+          backgroundColor: '',
           [`& .${timelineItemClasses.root}:before`]: {
             flex: 0,
             padding: 0
@@ -145,25 +144,26 @@ const LineaDelTiempo2 = ({ events }) => {
           const { dotColor, icon, isDisabled } = getEventStyle(event.titulo, event);
           const isEven = index % 2 === 0;
 
-          // Choose icon color: gray when disabled
-          const iconColor = isDisabled ? '#C0C0C0' : 'white'; // soft silver-gray for disabled icon
+          // Color de icono deshabilitado
+          const iconColor = isDisabled ? '#c0c0c08c' : 'white';
 
-          // Choose text color based on disabled state
-          const textColor = isDisabled ? '#C0C0C0' : 'white';
+          // Color de texto deshabilitado
+          const textColor = isDisabled ? '#c0c0c08c' : 'white';
 
           return (
             <TimelineItem key={index}>
               {isEven ? (
                 <>
-                  {/* Date on Left */}
+                  {/* Fecha izquierda */}
                   <TimelineOppositeContent
                     sx={{
                       display: 'flex',
                       textAlign: 'right',
-                      mr: 2,
+                      mr: { xs: 0, md: 2 },
                       justifyContent: 'end',
                       alignItems: 'flex-start',
-                      pt: 1
+                      pt: 1,
+                      backgroundColor: ''
                     }}
                     color="text.secondary"
                     variant="body1"
@@ -171,20 +171,21 @@ const LineaDelTiempo2 = ({ events }) => {
                     {event.folio && event.fecha ? new Date(event.fecha).toLocaleDateString('es-MX') : '–'}
                   </TimelineOppositeContent>
 
-                  <TimelineSeparator>
+                  <TimelineSeparator sx={{ display: { xs: 'none', sm: 'flex' } }}>
                     <DotIcon color={dotColor} size={80} iconColor={iconColor}>
                       {icon}
                     </DotIcon>
                     {index !== events.length - 1 && <TimelineConnector sx={{ bgcolor: 'grey.300' }} />}
                   </TimelineSeparator>
 
-                  {/* Content on Right */}
-                  <TimelineContent sx={{ ml: 2 }}>
+                  {/* Contenido a la derecha */}
+                  <TimelineContent sx={{ ml: { xs: 0, md: 2 } }}>
                     <Paper
                       elevation={2}
                       sx={{
                         p: 3,
                         borderRadius: 2,
+                        textAlign: { xs: 'end', sm: 'start' },
                         bgcolor: dotColor,
                         color: textColor,
                         opacity: isDisabled ? 0.9 : 1,
@@ -219,6 +220,7 @@ const LineaDelTiempo2 = ({ events }) => {
                       sx={{
                         p: 3,
                         borderRadius: 2,
+                        textAlign: { xs: 'end', sm: 'start' },
                         bgcolor: dotColor,
                         color: textColor,
                         opacity: isDisabled ? 0.9 : 1,
@@ -244,7 +246,7 @@ const LineaDelTiempo2 = ({ events }) => {
                     </Paper>
                   </TimelineContent>
 
-                  <TimelineSeparator>
+                  <TimelineSeparator sx={{ display: { xs: 'none', sm: 'flex' } }}>
                     <DotIcon color={dotColor} size={60} iconColor={iconColor}>
                       {icon}
                     </DotIcon>
@@ -255,7 +257,7 @@ const LineaDelTiempo2 = ({ events }) => {
                     sx={{
                       display: 'flex',
                       justifyContent: 'flex-start',
-                      ml: 2,
+                      ml: { xs: 0, md: 2 },
                       alignItems: 'flex-start',
                       pt: 1
                     }}

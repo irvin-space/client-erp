@@ -12,6 +12,7 @@ import { esES } from '@mui/x-data-grid/locales';
 
 //Ant Design
 import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons';
+import { minWidth } from '@mui/system';
 
 // const rows = [
 //   {
@@ -60,15 +61,16 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
 
   const columns = [
     ...(sucursalColumna ? [sucursalColumna] : []),
-    { field: 'cliente_documento', headerName: 'Cliente', flex: 2, height: 500 },
-    { field: 'anticipo', headerName: 'Anticipo', flex: 1, height: 500 },
-    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2, align: 'right', headerAlign: 'right' },
-    { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1 },
+    { field: 'cliente_documento', headerName: 'Cliente', flex: 2,minWidth:250, height: 500 },
+    { field: 'anticipo', headerName: 'Anticipo', flex: 1,minWidth:100, height: 500 },
+    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2,minWidth:100, align: 'right', headerAlign: 'right' },
+    { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1,minWidth:180 },
     {
       field: 'importe_ficha_deposito',
       headerName: 'Importe',
       type: 'number',
       flex: 1,
+      minWidth:120,
       align: 'right',
       headerAlign: 'right'
     },
@@ -78,6 +80,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
       type: 'number',
       sortable: false,
       flex: 1,
+      minWidth:120,
       align: 'right',
       headerAlign: 'right'
     },
@@ -85,6 +88,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
       field: 'poliza_ficha',
       headerName: 'Póliza',
       flex: 1,
+      minWidth:100,
       align: 'right',
       headerAlign: 'right'
     },
@@ -92,6 +96,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
       field: 'seleccion',
       headerName: 'Selección',
       flex: 1,
+      minWidth:100,
       align: 'center',
       filterable: false, // usually you don't filter this column
       sortable: false,
@@ -135,7 +140,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
 
   return (
     //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
-    <Paper sx={{ height: '100%', width: '100%' }}>
+    <Paper sx={{ height: '100%', width:'100%'}}>
       <DataGrid
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         showToolbar
@@ -153,6 +158,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
         initialState={{ pagination: { paginationModel: paginationModel } }}
         pageSizeOptions={[5, 10]}
         sx={{
+          minWidth:'650',
           border: 0,
           '& .MuiDataGrid-columnHeader': {
             py: 0.5,

@@ -26,37 +26,67 @@ import useSQL from '../../hooks/useSQL';
 //Componente
 const TrazabilidadDePagos = () => {
   const { user } = useAuth();
-  const [sucursal, setSucursal] = useState(user?.sucursal || '');
   console.log(user);
 
-  const navigate = useNavigate()
+  const STORAGE_KEY = 'trazabilidadPagosFiltros';
+  const savedState = JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {};
 
+  const navigate = useNavigate();
+
+  const [sucursal, setSucursal] = useState(savedState.sucursal || user?.sucursal || '');
   const [openBusquedaClientePedimentoModal, setOpenBusquedaClientePedimentoModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [clienteFolioPedimento, setClienteFolioPedimento] = useState(null);
   const [nombreDeCliente, setNombreDeCliente] = useState('');
   const [numeroDeCliente, setNumeroDeCliente] = useState(null);
   const [arregloDeConsulta, setArregloDeConsulta] = useState([]);
 
-  const [desdeFecha, setDesdeFecha] = useState(dayjs().subtract(1, 'month'));
-  const [hastaFecha, setHastaFecha] = useState(dayjs());
+  const [desdeFecha, setDesdeFecha] = useState(savedState.desdeFecha ? dayjs(savedState.desdeFecha) : dayjs().subtract(1, 'month'));
+  const [hastaFecha, setHastaFecha] = useState(savedState.hastaFecha ? dayjs(savedState.hastaFecha) : dayjs());
 
-  const [columnaSucursal,setColumnaSucursal] = useState(null)
+  console.log(dayjs());
+
+  const [columnaSucursal, setColumnaSucursal] = useState(null);
 
   const { executeFetch } = useSQL();
 
+  // Guarda valores de filtrado en sessionStorage
+  const saveToSessionStorage = () => {
+    const stateToSave = {
+      sucursal,
+      desdeFecha: desdeFecha?.format('YYYY-MM-DD HH:mm:ss'),
+      hastaFecha: hastaFecha?.format('YYYY-MM-DD HH:mm:ss')
+      // clienteFolioPedimento,
+      // nombreDeCliente,
+      // numeroDeCliente,
+      // arregloDeConsulta,
+      // columnaSucursal,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  };
+
+  React.useEffect(() => {
+    saveToSessionStorage();
+  }, [
+    sucursal,
+    desdeFecha,
+    hastaFecha
+    // clienteFolioPedimento,
+    // nombreDeCliente,
+    // numeroDeCliente,
+    // arregloDeConsulta,
+    // columnaSucursal,
+  ]);
+
   const handleSucursalSelected = (value, objeto) => {
-    console.log('Sucursal seleccionada:', value);
-    if(value == '%'){
-      console.log("Se selecciono todo")
-      setColumnaSucursal({ field: 'sucursal', headerName: 'Sucursal', flex: 1, height: 500 })
-    }else{
-      setColumnaSucursal(null)
+    if (value == '%') {
+      setColumnaSucursal({ field: 'sucursal', headerName: 'Sucursal', flex: 1, height: 500 });
+    } else {
+      setColumnaSucursal(null);
     }
     setSucursal(value);
   };
 
   const handleRowSelectClientePedimento = (row) => {
-    console.log('est-camb-ad', row);
     setOpenBusquedaClientePedimentoModal(false);
     let folioYNombre = `${row.folio} - ${row.nombre_cliente}`;
     let nombreDeCliente = row.nombre_cliente;
@@ -65,29 +95,18 @@ const TrazabilidadDePagos = () => {
     // setFolio('');
     // setGastos([]);
     // setIngresos([]);
-    console.log('Esta es el numero de cliente:', row.cliente);
+    // console.log('Esta es el numero de cliente:', row.cliente);
     setClienteFolioPedimento(folioYNombre);
     setNombreDeCliente(folioYNombre);
     setNumeroDeCliente(numeroDeCliente);
   };
 
   const handleAplicarFiltros = async () => {
-    console.log('Aplicar filtros...');
-    console.log('sucursal', sucursal);
-    // console.log("Cliente",clienteFolioPedimento)
-    console.log('Numero de cliente', numeroDeCliente);
-    console.log(!!numeroDeCliente);
     let numeroCliente = numeroDeCliente;
     if (!numeroDeCliente) {
-      console.log('a');
       numeroCliente = 0;
-      console.log(numeroCliente);
     }
-    console.log('Desde Fecha', desdeFecha);
-    console.log('Desde Fecha', desdeFecha.format('YYYY-MM-DD').replaceAll('-', ''));
-    console.log('Hasta Fecha', hastaFecha.format('YYYY-MM-DD').replaceAll('-', ''));
 
-    console.log("ZUCURZAL",sucursal)
     const objetoParametros = {
       '@cSucursal': sucursal == 'Todos' ? "'%'" : `'${sucursal}'`,
       '@nCliente': numeroCliente,
@@ -96,46 +115,34 @@ const TrazabilidadDePagos = () => {
     };
 
     const { data, success } = await executeFetch('Trazabilidad_Pagos', objetoParametros);
-    console.log(success);
-    console.log('resultado despues de presionar consultar')
-    console.log(data);
+
     if (success) {
       setArregloDeConsulta(data[0]);
     }
   };
 
   const handleReiniciarValores = () => {
-    console.log('Se asignara la sucursal correspondiente del usuiario');
     setSucursal(user?.sucursal || '');
-
-    console.log('Se limpiara el input cliente');
     setNombreDeCliente('');
-
-    console.log('Se reestablecera la fecha desde ');
     setDesdeFecha(dayjs().subtract(1, 'month'));
-
-    console.log('Se reestablecera la fecha hasta ');
     setHastaFecha(dayjs());
-
-    console.log('Se limpiaran los valores de la tabla');
     setArregloDeConsulta([]);
   };
 
   const handleRowSelect = (rowInfo) => {
-    console.log(rowInfo)
-    navigate("/dashboard-trazabilidad-pagos",{state:{rowInfo}})
-  }
+    navigate('/dashboard-trazabilidad-pagos', { state: { rowInfo } });
+  };
 
   return (
     <Box>
-      <Box sx={{ marginBottom: '16px'/*, backgroundColor: 'white'*/ }}>
+      <Box sx={{ marginBottom: '16px' /*, backgroundColor: 'white'*/ }}>
         <Typography sx={{ verticalAlign: 'baseline' }} variant="h2">
           Trazabilidad de Pagos
         </Typography>
       </Box>
       <Grid container spacing={2}>
-        <Grid /*sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }}*/ size={{ xs: 12, md: 12, lg: 12 }}>
-          <Grid sx={{ height: '100%', backgroundColor: '', display: 'flex', alignItems: 'end' }} container spacing={3}>
+        <Grid size={{ xs: 12, md: 12, lg: 12 }}>
+          <Grid sx={{ backgroundColor: '', display: 'flex', alignItems: 'end' }} container spacing={3}>
             {/* Sucursales */}
             <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 2, lg: 2 }}>
               <ComponenteListaDinamica
@@ -151,6 +158,7 @@ const TrazabilidadDePagos = () => {
                 extraOption="Todos"
               />
             </Grid>
+            {/* Clientes */}
             <Grid sx={{ height: '60%' }} size={{ xs: 12, md: 3, lg: 4 }}>
               <Box sx={{ height: '100%', display: 'flex' }}>
                 {/* <TextField
@@ -165,42 +173,31 @@ const TrazabilidadDePagos = () => {
                   onClose={() => setOpenBusquedaClientePedimentoModal(false)}
                   onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
                   onSelectedRow={handleRowSelectClientePedimento}
-
                   value={nombreDeCliente ? nombreDeCliente : ''}
-                  //
-                  //
-                  //
-                  //
                 />
               </Box>
             </Grid>
             {/* Fecha Desde */}
-            <Grid size={{ md: 2, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 2, lg: 2 }}>
               <Typography variant="subtitle2">Desde</Typography>
               <FirstComponent value={desdeFecha} onChange={setDesdeFecha} />
             </Grid>
             {/* Fecha Hasta */}
-            <Grid size={{ md: 2, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 2, lg: 2 }}>
               <Typography variant="subtitle2">Hasta</Typography>
               <FirstComponent value={hastaFecha} onChange={setHastaFecha} />
             </Grid>
           </Grid>
         </Grid>
-        {/* Tabla */}
-        <Grid
-          sx={{ marginTop: '16px', height: '60vh', backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'lightblue' } }}
-          size={{ xs: 12, md: 12, lg: 12 }}
-        >
-          <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} sucursalColumna={columnaSucursal}/>
-        </Grid>
-        {/* <Grid sx={{ backgroundColor: { xs: 'lightcoral', md: 'lightgrey', lg: 'white' } }} size={{ xs: 12, md: 8, lg: 12 }}>
-          <p>Lorem Ipsum</p>
-        </Grid> */}
       </Grid>
+      {/* Tabla */}
+      <Box sx={{ width: '100', marginTop: '16px', height: '60vh', overflowX:'auto' }}>
+        <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} sucursalColumna={columnaSucursal} />
+      </Box>
       <br />
       {/* Botones Aplicar,Reinicar */}
       <Box sx={{ display: 'flex', justifyContent: 'l' }}>
-        <Button sx={{marginRight:'8px'}} variant="contained" onClick={handleAplicarFiltros}>
+        <Button sx={{ marginRight: '8px' }} variant="contained" onClick={handleAplicarFiltros}>
           Consultar
         </Button>
         <Button variant="outlined" onClick={handleReiniciarValores}>
