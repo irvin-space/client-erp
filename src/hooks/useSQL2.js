@@ -1,14 +1,15 @@
 import { useState, useCallback } from 'react';
-import { mensajes } from '../utils/mensajes.js'; 
 
 const API_URL = 'http://localhost:3001/ejecuta';
 
-const useSQL = () => {
+///
+// Este hook Funciona igual que useSQL.js pero sin mostrar mensajes
+///
+const useSQL2 = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🏆 CORRECCIÓN CLAVE: Usar useCallback para la estabilidad
   const executeFetch = useCallback(async (instruccionSQL, parametros, esAutorizacion) => {
     // Las funciones de setState (setData, setLoading, setError) son estables, 
     // por lo que no necesitan ir en las dependencias de useCallback.
@@ -36,11 +37,11 @@ const useSQL = () => {
       // Lógica de validación de tu código original
       if (responseData[0] && responseData[0].length === 0) {
         if (esAutorizacion) {
-          mensajes('error', 'Error durante registro de autorización');
+            console.log('Error durante registro de autorización');
           
         }
         else {  
-          mensajes('info', 'Consulta realizada');
+            console.log('Consulta realizada');
         }
         return { success: false, data: responseData }; 
       }
@@ -50,7 +51,6 @@ const useSQL = () => {
     } catch (e) {
       console.error("Error al ejecutar la consulta:", e);
       setError(e.message);
-      mensajes('error', `Error en la comunicación con el servidor: ${e.message}`);
       return { success: false, data: null };
       
     } finally {
@@ -61,4 +61,4 @@ const useSQL = () => {
   return { data, loading, error, executeFetch };
 };
 
-export default useSQL;
+export default useSQL2;
