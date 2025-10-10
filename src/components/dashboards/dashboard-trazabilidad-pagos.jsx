@@ -171,7 +171,7 @@ const DashboardTrazabilidadPagos = () => {
                   '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
                   // Elige la URL del endpoint según el servicio que se le pasó como argumento
-    const endpointURL = servicio === 'gemini' ? 'http://localhost:3001/analisis-ia' : 'http://localhost:3001/analisis-ia-gpt';
+    const endpointURL = servicio === 'gemini' ? VITE_URL_ENVIRONMENT + '/analisis-ia' : VITE_URL_ENVIRONMENT + '/analisis-ia-gpt';
 
     try {
       const response = await fetch(endpointURL, {

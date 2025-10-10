@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const API_URL = 'http://localhost:3001/ejecuta';
+const API_URL = VITE_URL_ENVIRONMENT+ '/ejecuta';
 
 ///
 // Este hook Funciona igual que useSQL.js pero sin mostrar mensajes

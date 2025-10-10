@@ -106,7 +106,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, onChange, onKeyDown,onClose, o
   const handleFetch = async (parametros) => {
     try {
       setIsLoading(true); // Comenzar a cargar
-      const response = await fetch('http://localhost:3001/dinamico/lista', {
+      const response = await fetch(VITE_URL_ENVIRONMENT + '/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

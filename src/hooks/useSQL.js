@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { mensajes } from '../utils/mensajes.js'; 
 
-const API_URL = 'http://localhost:3001/ejecuta';
+const API_URL = VITE_URL_ENVIRONMENT + '/ejecuta';
 
 const useSQL = () => {
   const [data, setData] = useState(null);

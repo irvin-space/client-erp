@@ -15,8 +15,8 @@ import { SunOutlined } from '@ant-design/icons';
 
 import CambioTema from 'utils/CambioTema';
 
-const cuentaOnClick = () => {
-  alert('Configuración de Cuenta');
+const seleccionOnClick = () => {
+  alert('Página en construcción');
 }
 
 // ==============================|| HEADER PROFILE - SETTING TAB ||============================== //
@@ -24,47 +24,47 @@ const cuentaOnClick = () => {
 export default function SettingTab() {
   return (
     <List component="nav" sx={{ p: 0, '& .MuiListItemIcon-root': { minWidth: 32 } }}>
-      <Link underline="none" sx={{ color: 'inherit' }} target="_blank" href="https://codedthemes.support-hub.io/">
+      <Link underline="none" sx={{ color: 'inherit' }} target="_blank" href="https://tickets.spaceti.cloud/">
         <ListItemButton>
           <ListItemIcon>
             <QuestionCircleOutlined />
           </ListItemIcon>
-          <ListItemText primary="Support" />
+          <ListItemText primary="Ayuda" />
         </ListItemButton>
       </Link>
       <ListItemButton>
         <ListItemIcon>
           <SunOutlined />
         </ListItemIcon>
-        <ListItemText primary="Light / Dark Mode" />
+        <ListItemText primary="Modo Oscuro / Claro" />
         <CambioTema />
       </ListItemButton>
       <ListItemButton>
         <ListItemIcon>
           <UserOutlined />
         </ListItemIcon>
-        <ListItemText primary="Account Settings" onClick={cuentaOnClick}/>
+        <ListItemText primary="Configuración de Cuenta" onClick={seleccionOnClick}/>
       </ListItemButton>
-      <ListItemButton>
+      {/* <ListItemButton>
         <ListItemIcon>
           <LockOutlined />
         </ListItemIcon>
         <ListItemText primary="Privacy Center" />
-      </ListItemButton>
-      <Link underline="none" style={{ color: 'inherit' }} target="_blank" href="https://codedthemes.support-hub.io/">
+      </ListItemButton> */}
+      <Link underline="none" style={{ color: 'inherit' }} target="_blank" href="https://tickets.spaceti.cloud/">
         <ListItemButton>
           <ListItemIcon>
             <CommentOutlined />
           </ListItemIcon>
-          <ListItemText primary="Feedback" />
+          <ListItemText primary="Comentarios" />
         </ListItemButton>
       </Link>
-      <ListItemButton>
+      {/* <ListItemButton>
         <ListItemIcon>
           <UnorderedListOutlined />
         </ListItemIcon>
         <ListItemText primary="History" />
-      </ListItemButton>
+      </ListItemButton> */}
     </List>
   );
 }

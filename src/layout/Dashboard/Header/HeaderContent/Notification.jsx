@@ -311,11 +311,8 @@ export default function Notification() {
                                                     divider
                                                     selected={isSelected}
                                                     secondaryAction={
-                                                        <Typography variant="caption" noWrap>
-                                                            {fecha 
-                                                              ? new Date(fecha.replace(' ', 'T').replace(/\.\d{3}/, '')).toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'}) 
-                                                              : 'N/A'
-                                                            }
+                                                        <Typography variant="caption" noWrap sx={{ fontSize: '0.65rem' }}>
+                                                          {fecha}
                                                         </Typography>
                                                     }
                                                     // Le pasamos toda la alerta a la función de clic
