@@ -134,7 +134,7 @@ const EstCambiosTramitesAduanales = () => {
                   '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
     // Elige la URL del endpoint según el servicio que se le pasó como argumento
-    const endpointURL = servicio === 'gemini' ? VITE_URL_ENVIRONMENT + '/analisis-ia' : VITE_URL_ENVIRONMENT+'/analisis-ia-gpt';
+    const endpointURL = servicio === 'gemini' ? import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia' : import.meta.env.VITE_URL_ENVIRONMENT+'/analisis-ia-gpt';
 
     try {
       const response = await fetch(endpointURL, {
@@ -165,7 +165,7 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleFetch = async (parametros) => {
     try {
-      const response = await fetch(VITE_URL_ENVIRONMENT +'/dinamico/lista', {
+      const response = await fetch(import.meta.env.VITE_URL_ENVIRONMENT +'/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

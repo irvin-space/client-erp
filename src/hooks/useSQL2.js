@@ -1,11 +1,14 @@
 import { useState, useCallback } from 'react';
 
-const API_URL = VITE_URL_ENVIRONMENT+ '/ejecuta';
-
 ///
 // Este hook Funciona igual que useSQL.js pero sin mostrar mensajes
 ///
+//const API_URL2 = VITE_URL_ENVIRONMENT + '/ejecuta'; 
+
 const useSQL2 = () => {
+  const BASE_URL2 = import.meta.env.VITE_URL_ENVIRONMENT;
+  const API_URL2 = BASE_URL2 ? BASE_URL2 + '/ejecuta' : '/ejecuta'; 
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,7 +21,7 @@ const useSQL2 = () => {
     setData(null);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_URL2, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

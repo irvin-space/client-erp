@@ -62,7 +62,7 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow, editando, la
 
   const handleFetch = async (orden, texto, principio, sucursal) => {
     try {
-      const response = await fetch(VITE_URL_ENVIRONMENT + '/dinamico/lista', {
+      const response = await fetch(import.meta.env.VITE_URL_ENVIRONMENT + '/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

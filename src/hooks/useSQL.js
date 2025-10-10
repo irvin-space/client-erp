@@ -1,9 +1,12 @@
 import { useState, useCallback } from 'react';
 import { mensajes } from '../utils/mensajes.js'; 
 
-const API_URL = VITE_URL_ENVIRONMENT + '/ejecuta';
+//const API_URL = VIRE_URL_ENVIRONMENT ? VITE_URL_ENVIRONMENT + '/ejecuta' : '/ejecuta';
 
 const useSQL = () => {
+  const BASE_URL = import.meta.env.VITE_URL_ENVIRONMENT;
+  const API_URL = BASE_URL ? BASE_URL + '/ejecuta' : '/ejecuta'; 
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -48,16 +48,20 @@ const setSession = (serviceToken) => {
 const JWTContext = createContext(null);
 
 export const JWTProvider = ({ children }) => {
+  const BASE_URL = import.meta.env.VITE_URL_ENVIRONMENT;
+  
+
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
     const init = async () => {
+      // const API_URL = BASE_URL ? BASE_URL + '/user/cuenta/yo' : '/user/cuenta/yo'; 
       try {
         const serviceToken = window.localStorage.getItem('serviceToken');
         if (serviceToken && verifyToken(serviceToken)) {
           setSession(serviceToken);
           //const response = await axios.post('http://172.16.2.31:3001/user/cuenta/yo');
-          const response = await axios.post(VITE_URL_ENVIRONMENT+'/user/cuenta/yo');
+          const response = await axios.post(import.meta.env.VITE_URL_ENVIRONMENT + '/user/cuenta/yo');
           console.log(response)
           const { user, menu } = response.data;
           dispatch({
@@ -85,8 +89,10 @@ export const JWTProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+    //const API_URL = BASE_URL ? BASE_URL + '/user/login' : '/user/login'; 
+
     //const response = await axios.post('http://172.16.2.31:3001/user/login', { email, password });
-    const response = await axios.post(VITE_URL_ENVIRONMENT+'/user/login', { email, password });
+    const response = await axios.post(import.meta.env.VITE_URL_ENVIRONMENT+'/user/login', { email, password });
 
     const { serviceToken, user, menu } = response.data;
     console.log(menu)
