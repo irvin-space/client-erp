@@ -138,9 +138,36 @@ const DashboardTrazabilidadPagos = () => {
     const parametros = Params; // Usa el folio del trámite seleccionado
     // const promptAI =
     //   'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
-    const promptAI = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
+    const promptAI = 
+      '**AUDITORÍA EXPRESS: TRÁMITE ADUANAL**\n\n' +
+      'Eres un auditor financiero externo de alto nivel. Analiza exclusivamente los datos aduanales y responde en **Markdown estricto** y ultra-conciso.\n' +
+      'Tu audiencia (Alta Dirección/Auditores) requiere identificar el riesgo en menos de 30 segundos. **Máximo 150 palabras totales.**\n\n' +
+      '**PREMISAS DE CÁLCULO:**\n' +
+      '1. **Ingreso:** Únicamente `importe_ficha_deposito`.\n' +
+      '2. **Gasto:** Sumatoria de `total_movimiento`.\n' +
+      '3. **Ignorar:** Excluir `folio_CONTPAQ` y `fecha_CONTPAQ`.\n\n' +
+      '**ENFOQUE EN RIESGO (Prioridad Máxima):**\n' +
+      '1. **Políticas y Exportación:** Verificar si la póliza de la ficha de depósito (`poliza_ficha`) y su exportación (`numero_exportado_poliza_ficha`) existen y coinciden las fechas de registro y exportación.\n' +
+      '2. **Discrepancias Monetarias:** Señalar inmediatamente si (Ingreso - Gasto) no coincide con `saldo_actual_ficha`, o si un gasto individual (`total_movimiento`) es atípico.\n' +
+      '3. **Cronología Crítica:** Alertar sobre cualquier inversión temporal (ej. Gasto antes de Ingreso) o lapsos de tiempo excesivos (más de 15 días) entre fechas clave.\n' +
+      '4. **Todo Bien:** Si no hay riesgos ni anomalías críticas, la primera sección debe ser **una sola oración** indicando conformidad.\n\n' +
+      '**FORMATO DE SALIDA (Máximo 2 secciones):**\n' +
+      '---\n' +
+      '# 🚨 RIESGO AUDITORÍA: [FOLIO/NOMBRE DEL TRÁMITE]\n' +
+      '---\n' +
+      '## ⚠️ Hallazgos Clave y Puntos de Atención (Lista Concisa)\n' +
+      '* **Póliza:** [Estado de las Pólizas y sus Exportaciones. Usar ✅ o ❌]\n' +
+      '* **Balance:** [Discrepancia monetaria o conformidad del saldo. Usar el balance numérico clave (e.g., $5,400 de diferencia)]\n' +
+      '* **Timing:** [Máximo desfase en días y entre qué fechas. Usar 🗓️]\n' +
+      '* **Atípico:** [Gasto inusual si aplica, sino omitir]\n\n' +
+      '## 🧭 Recomendación Auditora (Una Sentencia)\n' +
+      '[Acción clara y directa: requerir documentación faltante, cerrar trámite o investigar $X.]';
+    
+      const promptAI2 = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
 
-                  'Analiza detalladamente los datos de este trámite aduanal. Revisa exhaustivamente los **ingresos y gastos**.' +
+                  'Analiza detalladamente los datos de este trámite aduanal, arrojando unicamente la información relevante en dos párrafos, ' +
+                  'teniendo en cuenta que esta información será revisada por alta dirección y auditor externo, es decir, personas con tiempo limitado. ' +
+                  'Revisa exhaustivamente los **ingresos y gastos**.' +
                   'PREMISAS ' + 
                   '1.- Tener en cuenta que el total distribuído es la sumatoria de total_movimiento, está indicada en pesos. ' +
                   ' La comparación de ingresos y gastos se debe basar en unicamente en importe_ficha_deposito como el unico importe de ingresos, '+
@@ -162,11 +189,11 @@ const DashboardTrazabilidadPagos = () => {
                   '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. '+
                   '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
 
-                  '## 📈 Análisis Financiero y de Consistencia'+
+                  '## 📈 Puntos Críticos'+
                   '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
                   '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
 
-                  '## ✅ Recomendación y Siguiente Paso'+
+                  '## ✅ Recomendaciones inmediatas'+
                   '* **Título Principal:** Usa **Markdown** para un título claro.' +
                   '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
@@ -344,7 +371,7 @@ const DashboardTrazabilidadPagos = () => {
                     { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
                     { headerName: 'Moneda', field: 'moneda' },
                     { headerName: 'Póliza', field: 'poliza' },
-                    { headerName: 'Número Exportado', field: 'poliza' },
+                    { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
                     { headerName: 'Total Movimiento', field: 'total_movimiento' }
                   ]}
                   data={filasDocumentosRelacionados}

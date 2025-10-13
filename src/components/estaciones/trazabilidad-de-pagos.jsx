@@ -78,11 +78,11 @@ const TrazabilidadDePagos = () => {
   ]);
 
   const handleSucursalSelected = (value, objeto) => {
-    if (value == '%') {
-      setColumnaSucursal({ field: 'sucursal', headerName: 'Sucursal', flex: 1, height: 500 });
-    } else {
-      setColumnaSucursal(null);
-    }
+    // if (value == '%') {
+    //   setColumnaSucursal({ field: 'sucursal', headerName: 'Sucursal', flex: 1, height: 500 });
+    // } else {
+    //   setColumnaSucursal(null);
+    // }
     setSucursal(value);
   };
 
