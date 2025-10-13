@@ -12,34 +12,6 @@ import { esES } from '@mui/x-data-grid/locales';
 
 //Ant Design
 import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons';
-import { minWidth } from '@mui/system';
-
-// const rows = [
-//   {
-//     id: 'Cliente A',
-//     fecha: '12/1/2025',
-//     ficha_deposito: '168305',
-//     importe: 275000,
-//     saldo_actual: 900,
-//     poliza: '654'
-//   },
-//   {
-//     id: 'Cliente B',
-//     fecha: '8/8/2025',
-//     ficha_deposito: '167957',
-//     importe: 370896,
-//     saldo_actual: 1000,
-//     poliza: '123'
-//   },
-//   {
-//     id: 'Cliente C',
-//     fecha: '9/12/2025',
-//     ficha_deposito: '168002',
-//     importe: 452000,
-//     saldo_actual: 2500,
-//     poliza: '456'
-//   }
-// ];
 
 const paginationModel = { page: 0, pageSize: 100 };
 
@@ -59,22 +31,43 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
   const [filterButton, setFilterButton] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
+  // Funcion auxiliar
+  const generateRowId = (row) => {
+    return row.documento != null ? row.documento : `fallback-${row.ficha_deposito}-${row.nombre_tipo}-fecha`;
+  };
+
   const columns = [
     // ...(sucursalColumna ? [sucursalColumna] : []),
-    { field: 'sucursal', headerName: 'Sucursal', flex: 2,minWidth:150, height: 500 },
-    { field: 'nombre_tipo', headerName: 'Tipo', flex: 2,minWidth:150, height: 500 },
-    { field: 'cliente_documento', headerName: 'Cliente', flex: 2,minWidth:250, height: 500 },
-    { field: 'anticipo', headerName: 'Anticipo', flex: 1,minWidth:100, height: 500 },
-    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2,minWidth:100, align: 'right', headerAlign: 'right' },
-    { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1,minWidth:180 },
+    { field: 'sucursal', headerName: 'Sucursal', flex: 2, minWidth: 150, height: 500 },
+    { field: 'nombre_tipo', headerName: 'Tipo', flex: 2, minWidth: 150, height: 500 },
+    { field: 'cliente_documento', headerName: 'Cliente', flex: 2, minWidth: 250, height: 500 },
+    { field: 'anticipo', headerName: 'Anticipo', flex: 1, minWidth: 100, height: 500 },
+    { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2, minWidth: 100, align: 'right', headerAlign: 'right' },
+    { field: 'fecha_deposito_documento', headerName: 'Fecha', flex: 1, minWidth: 180 },
     {
       field: 'importe_ficha_deposito',
       headerName: 'Importe',
       type: 'number',
       flex: 1,
-      minWidth:120,
+      minWidth: 120,
       align: 'right',
-      headerAlign: 'right'
+      headerAlign: 'right',
+      valueFormatter: (value) => {
+        if (value === undefined || value === null || value === '') {
+          return '';
+        }
+
+        const num = Number(value);
+
+        if (isNaN(num)) {
+          return '—';
+        }
+
+        return new Intl.NumberFormat('es-MX', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(num);
+      }
     },
     {
       field: 'saldo_actual_ficha',
@@ -82,15 +75,31 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
       type: 'number',
       sortable: false,
       flex: 1,
-      minWidth:120,
+      minWidth: 120,
       align: 'right',
-      headerAlign: 'right'
+      headerAlign: 'right',
+      valueFormatter: (value) => {
+        if (value === undefined || value === null || value === '') {
+          return '';
+        }
+
+        const num = Number(value);
+
+        if (isNaN(num)) {
+          return '—';
+        }
+
+        return new Intl.NumberFormat('es-MX', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(num);
+      }
     },
     {
       field: 'poliza_ficha',
       headerName: 'Póliza',
       flex: 1,
-      minWidth:100,
+      minWidth: 100,
       align: 'right',
       headerAlign: 'right'
     },
@@ -98,18 +107,19 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
       field: 'seleccion',
       headerName: 'Selección',
       flex: 1,
-      minWidth:100,
+      minWidth: 100,
       align: 'center',
-      filterable: false, // usually you don't filter this column
+      filterable: false,
       sortable: false,
       headerAlign: 'center',
       renderCell: (params) => {
-        const isSelected = selectedRowId === params.row.documento;
+        const generatedId = generateRowId(params.row);
+        const isSelected = selectedRowId === generatedId;
 
         const handleSelect = () => {
-          setSelectedRowId(params.row.documento); // Update local state for visual feedback
+          setSelectedRowId(generatedId); // guardar id
           if (onSelectRow) {
-            onSelectRow(params.row); // Notify parent
+            onSelectRow(params.row); // pasar data
           }
         };
 
@@ -142,7 +152,7 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
 
   return (
     //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
-    <Paper sx={{ height: '100%', width:'100%'}}>
+    <Paper sx={{ height: '100%', width: '100%' }}>
       <DataGrid
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         showToolbar
@@ -154,13 +164,13 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
           toolbar: { setFilterButton }
         }}
         rows={rowsArray}
-        getRowId={(row) => `${row.documento}`}
+        getRowId={generateRowId}
         columns={columns}
         rowHeight={52} //valor default 52
         initialState={{ pagination: { paginationModel: paginationModel } }}
         pageSizeOptions={[5, 10]}
         sx={{
-          minWidth:'650',
+          minWidth: '650',
           border: 0,
           '& .MuiDataGrid-columnHeader': {
             py: 0.5,
