@@ -31,12 +31,14 @@ import GiftOutlined from '@ant-design/icons/GiftOutlined';
 import MessageOutlined from '@ant-design/icons/MessageOutlined';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import { BellFilled, EditOutlined,FileDoneOutlined, DeliveredProcedureOutlined, ExportOutlined } from '@ant-design/icons';
+import { GiEasterEgg} from 'react-icons/gi';
 
 import useSQL from 'hooks/useSQL2.js'; //Empleamos useSQL2 para no mostrar mensajes
 import useAuth from 'hooks/useAuth.js';
 
 import Snackbar from '@mui/material/Snackbar'; // 👈 Importa Snackbar
 import MuiAlert from '@mui/material/Alert'; // 👈 Opcional: Para darle estilo de alerta
+import { set } from 'lodash-es';
 
 
 // sx styles
@@ -78,6 +80,8 @@ export default function Notification() {
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+
 
   const handleClose = (event) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -129,9 +133,12 @@ export default function Notification() {
         const alertas = result.data[0]; 
         setMisAlertas(alertas); // Dependencia: setMisDatos
         setRead(alertas.length); // Dependencia: setRead
+
+        setShowEasterEgg(result.data[1][0].showEasterEgg);        
     } else {
         setMisAlertas([]);
         setRead(0);
+        setShowEasterEgg(false);
     }
   }, [executeFetch]); // Las dependencias de useCallback
   
@@ -229,9 +236,30 @@ export default function Notification() {
       setSnackbarOpen(false);
   };
 
+  //const easterEgg = false;
+
   // ==============================|| RENDERIZADO DEL COMPONENTE ||============================== //
     return (
         <Box sx={{ flexShrink: 0, ml: 0.75 }}>
+            <IconButton 
+                color="secondary"
+                variant="light"
+                sx={(theme) => ({
+                    color: 'purple',
+                    bgcolor: open ? 'grey.100' : 'transparent',
+                    display: showEasterEgg ? 'inline-flex' : 'none',
+                    ...theme.applyStyles('dark', { bgcolor: open ? 'background.default' : 'transparent' })
+                })}
+                aria-label="open profile"
+                ref={anchorRef}
+                aria-controls={open ? 'profile-grow' : undefined}
+                aria-haspopup="true"
+                //onClick={handleToggle}
+            >
+                <Badge badgeContent={0}>
+                    <GiEasterEgg /> 
+                </Badge>
+            </IconButton>
             <IconButton
                 color="secondary"
                 variant="light"

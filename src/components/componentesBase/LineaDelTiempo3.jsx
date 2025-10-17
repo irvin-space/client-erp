@@ -81,7 +81,13 @@ const getEventStyle = (titulo, { folio }) => {
       case 'Pago de Cliente':
         icon = <CreditCardOutlined />;
         break;
-      case 'Factura de cliente':
+      case 'Pago de Cliente':
+        icon = <CreditCardOutlined />;
+        break;
+      case 'Nota de Crédito':
+        icon = <CreditCardOutlined />;
+        break;
+      case 'Conciliación de Anticipo':
         icon = <FileTextOutlined />;
         break;
       default:
@@ -122,6 +128,12 @@ const getEventStyle = (titulo, { folio }) => {
 
     case 'Pago de Cliente':
       return { dotColor: '#3a8dc4ff', icon, isDisabled: false };
+
+    case 'Nota de Crédito':
+      return { dotColor: '#7d3ac4ff', icon, isDisabled: false };
+
+    case 'Conciliación de Anticipo':
+      return { dotColor: '#11908cff', icon, isDisabled: false };
 
     default:
       return { dotColor: '#8c8d8b86', icon, isDisabled: true };

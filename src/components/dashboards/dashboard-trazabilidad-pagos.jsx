@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -20,8 +20,16 @@ import {
   FileTextOutlined,
   NumberOutlined,
   ProfileOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
+  FilePdfOutlined,
+  CodeOutlined, // Reemplazo para FileXmlOutlined
+  CheckCircleOutlined,
+  WarningOutlined,
+  FireOutlined as TrendingUp // Renombrado para la Card de distribución
 } from '@ant-design/icons';
+
+// Y si tu botón es de AntD:
+ //import { Button } from 'antd'; 
 
 //Componentes propios del proyecto
 import MainCard from '../MainCard.jsx';
@@ -227,6 +235,124 @@ const DashboardTrazabilidadPagos = () => {
     }
   };
 
+  const handleViewPDF = useCallback((documento) => {
+      // La estructura es documento.pdf.data
+      const bufferData = documento.pdf.data; // 👈 Accedemos al array de bytes
+
+      if (!bufferData || bufferData.length === 0) {
+          console.error("Los datos binarios del PDF están vacíos.");
+          // Notificación de error si usas Notistack
+          return;
+      }
+
+      // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
+      // Esto es el formato binario que el Blob espera.
+      const byteArray = new Uint8Array(bufferData);
+
+      // 2. Crear un objeto Blob con el Array Binario
+      // Usamos 'application/pdf' como MIME type
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+      // 3. Crear una URL de objeto temporal
+      const url = URL.createObjectURL(blob);
+
+      // 4. Abrir la nueva pestaña
+      const newWindow = window.open(url, '_blank');
+
+      // OPCIONAL: Liberación de memoria
+      if (newWindow) {
+          newWindow.onload = () => {
+              URL.revokeObjectURL(url);
+          };
+      } else {
+          console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
+      }
+
+  }, []);
+
+  const handleViewXML = useCallback((documento) => {
+      // 1. Obtener el contenido del XML
+      const xmlContent = documento.xml;
+
+      if (!xmlContent) {
+          mensajes("error","El campo 'documento.xml' está vacío.");
+          // Opcional: Mostrar una notificación al usuario (con Notistack, por ejemplo)
+          return;
+      }
+
+      // 2. Crear un objeto Blob con el contenido XML
+      // 'text/xml' es el MIME type correcto para archivos XML.
+      const blob = new Blob([xmlContent], { type: 'text/xml' });
+
+      // 3. Crear una URL de objeto temporal
+      // Esta URL es un enlace interno que el navegador puede usar para acceder al Blob.
+      const url = URL.createObjectURL(blob);
+
+      // 4. Abrir la nueva pestaña
+      const newWindow = window.open(url, '_blank');
+
+      // OPCIONAL: Liberar la URL temporal cuando la ventana se cierre (aunque el navegador lo gestiona a menudo)
+      if (newWindow) {
+          newWindow.onload = () => {
+              // No es estrictamente necesario, pero es buena práctica de limpieza
+              URL.revokeObjectURL(url);
+          };
+      } else {
+          // En caso de que un bloqueador de pop-ups lo impida
+          // console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
+          mensajes("error","No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
+      }
+
+  }, []);
+
+  // Renderizador de columna Acciones
+const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llaves {}
+    // console.log('documento en acciones', documento); // <-- Aquí si quieres el log
+
+    return ( // <-- Return explícito
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+            <Button onClick={() => handleViewPDF(documento)} 
+                variant="text" 
+                size="small" 
+                style={{ color: '#E53935' }} // Rojo para PDF
+                title={`Ver PDF de Folio ${documento.factura}`} >
+                <FilePdfOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+            </Button>
+            <Button onClick={() => handleViewXML(documento)} 
+                variant="text" 
+                size="small" 
+                style={{ color: '#00BCD4' }} // Cian para XML (CodeOutlined)
+                title={`Ver XML de Folio ${documento.factura}`} >
+                <CodeOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+            </Button>
+        </div>
+    );
+}, [handleViewPDF, handleViewXML]);
+
+    // --- Configuración de Columnas para la Tabla ---
+  const columnsConfig = useMemo(() => [
+    { headerName: 'Tipo', field: 'tipo' },
+    { headerName: 'Folio', field: 'factura' },
+    { headerName: 'Fiscal', field: 'fiscal' },
+    { headerName: 'Fecha', field: 'fecha_factura' },
+    { headerName: 'UUID', field: 'uuid_funcion' },
+    { headerName: 'Total', field: 'total_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_factura} /> },
+    { headerName: 'Saldo Actual', field: 'saldo_actual_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.saldo_actual_factura} /> },
+    { headerName: 'Moneda', field: 'moneda' },
+    { headerName: 'Total Movimiento', field: 'total_movimiento', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_movimiento} /> },
+    { 
+      headerName: 'Acciones', 
+      field: 'acciones_renderer', 
+      cellRenderer: AccionesCellRenderer,
+      sortable: false,
+      filterable: false,
+      valueGetter: () => null,
+      width: 80,
+      align: 'center',
+      headerAlign: 'center'
+    }
+  ], [AccionesCellRenderer]);
+
   return (
     <Box sx={{ backgroundColor: '' }}>
       <Typography variant="h2">Dashboard de Trazabilidad</Typography>
@@ -362,19 +488,22 @@ const DashboardTrazabilidadPagos = () => {
               <Box sx={{ backgroundColor: 'gray' }}>
                 {/* <DataTable rowsArray={[]} /> */}
                 <TablaBase
-                  columnsConfig={[
-                    { headerName: 'Folio', field: 'factura' },
-                    { headerName: 'Fiscal', field: 'fiscal' },
-                    { headerName: 'Fecha', field: 'fecha_factura' },
-                    { headerName: 'UUID', field: 'uuid_funcion' },
-                    { headerName: 'Total', field: 'total_factura' },
-                    { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
-                    { headerName: 'Moneda', field: 'moneda' },
-                    { headerName: 'Póliza', field: 'poliza' },
-                    { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
-                    { headerName: 'Total Movimiento', field: 'total_movimiento' }
-                  ]}
+                  columnsConfig={columnsConfig}
                   data={filasDocumentosRelacionados}
+                  // columnsConfig={[  
+                    // { headerName: 'Folio', field: 'factura' },
+                    // { headerName: 'Fiscal', field: 'fiscal' },
+                    // { headerName: 'Fecha', field: 'fecha_factura' },
+                    // { headerName: 'UUID', field: 'uuid_funcion' },
+                    // { headerName: 'Total', field: 'total_factura' },
+                    // { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
+                    // { headerName: 'Moneda', field: 'moneda' },
+                    // { headerName: 'Póliza', field: 'poliza' },
+                    // { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
+                    // { headerName: 'Total Movimiento', field: 'total_movimiento' },
+                    // { headerName: 'Acciones', field: '' }
+                  // ]}
+                  // data={filasDocumentosRelacionados}
                 />
               </Box>
             </Grid>

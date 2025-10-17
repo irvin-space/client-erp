@@ -3,6 +3,10 @@ import { useContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MyContext } from '../../context';
 
+import FileUploader from '../componentesBase/FileUploader';
+// Asumiendo que tienes un hook para hacer peticiones al backend
+import useBackendApi from '../../hooks/useBackendApi'; 
+
 import useAuth from 'hooks/useAuth.js';
 
 //Librerias
@@ -50,6 +54,8 @@ import { m } from 'framer-motion';
 
 // Componente EstCambiosTramitesAduanales
 const EstCambiosTramitesAduanales = () => {
+  const [analisisResultado, setAnalisisResultado] = useState(null);
+  const { postData } = useBackendApi(); // Hook de ejemplo
   //const { data, setData } = useContext(MyContext);
   const [openModal, setOpenModal] = useState(false); // Seguimiento del estado del modal de busqueda tramites aduanales
   const [openAutoriza, setOpenAutoriza] = useState(false); // Seguimiento del estado del modal de autorizacion
@@ -69,11 +75,7 @@ const EstCambiosTramitesAduanales = () => {
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
   const [gastosRowSelected, setGastosRowSelected] = useState(null);
 
-  const [esHabilitadoIniciar, setEsHabilitadoIniciar] = useState(true);
-  const [esHabilitadoGuardar, setEsHabilitadoGuardar] = useState(false);
-  const [esHabilitadoCancelar, setEsHabilitadoCancelar] = useState(false);
-
-  const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
+   const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
   const [clienteFolioFacturacion, setClienteFolioFacturacion] = useState('');
 
   const [folio, setFolio] = useState('');
@@ -546,6 +548,43 @@ const EstCambiosTramitesAduanales = () => {
   // ENDWITH
 
   };
+
+// 💡 ESTA ES LA FUNCIÓN CLAVE 💡
+const handleFileAnalysis = async (fileData) => {
+    // Aquí recibimos el objeto: { name, mimeType, base64 }
+    console.log("Paso 1: Archivo recibido para análisis:", fileData);
+    
+    // Paso 1: AGREGAR VALIDACIÓN INICIAL
+    if (!folio) {
+        console.error("El Folio (trámite) no está definido. No se puede enviar a la IA.");
+        mensajes('aviso', 'Debes ingresar o seleccionar un Folio de Trámite para analizar el documento.');
+        return; 
+    }
+
+    try {
+        console.log("Enviando archivo a backend para análisis...");
+        const response = await postData('/analizar-documento-gemini', {
+            tramite_id: folio,
+            file: fileData // Enviamos el archivo ya en Base64
+        });
+
+        // 🚨 CORRECCIÓN CLAVE: El backend devuelve la data en la propiedad 'data'
+        // console.log("Respuesta completa del Backend:", response); // Descomentar para debug
+        
+        if (response.success && response.data) {
+            setAnalisisResultado(response.data); // USAR response.data
+            mensajes('exito', 'Datos extraídos con éxito por la IA.');
+            console.log("Datos para llenar campos (FRONTEND):", response.data);
+        } else {
+            mensajes('error', response.message || 'Error desconocido al extraer datos del documento.');
+        }
+
+    } catch (error) {
+        console.error("Error en la extracción de datos:", error);
+        mensajes('error', 'Fallo de comunicación con el servidor de análisis.');
+    }
+};
+
 
   return (
     <div>
@@ -1103,6 +1142,21 @@ const EstCambiosTramitesAduanales = () => {
             />
           </Box>
         </Box>
+
+        {/* <div>
+            <Typography variant="h5">Modificación de Trámite #{folio}</Typography>
+            
+            <FileUploader onFileProcessed={handleFileAnalysis} />
+            
+            {analisisResultado && (
+              <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', border: '1px solid #ddd' }}>
+                <Typography variant="subtitle1">Datos Extraídos por IA (Revisar):</Typography>
+                <pre>{JSON.stringify(analisisResultado, null, 2)}</pre>
+              </Box>
+            )}
+
+          </div> */}
+        
       </Stack>
       <Divider sx={{ my: 2 }} />
       {/* Botones */}

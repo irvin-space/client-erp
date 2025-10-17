@@ -24,8 +24,17 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@ant-design/icons': path.resolve(__dirname, 'node_modules/@ant-design/icons')
+        '@ant-design/icons': path.resolve(__dirname, 'node_modules/@ant-design/icons'),
         // Add more aliases as needed
+        // Alias para la carpeta raíz 'src' (convención común)
+        '@': path.resolve(__dirname, './src'), 
+
+        // Alias para tu carpeta 'components'
+        'components': path.resolve(__dirname, './src/components'),
+        //'api': path.resolve(__dirname, './src/api'), // 👈 ¡ESTO ES CLAVE!
+        // Alias para otras carpetas comunes que usan rutas absolutas
+        'contexts': path.resolve(__dirname, './src/contexts'), 
+        'utils': path.resolve(__dirname, './src/utils'), 
       }
     },
     plugins: [react(), jsconfigPaths()],

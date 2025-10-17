@@ -17,6 +17,8 @@ import Stack from '@mui/material/Stack';
  
 //Space background image
 import spaceBg from 'assets/images/backgrounds/spaceBg.jpg';
+
+import HuevosPascua from 'components/servicios/huevo-pascua.jsx';
  
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
  
@@ -27,13 +29,62 @@ export default function DashboardLayout() {
   const downXL = useMediaQuery((theme) => theme.breakpoints.down('xl'));
  
   const [isVisible, setIsVisible] = useState(true);
+  const [mensajeVisible, setMensajeVisible] = useState(false);
+   const [openHuevoPascua, setOpenHuevoPascua] = useState(false); // Seguimiento del estado del modal de historia de tramites
  
-  // set media wise responsive drawer
   useEffect(() => {
     handlerDrawerOpen(!downXL);
   }, [downXL]);
+
+  // 2. NUEVO useEffect para el Easter Egg (¡Añádelo!)
+  useEffect(() => {
+      const handleKeyDown = (event) => {
+      // La condición que ya tienes
+      if (event.key === "F2" && event.code === 'F2') { 
+          event.preventDefault(); 
+          
+          setOpenHuevoPascua(true); // Abre el modal
+          
+          // Temporizador para cerrar
+          const timer = setTimeout(() => {
+              setOpenHuevoPascua(false);
+          }, 9000); 
+
+          // Limpieza del timer si se presiona F2 varias veces antes de que expire
+          return () => clearTimeout(timer); 
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // La función de limpieza
+    return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+    };
+}, []); // 👈 Dependencia vacía para que solo se monte una vez.
+
+useEffect(() => {
+    if (openHuevoPascua) {
+        document.body.classList.add('invertir-raton');
+    } else {
+        document.body.classList.remove('invertir-raton');
+    }
+    
+    // Función de limpieza al desmontar: asegura que la clase se quite si el componente muere
+    return () => {
+        document.body.classList.remove('invertir-raton');
+    };
+}, [openHuevoPascua]); // Depende del estado del modal
  
-  if (menuMasterLoading) return <Loader />;
+if (menuMasterLoading) return <Loader />;
+
+  const handleOpenHuevoPascua = () => {
+    setOpenHuevoPascua(true);
+  };
+
+  const handleCloseHuevoPascua = () => {
+    setOpenHuevoPascua(false);
+  };
  
   return (
     <Box
@@ -63,6 +114,17 @@ export default function DashboardLayout() {
         <Outlet />
         {/* <Footer /> */}
       </Box>
+
+        {openHuevoPascua && (
+          <HuevosPascua 
+              open={openHuevoPascua} 
+              onClose={handleCloseHuevoPascua} 
+              // Si necesitas una clase para el modal para la inversión CSS
+              className="modal-huevo-pascua"
+          />
+        )}
     </Box>
+
+    
   );
 }

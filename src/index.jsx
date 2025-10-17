@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 
 // style.scss
-import 'assets/style.css';
+import './assets/style.css';
 
 // scroll bar
 import 'simplebar-react/dist/simplebar.min.css';
@@ -9,7 +9,7 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 // apex-chart
-import 'assets/third-party/apex-chart.css';
+import './assets/third-party/apex-chart.css';
 
 // google-fonts
 import '@fontsource/roboto/400.css';
@@ -36,7 +36,7 @@ import './global.css'   // 👈 importa los estilos globales aquí
 
 // project imports
 import App from './App';
-import { ConfigProvider } from 'contexts/ConfigContext';
+import { ConfigProvider } from './contexts/ConfigContext';
 import reportWebVitals from './reportWebVitals';
 
 const container = document.getElementById('root');

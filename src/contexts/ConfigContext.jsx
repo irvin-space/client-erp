@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { createContext, useCallback } from 'react';
 
 // project imports
-import config, { MenuOrientation } from 'config';
-import useLocalStorage from 'hooks/useLocalStorage';
+import config, { MenuOrientation } from '../config';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 // initial state
 const initialState = {

@@ -1,49 +1,49 @@
 import { lazy } from 'react';
 
 // project imports
-import AuthLayout from 'layout/Auth';
-import Loadable from 'components/Loadable';
-import { APP_AUTH, AuthProvider } from 'config';
+import AuthLayout from '../layout/Auth';
+import Loadable from '../components/Loadable';
+import { APP_AUTH, AuthProvider } from '../config';
 
 // jwt auth
-const JwtAuthLogin = Loadable(lazy(() => import('pages/auth/jwt/login')));
-const JwtAuthRegister = Loadable(lazy(() => import('pages/auth/jwt/register')));
-const JwtAuthForgotPassword = Loadable(lazy(() => import('pages/auth/jwt/forgot-password')));
-const JwtAuthResetPassword = Loadable(lazy(() => import('pages/auth/jwt/reset-password')));
-const JwtAuthCodeVerification = Loadable(lazy(() => import('pages/auth/jwt/code-verification')));
-const JwtAuthCheckMail = Loadable(lazy(() => import('pages/auth/jwt/check-mail')));
+const JwtAuthLogin = Loadable(lazy(() => import('../pages/auth/jwt/login')));
+const JwtAuthRegister = Loadable(lazy(() => import('../pages/auth/jwt/register')));
+const JwtAuthForgotPassword = Loadable(lazy(() => import('../pages/auth/jwt/forgot-password')));
+const JwtAuthResetPassword = Loadable(lazy(() => import('../pages/auth/jwt/reset-password')));
+const JwtAuthCodeVerification = Loadable(lazy(() => import('../pages/auth/jwt/code-verification')));
+const JwtAuthCheckMail = Loadable(lazy(() => import('../pages/auth/jwt/check-mail')));
 
 // firebase auth
-const FirebaseAuthLogin = Loadable(lazy(() => import('pages/auth/firebase/login')));
-const FirebaseAuthRegister = Loadable(lazy(() => import('pages/auth/firebase/register')));
-const FirebaseAuthForgotPassword = Loadable(lazy(() => import('pages/auth/firebase/forgot-password')));
-const FirebaseAuthResetPassword = Loadable(lazy(() => import('pages/auth/firebase/reset-password')));
-const FirebaseAuthCodeVerification = Loadable(lazy(() => import('pages/auth/firebase/code-verification')));
-const FirebaseAuthCheckMail = Loadable(lazy(() => import('pages/auth/firebase/check-mail')));
+const FirebaseAuthLogin = Loadable(lazy(() => import('../pages/auth/firebase/login')));
+const FirebaseAuthRegister = Loadable(lazy(() => import('../pages/auth/firebase/register')));
+const FirebaseAuthForgotPassword = Loadable(lazy(() => import('../pages/auth/firebase/forgot-password')));
+const FirebaseAuthResetPassword = Loadable(lazy(() => import('../pages/auth/firebase/reset-password')));
+const FirebaseAuthCodeVerification = Loadable(lazy(() => import('../pages/auth/firebase/code-verification')));
+const FirebaseAuthCheckMail = Loadable(lazy(() => import('../pages/auth/firebase/check-mail')));
 
 // auth0 auth
-const Auth0AuthLogin = Loadable(lazy(() => import('pages/auth/auth0/login')));
-const Auth0AuthRegister = Loadable(lazy(() => import('pages/auth/auth0/register')));
-const Auth0AuthForgotPassword = Loadable(lazy(() => import('pages/auth/auth0/forgot-password')));
-const Auth0AuthResetPassword = Loadable(lazy(() => import('pages/auth/auth0/reset-password')));
-const Auth0AuthCodeVerification = Loadable(lazy(() => import('pages/auth/auth0/code-verification')));
-const Auth0AuthCheckMail = Loadable(lazy(() => import('pages/auth/auth0/check-mail')));
+const Auth0AuthLogin = Loadable(lazy(() => import('../pages/auth/auth0/login')));
+const Auth0AuthRegister = Loadable(lazy(() => import('../pages/auth/auth0/register')));
+const Auth0AuthForgotPassword = Loadable(lazy(() => import('../pages/auth/auth0/forgot-password')));
+const Auth0AuthResetPassword = Loadable(lazy(() => import('../pages/auth/auth0/reset-password')));
+const Auth0AuthCodeVerification = Loadable(lazy(() => import('../pages/auth/auth0/code-verification')));
+const Auth0AuthCheckMail = Loadable(lazy(() => import('../pages/auth/auth0/check-mail')));
 
 // aws auth
-const AwsAuthLogin = Loadable(lazy(() => import('pages/auth/aws/login')));
-const AwsAuthRegister = Loadable(lazy(() => import('pages/auth/aws/register')));
-const AwsAuthForgotPassword = Loadable(lazy(() => import('pages/auth/aws/forgot-password')));
-const AwsAuthResetPassword = Loadable(lazy(() => import('pages/auth/aws/reset-password')));
-const AwsAuthCodeVerification = Loadable(lazy(() => import('pages/auth/aws/code-verification')));
-const AwsAuthCheckMail = Loadable(lazy(() => import('pages/auth/aws/check-mail')));
+const AwsAuthLogin = Loadable(lazy(() => import('../pages/auth/aws/login')));
+const AwsAuthRegister = Loadable(lazy(() => import('../pages/auth/aws/register')));
+const AwsAuthForgotPassword = Loadable(lazy(() => import('../pages/auth/aws/forgot-password')));
+const AwsAuthResetPassword = Loadable(lazy(() => import('../pages/auth/aws/reset-password')));
+const AwsAuthCodeVerification = Loadable(lazy(() => import('../pages/auth/aws/code-verification')));
+const AwsAuthCheckMail = Loadable(lazy(() => import('../pages/auth/aws/check-mail')));
 
 // supabase auth
-const SupabaseAuthLogin = Loadable(lazy(() => import('pages/auth/supabase/login')));
-const SupabaseAuthRegister = Loadable(lazy(() => import('pages/auth/supabase/register')));
-const SupabaseAuthForgotPassword = Loadable(lazy(() => import('pages/auth/supabase/forgot-password')));
-const SupabaseAuthResetPassword = Loadable(lazy(() => import('pages/auth/supabase/reset-password')));
-const SupabaseAuthCodeVerification = Loadable(lazy(() => import('pages/auth/supabase/code-verification')));
-const SupabaseAuthCheckMail = Loadable(lazy(() => import('pages/auth/supabase/check-mail')));
+const SupabaseAuthLogin = Loadable(lazy(() => import('../pages/auth/supabase/login')));
+const SupabaseAuthRegister = Loadable(lazy(() => import('../pages/auth/supabase/register')));
+const SupabaseAuthForgotPassword = Loadable(lazy(() => import('../pages/auth/supabase/forgot-password')));
+const SupabaseAuthResetPassword = Loadable(lazy(() => import('../pages/auth/supabase/reset-password')));
+const SupabaseAuthCodeVerification = Loadable(lazy(() => import('../pages/auth/supabase/code-verification')));
+const SupabaseAuthCheckMail = Loadable(lazy(() => import('../pages/auth/supabase/check-mail')));
 
 // ==============================|| AUTH ROUTING ||============================== //
 

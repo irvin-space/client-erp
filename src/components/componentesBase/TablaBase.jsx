@@ -55,25 +55,39 @@ const TablaBase = ({ data, columnsConfig }) => {
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {columnsConfig.map((col, colIndex) => {
-                if (col.field == 'total_movimiento' || col.field == 'total_factura' || col.field == 'saldo_actual_factura') {
+                
+                // 💡 PASO 1: VERIFICAR SI HAY UN RENDERER PERSONALIZADO
+                if (col.cellRenderer) {
+                  
+                  // Si existe un renderer, lo ejecutamos y renderizamos su resultado.
+                  // Le pasamos la fila completa (row) para que pueda acceder a 'documento.factura'
+                  const CellContent = col.cellRenderer(row); 
+                  
                   return (
-                    <TableCell key={colIndex}>
-                      {<MonedaFormatoMiles cantidad={row[col.field]} etiquetaHTML={'p'} /> ?? 'N/A'}{' '}
-                      {/* Accede al valor por el nombre del campo */}
+                    <TableCell key={colIndex} align="center"> {/* Alineamos al centro para los iconos */}
+                      {CellContent}
                     </TableCell>
                   );
-                } else {
+                } 
+                
+                // 💡 PASO 2: LÓGICA RÍGIDA PARA CASOS DE MONEDA
+                // Usamos el 'else if' para mantener tu lógica existente de formato
+                else if (col.field === 'total_movimiento' || col.field === 'total_factura' || col.field === 'saldo_actual_factura') {
                   return (
-                    <TableCell key={colIndex}>
-                      {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}
+                    <TableCell key={colIndex} align="center">
+                      {<MonedaFormatoMiles cantidad={row[col.field]} etiquetaHTML={'p'} /> ?? 'N/A'}
                     </TableCell>
                   );
                 }
-                // return (
-                //   <TableCell key={colIndex}>
-                //     {row[col.field] ?? 'N/A'} {/* Accede al valor por el nombre del campo */}
-                //   </TableCell>
-                // );
+                
+                // 💡 PASO 3: RENDERIZADO POR DEFECTO (muestra el valor del campo)
+                else {
+                  return (
+                    <TableCell key={colIndex} align="center">
+                      {row[col.field] ?? 'N/A'}
+                    </TableCell>
+                  );
+                }
               })}
             </TableRow>
           ))}

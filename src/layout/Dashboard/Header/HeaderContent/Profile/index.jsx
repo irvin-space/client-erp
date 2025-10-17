@@ -164,7 +164,7 @@ export default function Profile() {
                           <Stack>
                             <Typography variant="h6">{user?.name}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              ERP-SPACE  versión 1.0
+                              ERP-SPACE v1.0
                             </Typography>
                           </Stack>
                         </Stack>

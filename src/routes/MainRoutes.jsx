@@ -1,18 +1,19 @@
 import { lazy } from 'react';
 
 // project imports
-import Loadable from 'components/Loadable';
-import DashboardLayout from 'layout/Dashboard';
-import PagesLayout from 'layout/Pages';
-import SimpleLayout from 'layout/Simple';
+import Loadable from '../components/Loadable';
+import DashboardLayout from '../layout/Dashboard';
+import PagesLayout from '../layout/Pages';
+import SimpleLayout from '../layout/Simple';
 
 
-import { SimpleLayoutType } from 'config';
+import { SimpleLayoutType } from '../config';
 
 
 //Componentes
 import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tramites-aduanales'
 import EstDesktop from '../components/estaciones/est-desktop';
+import FileToJson from '@/components/estaciones/file-to-json';
 
 //Pages
 import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos';
@@ -20,18 +21,18 @@ import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-traza
 
 
 // pages routing
-const MaintenanceError = Loadable(lazy(() => import('pages/maintenance/404')));
-const MaintenanceError500 = Loadable(lazy(() => import('pages/maintenance/500')));
-const MaintenanceUnderConstruction = Loadable(lazy(() => import('pages/maintenance/under-construction')));
-const MaintenanceComingSoon = Loadable(lazy(() => import('pages/maintenance/coming-soon')));
+const MaintenanceError = Loadable(lazy(() => import('../pages/maintenance/404')));
+const MaintenanceError500 = Loadable(lazy(() => import('../pages/maintenance/500')));
+const MaintenanceUnderConstruction = Loadable(lazy(() => import('../pages/maintenance/under-construction')));
+const MaintenanceComingSoon = Loadable(lazy(() => import('../pages/maintenance/coming-soon')));
 
-const AppContactUS = Loadable(lazy(() => import('pages/contact-us')));
+const AppContactUS = Loadable(lazy(() => import('../pages/contact-us')));
 
 // render - sample page
-const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
+const SamplePage = Loadable(lazy(() => import('../pages/extra-pages/sample-page')));
 
 //renderizar - sample page 2
-const SamplePage2 = Loadable(lazy(() => import('pages/extra-pages/sample-page2')))
+const SamplePage2 = Loadable(lazy(() => import('../pages/extra-pages/sample-page2')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -64,6 +65,10 @@ const MainRoutes = {
         {
           path: 'dashboard-trazabilidad-pagos',
           element: <DashboardTrazabilidadPagos/>
+        },
+        {
+          path: 'file-to-json',
+          element: <FileToJson/>
         },
         {
           path: 'sample-page2', 
