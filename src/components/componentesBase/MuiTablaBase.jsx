@@ -1,196 +1,130 @@
-import * as React from 'react';
-import {
-  DataGrid
-  // We avoid GridToolbar and all deprecated toolbar helpers
-} from '@mui/x-data-grid';
+import React from 'react';
+import {useState} from 'react'
+
+//MUI
+//Componentes para tabla MUI
+import { DataGrid } from '@mui/x-data-grid';
+//Componentes generales MUI
+import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import ClearIcon from '@mui/icons-material/Clear';
+
+//Componentes propios del proyecto
+import MonedaFormatoMiles from './MonedaFormatoMiles.jsx'
+
+//Idioma para tabla
 import { esES } from '@mui/x-data-grid/locales';
 
-/**
- * Reusable DataTable without any deprecated MUI X components.
- *
- * @param {{ rows: object[], columns: object[], onSelectRow?: Function, enableFiltering?: boolean, pageSize?: number, pageSizeOptions?: number[] }} props
- */
-export default function MuiTablaBase({
-  rows = [],
-  columns,
-  onSelectRow = null,
-  enableFiltering = true,
-  pageSize = 50,
-  pageSizeOptions = [50, 100]
-}) {
-  const [selectedRowId, setSelectedRowId] = React.useState(null);
-  const [quickFilterValue, setQuickFilterValue] = React.useState('');
-  const [filterButtonEl, setFilterButtonEl] = React.useState(null);
+//Ant Design
+import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons';
 
-  // Reset selection when data changes
-  React.useEffect(() => {
-    setSelectedRowId(null);
-  }, [rows]);
+//Componente MuiTablaBase
+//Ejemplo de como utilizar:
+{/* <MuiTablaBase
+          tieneSeleccion={true} //Valor puede ser true o false
+          estructuraEncabezados={[
+            { propiedad: 'test1', encabezadoTitulo: 'prueba1abcdefghijklmnopqrstuvwxyz' },
+            { propiedad: 'test2', encabezadoTitulo: 'prueba2' },
+            { propiedad: 'test3', encabezadoTitulo: 'prueba3' },
+            { propiedad: 'test4', encabezadoTitulo: 'prueba4' },
+            { propiedad: 'test5', encabezadoTitulo: 'prueba5' },
+            { propiedad: 'test6', encabezadoTitulo: 'prueba6' },
+            { propiedad: 'test7', encabezadoTitulo: 'prueba7' },
+            { propiedad: 'test8', encabezadoTitulo: 'prueba8' },
+            { propiedad: 'test9', encabezadoTitulo: 'prueba9' },
+            { propiedad: 'test10', encabezadoTitulo: 'prueba10' }
+          ]}
+        /> */}
+const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
 
-  // Add selection column if needed
-  const finalColumns = React.useMemo(() => {
-    if (!onSelectRow) return columns;
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
-    return [
-      ...columns,
-      {
-        field: 'selection',
-        headerName: 'Select',
-        width: 100,
-        sortable: false,
-        filterable: false,
-        disableColumnMenu: true,
-        renderHeader: () => <strong>Select</strong>,
-        renderCell: (params) => {
-          const isSelected = selectedRowId === params.row.id;
+  // Funcion auxiliar
+  const generateRowId = (row) => {
+    return row.documento != null ? row.documento : `fallback-${row.ficha_deposito}-${row.nombre_tipo}-fecha`;
+  };
 
-          const handleSelect = () => {
-            setSelectedRowId(params.row.id);
-            onSelectRow?.(params.row);
-          };
+  console.log(seleccionable)
 
-          return (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%'
-              }}
+
+  const encabezados = estructuraEncabezados.map((item) => {
+    const calculatedFlex = item.encabezadoTitulo.length > 20 ? 2 : 1;
+
+    return { field: item.propiedad, headerName: item.encabezadoTitulo, flex: calculatedFlex};
+  });
+
+  if(seleccionable){
+    const columnaSeleccion = {
+      field: 'seleccion',
+      headerName: 'Selección',
+      flex: 1,
+      minWidth: 100,
+      align: 'center',
+      filterable: false,
+      sortable: false,
+      headerAlign: 'center',
+      renderCell: (params) => {
+        const generatedId = generateRowId(params.row);
+        const isSelected = selectedRowId === generatedId;
+
+        const handleSelect = () => {
+          setSelectedRowId(generatedId); // guardar id
+          if (onSelectRow) {
+            onSelectRow(params.row); // pasar data
+          }
+        };
+
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+              px: 0,
+              py: 0
+            }}
+          >
+            <IconButton
+              onClick={handleSelect}
+              aria-label={isSelected ? `Deseleccionar ${params.row.nombre_cliente}` : `Seleccionar ${params.row.nombre_cliente}`}
+              color="success"
+              size="medium"
+              sx={{ width: '100%', height: '100%' }}
             >
-              <IconButton onClick={handleSelect} aria-label={isSelected ? 'Deselect row' : 'Select row'} color="success" size="small">
-                {isSelected ? (
-                  <img src="/icons/check-circle-filled.svg" alt="" style={{ fontSize: '20px' }} />
-                ) : (
-                  <img src="/icons/check-circle-outlined.svg" alt="" style={{ fontSize: '20px' }} />
-                )}
-                {/* Or use AntDesign icons if still loaded */}
-              </IconButton>
-            </Box>
-          );
-        }
+              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CheckCircleOutlined fontSize="large" />}
+            </IconButton>
+          </Box>
+        );
       }
-    ];
-  }, [columns, onSelectRow, selectedRowId]);
+    }
 
-  if (!rows.length) {
-    return (
-      <Paper sx={{ p: 3, textAlign: 'center' }}>
-        <Typography variant="h6" color="textSecondary">
-          No data available
-        </Typography>
-      </Paper>
-    );
+    encabezados.push(columnaSeleccion)
   }
 
+  // const columns = [
+  //   { field: 'field', headerName: 'NombreColumna', flex: 1 },
+  //   { field: 'field2', headerName: 'NombreColumna2', flex: 1 }
+  // ];
+
+  const filas = [
+    { id:546, test1: 'Lorem Ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',test2: <MonedaFormatoMiles cantidad={555} />}
+  ]
+
   return (
+    //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
     <Paper sx={{ height: '100%', width: '100%' }}>
       <DataGrid
-        rows={rows}
-        columns={finalColumns}
-        // ✅ Correct way to set initial pagination in v7+
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize }
-          }
-        }}
-        pageSizeOptions={pageSizeOptions}
-        onRowSelectionModelChange={(newSelection) => {
-          if (newSelection.length > 0 && onSelectRow) {
-            const selectedId = newSelection[0];
-            const selectedRow = rows.find((row) => row.id === selectedId);
-            if (selectedRow) {
-              setSelectedRowId(selectedId);
-              onSelectRow(selectedRow);
-            }
-          }
-        }}
+        sx={{ '& .MuiDataGrid-columnHeader': { backgroundColor: 'primary.dark', color: 'primary.contrastText' } }}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        sx={{
-          border: 0,
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: 'primary.dark',
-            color: 'primary.contrastText',
-            py: 0.5,
-            px: 1
-          }
-        }}
-        // 🔍 Manual Toolbar (no GridToolbar used)
-        slots={{
-          toolbar: enableFiltering
-            ? () => (
-                <div style={{ padding: '8px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  {/* Custom Filter Button */}
-                  <Button
-                    ref={setFilterButtonEl}
-                    startIcon={<FilterListIcon />}
-                    variant="outlined"
-                    size="small"
-                    onClick={() => setFilterButtonEl((prev) => prev || document.activeElement)}
-                  >
-                    Filters
-                  </Button>
-
-                  {/* Quick Search Input */}
-                  <TextField
-                    value={quickFilterValue}
-                    onChange={(e) => setQuickFilterValue(e.target.value)}
-                    placeholder="Search all fields..."
-                    variant="outlined"
-                    size="small"
-                    InputProps={{ style: { minWidth: 200 } }}
-                    sx={{ flexGrow: 1, maxWidth: 300 }}
-                  />
-
-                  {/* Clear button */}
-                  {quickFilterValue && (
-                    <IconButton size="small" onClick={() => setQuickFilterValue('')}>
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                </div>
-              )
-            : null
-        }}
-        slotProps={{
-          panel: {
-            // For filter panel anchor
-            anchorEl: filterButtonEl,
-            placement: 'bottom-start',
-            onExited: () => setFilterButtonEl(null)
-          },
-          baseButton: {
-            size: 'small',
-            variant: 'outlined'
-          },
-          // Apply quick filter logic manually
-          toolbar: {}
-        }}
-        // Pass external filter value
-        filterModel={{
-          items: [],
-          quickFilterValues: quickFilterValue ? [quickFilterValue] : []
-        }}
-        onFilterModelChange={(model) => {
-          // Optional: sync with state or URL
-        }}
-        checkboxSelection={false}
-        disableRowSelectionOnClick
-        // Disable unnecessary UI if filtering is off
-        {...(!enableFiltering && {
-          disableColumnFilter: true,
-          disableColumnSelector: true,
-          disableDensitySelector: true
-        })}
+        columns={encabezados}
+        // rows={filas}
       />
     </Paper>
   );
-}
+};
+
+//Exportar componente
+export default MuiTablaBase;

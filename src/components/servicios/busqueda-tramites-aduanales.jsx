@@ -65,7 +65,7 @@ const BusquedaTramitesAduanales = ({ onSelectRow, onChange, onKeyDown,onClose, o
   //   setSegundoArreglo([])
   // }
 
-  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
   const [desdeFecha, setDesdeFecha] = useState(dayjs().subtract(1, 'month'));
   const [hastaFecha, setHastaFecha] = useState(dayjs());
   const [tipo, setTipo] = useState('Todos'); // 'Todos', 'Importación', 'Exportación');
