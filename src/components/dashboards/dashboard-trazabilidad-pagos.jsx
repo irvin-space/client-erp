@@ -80,12 +80,12 @@ const DashboardTrazabilidadPagos = () => {
       console.log('facturas relacionadas');
       console.log('RESPUESTA DEL BACKEND', data);
       console.log(data[0]);
-      console.log(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
-      setJsonIA(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      console.log(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
       setFilasDocumentosRelacionados(data[1]);
-      console.log('eventos para timeline', data[4]);
+      console.log('eventos para timeline', data[3]);
 
-      setEventos(data[4]);
+      setEventos(data[3]);
 
       let cantidadesTotalDistribuido = data[0].map((item) => {
         return item.total_movimiento;
