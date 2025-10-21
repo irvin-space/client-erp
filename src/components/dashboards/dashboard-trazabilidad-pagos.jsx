@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import useSQL from '../../hooks/useSQL.js';
 
+import * as XLSX from 'xlsx';
+
 //MUI
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -31,7 +33,7 @@ import {
 import { FaFolderOpen } from 'react-icons/fa';
 
 // Y si tu botón es de AntD:
- //import { Button } from 'antd'; 
+//import { Button } from 'antd';
 
 //Componentes propios del proyecto
 import MainCard from '../MainCard.jsx';
@@ -48,7 +50,6 @@ import MonedaFormatoMiles from '../componentesBase/MonedaFormatoMiles.jsx';
 import { mensajes } from '../../utils/mensajes.js';
 
 import ReactMarkdown from 'react-markdown';
-
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -83,6 +84,7 @@ const DashboardTrazabilidadPagos = () => {
       console.log(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
       setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
       setFilasDocumentosRelacionados(data[1]);
+      console.log("jijijij",data[1])
       console.log('eventos para timeline', data[3]);
 
       setEventos(data[3]);
@@ -148,7 +150,7 @@ const DashboardTrazabilidadPagos = () => {
     const parametros = Params; // Usa el folio del trámite seleccionado
     // const promptAI =
     //   'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
-    const promptAI = 
+    const promptAI =
       '**AUDITORÍA EXPRESS: TRÁMITE ADUANAL**\n\n' +
       'Eres un auditor financiero externo de alto nivel. Analiza exclusivamente los datos aduanales y responde en **Markdown estricto** y ultra-conciso.\n' +
       'Tu audiencia (Alta Dirección/Auditores) requiere identificar el riesgo en menos de 30 segundos. **Máximo 150 palabras totales.**\n\n' +
@@ -172,43 +174,40 @@ const DashboardTrazabilidadPagos = () => {
       '* **Atípico:** [Gasto inusual si aplica, sino omitir]\n\n' +
       '## 🧭 Recomendación Auditora (Una Sentencia)\n' +
       '[Acción clara y directa: requerir documentación faltante, cerrar trámite o investigar $X.]';
-    
-      const promptAI2 = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
 
-                  'Analiza detalladamente los datos de este trámite aduanal, arrojando unicamente la información relevante en dos párrafos, ' +
-                  'teniendo en cuenta que esta información será revisada por alta dirección y auditor externo, es decir, personas con tiempo limitado. ' +
-                  'Revisa exhaustivamente los **ingresos y gastos**.' +
-                  'PREMISAS ' + 
-                  '1.- Tener en cuenta que el total distribuído es la sumatoria de total_movimiento, está indicada en pesos. ' +
-                  ' La comparación de ingresos y gastos se debe basar en unicamente en importe_ficha_deposito como el unico importe de ingresos, '+
-                  'y la sumatoria de total_movimiento es el unico elemento a considerar como gasto.  Los otros elementos con importes son solamente referencias. ' +
-                  '2.- Los elementos folio_CONTPAQ y fecha_CONTPAQ son elementos que no se deben contemplar por el momento, ya que estamos en fase de pruebas con estos elementos' +
+    const promptAI2 =
+      '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
+      'Analiza detalladamente los datos de este trámite aduanal, arrojando unicamente la información relevante en dos párrafos, ' +
+      'teniendo en cuenta que esta información será revisada por alta dirección y auditor externo, es decir, personas con tiempo limitado. ' +
+      'Revisa exhaustivamente los **ingresos y gastos**.' +
+      'PREMISAS ' +
+      '1.- Tener en cuenta que el total distribuído es la sumatoria de total_movimiento, está indicada en pesos. ' +
+      ' La comparación de ingresos y gastos se debe basar en unicamente en importe_ficha_deposito como el unico importe de ingresos, ' +
+      'y la sumatoria de total_movimiento es el unico elemento a considerar como gasto.  Los otros elementos con importes son solamente referencias. ' +
+      '2.- Los elementos folio_CONTPAQ y fecha_CONTPAQ son elementos que no se deben contemplar por el momento, ya que estamos en fase de pruebas con estos elementos' +
+      '**Objetivos del Análisis:**' +
+      '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
+      '2.  **Discrepancias:** Señala gastos que sean inusualmente altos o bajos en comparación con la media, o discrepancias en las fechas de registro.' +
+      '**FORMATO DE SALIDA REQUERIDO:**' +
+      'Tu respuesta debe ser estructurada usando **Markdown** estricto para asegurar un formato profesional y legible.' +
+      '--- ' +
+      '# 📊 [NOMBRE O FOLIO DEL TRÁMITE] - Resumen de Auditoría Aduanal' +
+      '---' +
+      '## 🔍 Hallazgos Clave' +
+      '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. ' +
+      '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
+      '## 📈 Puntos Críticos' +
+      '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
+      '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
+      '## ✅ Recomendaciones inmediatas' +
+      '* **Título Principal:** Usa **Markdown** para un título claro.' +
+      '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
-                  '**Objetivos del Análisis:**' +
-                  '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
-                  '2.  **Discrepancias:** Señala gastos que sean inusualmente altos o bajos en comparación con la media, o discrepancias en las fechas de registro.' +
-
-                  '**FORMATO DE SALIDA REQUERIDO:**' +
-                  'Tu respuesta debe ser estructurada usando **Markdown** estricto para asegurar un formato profesional y legible.' +
-
-                  '--- '+
-                  '# 📊 [NOMBRE O FOLIO DEL TRÁMITE] - Resumen de Auditoría Aduanal' +
-                  '---' +
-
-                  '## 🔍 Hallazgos Clave'+
-                  '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. '+
-                  '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
-
-                  '## 📈 Puntos Críticos'+
-                  '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
-                  '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
-
-                  '## ✅ Recomendaciones inmediatas'+
-                  '* **Título Principal:** Usa **Markdown** para un título claro.' +
-                  '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
-
-                  // Elige la URL del endpoint según el servicio que se le pasó como argumento
-    const endpointURL = servicio === 'gemini' ? import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia' : import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia-gpt';
+    // Elige la URL del endpoint según el servicio que se le pasó como argumento
+    const endpointURL =
+      servicio === 'gemini'
+        ? import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia'
+        : import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia-gpt';
 
     try {
       const response = await fetch(endpointURL, {
@@ -238,73 +237,71 @@ const DashboardTrazabilidadPagos = () => {
   };
 
   const handleViewPDF = useCallback((documento) => {
-      // La estructura es documento.pdf.data
-      const bufferData = documento.pdf.data; // 👈 Accedemos al array de bytes
+    // La estructura es documento.pdf.data
+    const bufferData = documento.pdf.data; // 👈 Accedemos al array de bytes
 
-      if (!bufferData || bufferData.length === 0) {
-          console.error("Los datos binarios del PDF están vacíos.");
-          // Notificación de error si usas Notistack
-          return;
-      }
+    if (!bufferData || bufferData.length === 0) {
+      console.error('Los datos binarios del PDF están vacíos.');
+      // Notificación de error si usas Notistack
+      return;
+    }
 
-      // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
-      // Esto es el formato binario que el Blob espera.
-      const byteArray = new Uint8Array(bufferData);
+    // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
+    // Esto es el formato binario que el Blob espera.
+    const byteArray = new Uint8Array(bufferData);
 
-      // 2. Crear un objeto Blob con el Array Binario
-      // Usamos 'application/pdf' como MIME type
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
+    // 2. Crear un objeto Blob con el Array Binario
+    // Usamos 'application/pdf' como MIME type
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-      // 3. Crear una URL de objeto temporal
-      const url = URL.createObjectURL(blob);
+    // 3. Crear una URL de objeto temporal
+    const url = URL.createObjectURL(blob);
 
-      // 4. Abrir la nueva pestaña
-      const newWindow = window.open(url, '_blank');
+    // 4. Abrir la nueva pestaña
+    const newWindow = window.open(url, '_blank');
 
-      // OPCIONAL: Liberación de memoria
-      if (newWindow) {
-          newWindow.onload = () => {
-              URL.revokeObjectURL(url);
-          };
-      } else {
-          console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
-      }
-
+    // OPCIONAL: Liberación de memoria
+    if (newWindow) {
+      newWindow.onload = () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      console.error('No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
+    }
   }, []);
 
   const handleViewXML = useCallback((documento) => {
-      // 1. Obtener el contenido del XML
-      const xmlContent = documento.xml;
+    // 1. Obtener el contenido del XML
+    const xmlContent = documento.xml;
 
-      if (!xmlContent) {
-          mensajes("error","El campo 'documento.xml' está vacío.");
-          // Opcional: Mostrar una notificación al usuario (con Notistack, por ejemplo)
-          return;
-      }
+    if (!xmlContent) {
+      mensajes('error', "El campo 'documento.xml' está vacío.");
+      // Opcional: Mostrar una notificación al usuario (con Notistack, por ejemplo)
+      return;
+    }
 
-      // 2. Crear un objeto Blob con el contenido XML
-      // 'text/xml' es el MIME type correcto para archivos XML.
-      const blob = new Blob([xmlContent], { type: 'text/xml' });
+    // 2. Crear un objeto Blob con el contenido XML
+    // 'text/xml' es el MIME type correcto para archivos XML.
+    const blob = new Blob([xmlContent], { type: 'text/xml' });
 
-      // 3. Crear una URL de objeto temporal
-      // Esta URL es un enlace interno que el navegador puede usar para acceder al Blob.
-      const url = URL.createObjectURL(blob);
+    // 3. Crear una URL de objeto temporal
+    // Esta URL es un enlace interno que el navegador puede usar para acceder al Blob.
+    const url = URL.createObjectURL(blob);
 
-      // 4. Abrir la nueva pestaña
-      const newWindow = window.open(url, '_blank');
+    // 4. Abrir la nueva pestaña
+    const newWindow = window.open(url, '_blank');
 
-      // OPCIONAL: Liberar la URL temporal cuando la ventana se cierre (aunque el navegador lo gestiona a menudo)
-      if (newWindow) {
-          newWindow.onload = () => {
-              // No es estrictamente necesario, pero es buena práctica de limpieza
-              URL.revokeObjectURL(url);
-          };
-      } else {
-          // En caso de que un bloqueador de pop-ups lo impida
-          // console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
-          mensajes("error","No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
-      }
-
+    // OPCIONAL: Liberar la URL temporal cuando la ventana se cierre (aunque el navegador lo gestiona a menudo)
+    if (newWindow) {
+      newWindow.onload = () => {
+        // No es estrictamente necesario, pero es buena práctica de limpieza
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      // En caso de que un bloqueador de pop-ups lo impida
+      // console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
+      mensajes('error', 'No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
+    }
   }, []);
 
 
@@ -370,10 +367,13 @@ const DashboardTrazabilidadPagos = () => {
   }, []);
 
   // Renderizador de columna Acciones
-const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llaves {}
-    // console.log('documento en acciones', documento); // <-- Aquí si quieres el log
+  const AccionesCellRenderer = useCallback(
+    (documento) => {
+      // <-- Cuerpo con llaves {}
+      // console.log('documento en acciones', documento); // <-- Aquí si quieres el log
 
-    return ( // <-- Return explícito
+      return (
+        // <-- Return explícito
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
             <Button onClick={() => handleViewPDF(documento)} 
                 variant="text" 
@@ -418,32 +418,93 @@ const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llav
             
             
         </div>
-    );
-}, [handleViewPDF, handleViewXML]);
+      );
+    },
+    [handleViewPDF, handleViewXML]
+  );
 
-    // --- Configuración de Columnas para la Tabla ---
-  const columnsConfig = useMemo(() => [
-    { headerName: 'Tipo', field: 'tipo' },
-    { headerName: 'Folio', field: 'factura' },
-    { headerName: 'Fiscal', field: 'fiscal' },
-    { headerName: 'Fecha', field: 'fecha_factura' },
-    { headerName: 'UUID', field: 'uuid_funcion' },
-    { headerName: 'Total', field: 'total_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_factura} /> },
-    { headerName: 'Saldo Actual', field: 'saldo_actual_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.saldo_actual_factura} /> },
-    { headerName: 'Moneda', field: 'moneda' },
-    { headerName: 'Total Movimiento', field: 'total_movimiento', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_movimiento} /> },
-    { 
-      headerName: 'Acciones', 
-      field: 'acciones_renderer', 
-      cellRenderer: AccionesCellRenderer,
-      sortable: false,
-      filterable: false,
-      valueGetter: () => null,
-      width: 80,
-      align: 'center',
-      headerAlign: 'center'
+  // --- Configuración de Columnas para la Tabla ---
+  const columnsConfig = useMemo(
+    () => [
+      { headerName: 'Tipo', field: 'tipo' },
+      { headerName: 'Folio', field: 'factura' },
+      { headerName: 'Fiscal', field: 'fiscal' },
+      { headerName: 'Fecha', field: 'fecha_factura' },
+      { headerName: 'UUID', field: 'uuid_funcion' },
+      { headerName: 'Total', field: 'total_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_factura} /> },
+      {
+        headerName: 'Saldo Actual',
+        field: 'saldo_actual_factura',
+        cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.saldo_actual_factura} />
+      },
+      { headerName: 'Moneda', field: 'moneda' },
+      {
+        headerName: 'Total Movimiento',
+        field: 'total_movimiento',
+        cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_movimiento} />
+      },
+      {
+        headerName: 'Acciones',
+        field: 'acciones_renderer',
+        cellRenderer: AccionesCellRenderer,
+        sortable: false,
+        filterable: false,
+        valueGetter: () => null,
+        width: 80,
+        align: 'center',
+        headerAlign: 'center'
+      }
+    ],
+    [AccionesCellRenderer]
+  );
+
+  const handleExportToExcel = () => {
+    if (!filasDocumentosRelacionados || filasDocumentosRelacionados.length === 0) {
+      mensajes('aviso', 'No hay datos para exportar.');
+      return;
     }
-  ], [AccionesCellRenderer]);
+
+    // Prepare data for export: map only visible/exportable fields
+    const headersMap = {
+      tipo: 'Tipo',
+      factura: 'Folio',
+      fiscal: 'Fiscal',
+      fecha_factura: 'Fecha',
+      uuid_funcion: 'UUID',
+      total_factura: 'Total',
+      saldo_actual_factura: 'Saldo Actual',
+      moneda: 'Moneda',
+      total_movimiento: 'Total Movimiento',
+      cntDoctos: 'test1'
+      // Acciones no se exporta
+    };
+
+    const dataToExport = filasDocumentosRelacionados.map((row) => ({
+      ...row,
+      // Format numbers if needed (optional)
+      total_factura: Number(row.total_factura),
+      saldo_actual_factura: Number(row.saldo_actual_factura),
+      total_movimiento: Number(row.total_movimiento)
+    }));
+    console.log('data to export' ,dataToExport)
+    // Extract only the columns we want, mapped to friendly names
+    const worksheetData = dataToExport.map((row) => {
+      console.log("Data to export map",row)
+      const mapped = {};
+      Object.keys(headersMap).forEach((key) => {
+        mapped[headersMap[key]] = row[key];
+      });
+      return mapped;
+    });
+
+    // Creacion de hoja y libro
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Documentos Relacionados');
+
+    // Trigger download
+    XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${folioDepositoAConsultar}.xlsx`);
+  };
 
   return (
     <Box sx={{ backgroundColor: '' }}>
@@ -530,11 +591,7 @@ const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llav
                     iconPrimary={ProfileOutlined}
                   />
                   <ReportCard
-                    primary={
-                      informacionDelDeposito?.numero_exportado_ficha
-                        ? informacionDelDeposito?.numero_exportado_ficha
-                        : 'N/A'
-                    }
+                    primary={informacionDelDeposito?.numero_exportado_ficha ? informacionDelDeposito?.numero_exportado_ficha : 'N/A'}
                     secondary="Folio CONTPAQ"
                     color="secondary.main"
                     iconPrimary={DatabaseOutlined}
@@ -574,6 +631,18 @@ const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llav
           <Box>
             <Typography variant="h3">Documentos Relacionados</Typography>
           </Box>
+
+          {/* Boton de exportar */}
+          <Button
+          sx={{marginTop:'4px', marginBottom:'12px'}}
+            variant="outlined"
+            color="primary"
+            size="medium"
+            onClick={handleExportToExcel}
+            disabled={loading}
+          >
+            Exportar a Excel
+          </Button>
           <br />
           <Grid container spacing={2}>
             <Grid size={12}>
@@ -582,18 +651,18 @@ const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llav
                 <TablaBase
                   columnsConfig={columnsConfig}
                   data={filasDocumentosRelacionados}
-                  // columnsConfig={[  
-                    // { headerName: 'Folio', field: 'factura' },
-                    // { headerName: 'Fiscal', field: 'fiscal' },
-                    // { headerName: 'Fecha', field: 'fecha_factura' },
-                    // { headerName: 'UUID', field: 'uuid_funcion' },
-                    // { headerName: 'Total', field: 'total_factura' },
-                    // { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
-                    // { headerName: 'Moneda', field: 'moneda' },
-                    // { headerName: 'Póliza', field: 'poliza' },
-                    // { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
-                    // { headerName: 'Total Movimiento', field: 'total_movimiento' },
-                    // { headerName: 'Acciones', field: '' }
+                  // columnsConfig={[
+                  // { headerName: 'Folio', field: 'factura' },
+                  // { headerName: 'Fiscal', field: 'fiscal' },
+                  // { headerName: 'Fecha', field: 'fecha_factura' },
+                  // { headerName: 'UUID', field: 'uuid_funcion' },
+                  // { headerName: 'Total', field: 'total_factura' },
+                  // { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
+                  // { headerName: 'Moneda', field: 'moneda' },
+                  // { headerName: 'Póliza', field: 'poliza' },
+                  // { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
+                  // { headerName: 'Total Movimiento', field: 'total_movimiento' },
+                  // { headerName: 'Acciones', field: '' }
                   // ]}
                   // data={filasDocumentosRelacionados}
                 />

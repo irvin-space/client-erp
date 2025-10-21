@@ -81,9 +81,6 @@ const getEventStyle = (titulo, { folio }) => {
       case 'Pago de Cliente':
         icon = <CreditCardOutlined />;
         break;
-      case 'Pago de Cliente':
-        icon = <CreditCardOutlined />;
-        break;
       case 'Nota de Crédito':
         icon = <CreditCardOutlined />;
         break;

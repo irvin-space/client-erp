@@ -23,7 +23,7 @@ const FileUploader = ({ onFileProcessed, tipo }) => {
   const [loadingg, setLoadingg] = useState(false);
 
   const handleFileChange = useCallback(async (event) => {
-    const file = event.target.files[0];
+    let file = event.target.files[0];
     
     if (!file) return;
 
