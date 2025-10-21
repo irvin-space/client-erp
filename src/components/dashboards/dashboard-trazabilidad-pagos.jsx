@@ -28,6 +28,8 @@ import {
   FireOutlined as TrendingUp // Renombrado para la Card de distribución
 } from '@ant-design/icons';
 
+import { FaFolderOpen } from 'react-icons/fa';
+
 // Y si tu botón es de AntD:
  //import { Button } from 'antd'; 
 
@@ -78,12 +80,12 @@ const DashboardTrazabilidadPagos = () => {
       console.log('facturas relacionadas');
       console.log('RESPUESTA DEL BACKEND', data);
       console.log(data[0]);
-      console.log(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
-      setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      console.log(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      setJsonIA(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
       setFilasDocumentosRelacionados(data[1]);
-      console.log('eventos para timeline', data[3]);
+      console.log('eventos para timeline', data[4]);
 
-      setEventos(data[3]);
+      setEventos(data[4]);
 
       let cantidadesTotalDistribuido = data[0].map((item) => {
         return item.total_movimiento;
@@ -305,6 +307,68 @@ const DashboardTrazabilidadPagos = () => {
 
   }, []);
 
+
+   const traePedimento = async (parametros) => {
+    // executeFetch debe ser una función asíncrona en tu backend (Node.js)
+    const result = await executeFetch('[Trae_PDF_pedimento_ADN]', parametros);
+
+    // Asumiendo que el campo 'datos' de tu consulta SQL Server (el PDF) 
+    // llega a React como un array de bytes (ej: { type: 'Buffer', data: [...] })
+
+    if (result.success && result.data && result.data[0] && result.data[0].length > 0) {
+        // En lugar de guardar en un estado, DEVOLVEMOS los datos binarios del PDF.
+        // Asume que la columna del PDF en SQL se llama 'datos' o similar, y llega en result.data[0][0].datos
+        const pdfData = result.data[0][0].datos; // 👈 AJUSTA ESTA RUTA DE ACCESO SEGÚN CÓMO DEVUELVA TU BACKEND EL PDF.
+        return pdfData; // Devolvemos los datos binarios
+    } else {
+        return null;
+    }
+};
+
+  const handleViewPedimento = useCallback ( async(documento) => {
+
+    const Params = {
+        nFolio: `'${documento.id_pedimento}'`
+      }
+
+      const pdfObject = await traePedimento(Params);
+        
+
+      // // La estructura es documento.pdf.data
+      // const bufferData = documento.pdfPedimento.data; // 👈 Accedemos al array de bytes
+      const bufferData = pdfObject?.data || pdfObject;
+
+      if (!bufferData || bufferData.length === 0) {
+          console.error("Los datos binarios del PDF están vacíos.");
+          // Notificación de error si usas Notistack
+          return;
+      }
+
+      // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
+      // Esto es el formato binario que el Blob espera.
+      const byteArray = new Uint8Array(bufferData);
+
+      // 2. Crear un objeto Blob con el Array Binario
+      // Usamos 'application/pdf' como MIME type
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+      // 3. Crear una URL de objeto temporal
+      const url = URL.createObjectURL(blob);
+
+      // 4. Abrir la nueva pestaña
+      const newWindow = window.open(url, '_blank');
+
+      // OPCIONAL: Liberación de memoria
+      if (newWindow) {
+          newWindow.onload = () => {
+              URL.revokeObjectURL(url);
+          };
+      } else {
+          console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
+      }
+
+  }, []);
+
   // Renderizador de columna Acciones
 const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llaves {}
     // console.log('documento en acciones', documento); // <-- Aquí si quieres el log
@@ -314,17 +378,45 @@ const AccionesCellRenderer = useCallback((documento) => { // <-- Cuerpo con llav
             <Button onClick={() => handleViewPDF(documento)} 
                 variant="text" 
                 size="small" 
-                style={{ color: '#E53935' }} // Rojo para PDF
-                title={`Ver PDF de Folio ${documento.factura}`} >
+                //style={{ color: '#E53935' }} // Rojo para PDF
+                title={`Ver PDF de Folio ${documento.factura}`} 
+                disabled={!documento.xml}
+                style={{ 
+                        color: documento.xml ? '#E53935' : '#BDBDBD' // Color original si hay XML, gris si no hay
+                    }}
+              >
                 <FilePdfOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
             </Button>
-            <Button onClick={() => handleViewXML(documento)} 
+            <Button
+                onClick={() => handleViewXML(documento)} 
                 variant="text" 
                 size="small" 
-                style={{ color: '#00BCD4' }} // Cian para XML (CodeOutlined)
-                title={`Ver XML de Folio ${documento.factura}`} >
-                <CodeOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+                title={`Ver XML de Folio ${documento.factura}`} 
+                // 💡 Condición de deshabilitación: TRUE si no hay XML
+                disabled={!documento.xml} 
+                
+                // 💡 CLAVE: Estilo condicional
+                style={{ 
+                    color: documento.xml ? '#00BCD4' : '#BDBDBD' // Color original si hay XML, gris si no hay
+                  }}
+              >
+                {/* El icono también toma el color del style del Button */}
+                <CodeOutlined style={{ fontSize: '18px' }} /> 
             </Button>
+            <Button onClick={() => handleViewPedimento(documento)} 
+              variant="text" 
+              size="small" 
+              //style={{ color: '#94d400ff' }} // Cian para XML (CodeOutlined)
+              title={`Ver PDF Pedimento `} 
+              disabled={!(documento.id_pedimento > 0)}
+              style={{ 
+                    color: documento.id_pedimento > 0 ? '#94d400ff' : '#BDBDBD' // Color original si hay XML, gris si no hay
+                }}
+            >
+              <FaFolderOpen style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+            </Button>
+            
+            
         </div>
     );
 }, [handleViewPDF, handleViewXML]);
