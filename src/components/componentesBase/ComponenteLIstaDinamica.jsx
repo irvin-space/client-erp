@@ -123,12 +123,12 @@ const ComponenteListaDinamica = ({
           <MenuItem disabled>
             <em>Cargando opciones...</em>
           </MenuItem>
-        ) : options.length === 0 ? (
+        ) : options?.length === 0 ? (
           <MenuItem disabled>
             <em>Sin opciones disponibles</em>
           </MenuItem>
         ) : (
-          options.map((item) => {
+          options?.map((item) => {
             const value = item[valueKey] ?? '';
             const label = item[labelKey] ?? '(Sin nombre)';
             const objeto = item;
@@ -147,7 +147,7 @@ const ComponenteListaDinamica = ({
               );
             }
           })
-        )}
+        ) ?? null}
       </Select>
     </FormControl>
   );

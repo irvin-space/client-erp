@@ -37,9 +37,9 @@ const Autoriza = ({ txtBoton, FolioAutorizacion, Tabla, Folio, Componente, Color
   const [password, setPassword] = useState('');
   const [nombreOperacion, setNombreOperacion] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const [usuario, setUsuario] = useState(useAuth().user.id_persona);
+  const [usuario, setUsuario] = useState(useAuth().user?.id_persona || '');
   const [usuarioLogged, setUsuarioLogged] = useState(usuario);
-  const [sucursal, setSucursal] = useState(useAuth().user.sucursal);
+  const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
 
   // 1. Use el hook useSQL
 const { loading, error, executeFetch } = useSQL();

@@ -124,6 +124,7 @@ const TrazabilidadDePagos = () => {
   const handleReiniciarValores = () => {
     setSucursal(user?.sucursal || '');
     setNombreDeCliente('');
+    setNumeroDeCliente(null)
     setDesdeFecha(dayjs().subtract(1, 'month'));
     setHastaFecha(dayjs());
     setArregloDeConsulta([]);
