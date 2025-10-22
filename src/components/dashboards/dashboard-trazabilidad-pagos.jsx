@@ -50,6 +50,7 @@ import MonedaFormatoMiles from '../componentesBase/MonedaFormatoMiles.jsx';
 import { mensajes } from '../../utils/mensajes.js';
 
 import ReactMarkdown from 'react-markdown';
+import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColapsableTrazabilidadDashboard.jsx';
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
@@ -77,14 +78,34 @@ const DashboardTrazabilidadPagos = () => {
     const { data, success } = await executeFetch('Trazabilidad_Pagos2', objetoParametros);
     console.log(success);
     if (success) {
-      // console.log(data[0][0]);
-      console.log('facturas relacionadas');
-      console.log('RESPUESTA DEL BACKEND', data);
-      console.log(data[0]);
-      console.log(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
       setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
-      setFilasDocumentosRelacionados(data[1]);
-      console.log("jijijij",data[1])
+
+
+      const filasDocumentosRelacionadosConGxcc = data[1].map((item) => {
+        const itemsGxcc = data[4].filter((gxccItem) => gxccItem.tramite === item.tramite_aduanal);
+
+        // Transforma los elementos coincidentes al formato deseado de gxcc
+        const formattedGxcc = itemsGxcc.map((gxccItem) => ({
+          'Fact. Prov': gxccItem.factura_prov, // Mapea factura_prov
+          Concepto: gxccItem.concepto, // Mapea concepto
+          'Nombre Concepto': gxccItem.nombre?.trim(), // Mapea nombre (y opcionalmente elimina espacios en blanco)
+          Pdf: gxccItem.documento // Mapea documento a Pdf (o cualquier propiedad que contenga el enlace/archivo PDF)
+          // Puedes agregar más mapeos aquí si es necesario desde gxccItem
+        }));
+
+        // Devuelve el elemento original con la propiedad 'gxcc' añadida
+        return {
+          ...item, // Extiende las propiedades originales
+          gxcc: formattedGxcc // Agrega el nuevo array gxcc
+        };
+      });
+
+      setFilasDocumentosRelacionados(filasDocumentosRelacionadosConGxcc); // Establece los datos modificados
+
+      // setFilasDocumentosRelacionados(data[1])
+      console.log('abcabc', data[4]);
+      // console.log('filasModificadas1',filasDocumentosRelacionadosModificado)
+      console.log('complementos', data[4]);
       console.log('eventos para timeline', data[3]);
 
       setEventos(data[3]);
@@ -304,66 +325,62 @@ const DashboardTrazabilidadPagos = () => {
     }
   }, []);
 
-
-   const traePedimento = async (parametros) => {
+  const traePedimento = async (parametros) => {
     // executeFetch debe ser una función asíncrona en tu backend (Node.js)
     const result = await executeFetch('[Trae_PDF_pedimento_ADN]', parametros);
 
-    // Asumiendo que el campo 'datos' de tu consulta SQL Server (el PDF) 
+    // Asumiendo que el campo 'datos' de tu consulta SQL Server (el PDF)
     // llega a React como un array de bytes (ej: { type: 'Buffer', data: [...] })
 
     if (result.success && result.data && result.data[0] && result.data[0].length > 0) {
-        // En lugar de guardar en un estado, DEVOLVEMOS los datos binarios del PDF.
-        // Asume que la columna del PDF en SQL se llama 'datos' o similar, y llega en result.data[0][0].datos
-        const pdfData = result.data[0][0].datos; // 👈 AJUSTA ESTA RUTA DE ACCESO SEGÚN CÓMO DEVUELVA TU BACKEND EL PDF.
-        return pdfData; // Devolvemos los datos binarios
+      // En lugar de guardar en un estado, DEVOLVEMOS los datos binarios del PDF.
+      // Asume que la columna del PDF en SQL se llama 'datos' o similar, y llega en result.data[0][0].datos
+      const pdfData = result.data[0][0].datos; // 👈 AJUSTA ESTA RUTA DE ACCESO SEGÚN CÓMO DEVUELVA TU BACKEND EL PDF.
+      return pdfData; // Devolvemos los datos binarios
     } else {
-        return null;
+      return null;
     }
-};
+  };
 
-  const handleViewPedimento = useCallback ( async(documento) => {
-
+  const handleViewPedimento = useCallback(async (documento) => {
     const Params = {
-        nFolio: `'${documento.id_pedimento}'`
-      }
+      nFolio: `'${documento.id_pedimento}'`
+    };
 
-      const pdfObject = await traePedimento(Params);
-        
+    const pdfObject = await traePedimento(Params);
 
-      // // La estructura es documento.pdf.data
-      // const bufferData = documento.pdfPedimento.data; // 👈 Accedemos al array de bytes
-      const bufferData = pdfObject?.data || pdfObject;
+    // // La estructura es documento.pdf.data
+    // const bufferData = documento.pdfPedimento.data; // 👈 Accedemos al array de bytes
+    const bufferData = pdfObject?.data || pdfObject;
 
-      if (!bufferData || bufferData.length === 0) {
-          console.error("Los datos binarios del PDF están vacíos.");
-          // Notificación de error si usas Notistack
-          return;
-      }
+    if (!bufferData || bufferData.length === 0) {
+      console.error('Los datos binarios del PDF están vacíos.');
+      // Notificación de error si usas Notistack
+      return;
+    }
 
-      // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
-      // Esto es el formato binario que el Blob espera.
-      const byteArray = new Uint8Array(bufferData);
+    // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
+    // Esto es el formato binario que el Blob espera.
+    const byteArray = new Uint8Array(bufferData);
 
-      // 2. Crear un objeto Blob con el Array Binario
-      // Usamos 'application/pdf' como MIME type
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
+    // 2. Crear un objeto Blob con el Array Binario
+    // Usamos 'application/pdf' como MIME type
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
 
-      // 3. Crear una URL de objeto temporal
-      const url = URL.createObjectURL(blob);
+    // 3. Crear una URL de objeto temporal
+    const url = URL.createObjectURL(blob);
 
-      // 4. Abrir la nueva pestaña
-      const newWindow = window.open(url, '_blank');
+    // 4. Abrir la nueva pestaña
+    const newWindow = window.open(url, '_blank');
 
-      // OPCIONAL: Liberación de memoria
-      if (newWindow) {
-          newWindow.onload = () => {
-              URL.revokeObjectURL(url);
-          };
-      } else {
-          console.error("No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.");
-      }
-
+    // OPCIONAL: Liberación de memoria
+    if (newWindow) {
+      newWindow.onload = () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      console.error('No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
+    }
   }, []);
 
   // Renderizador de columna Acciones
@@ -375,48 +392,47 @@ const DashboardTrazabilidadPagos = () => {
       return (
         // <-- Return explícito
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-            <Button onClick={() => handleViewPDF(documento)} 
-                variant="text" 
-                size="small" 
-                //style={{ color: '#E53935' }} // Rojo para PDF
-                title={`Ver PDF de Folio ${documento.factura}`} 
-                disabled={!documento.xml}
-                style={{ 
-                        color: documento.xml ? '#E53935' : '#BDBDBD' // Color original si hay XML, gris si no hay
-                    }}
-              >
-                <FilePdfOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
-            </Button>
-            <Button
-                onClick={() => handleViewXML(documento)} 
-                variant="text" 
-                size="small" 
-                title={`Ver XML de Folio ${documento.factura}`} 
-                // 💡 Condición de deshabilitación: TRUE si no hay XML
-                disabled={!documento.xml} 
-                
-                // 💡 CLAVE: Estilo condicional
-                style={{ 
-                    color: documento.xml ? '#00BCD4' : '#BDBDBD' // Color original si hay XML, gris si no hay
-                  }}
-              >
-                {/* El icono también toma el color del style del Button */}
-                <CodeOutlined style={{ fontSize: '18px' }} /> 
-            </Button>
-            <Button onClick={() => handleViewPedimento(documento)} 
-              variant="text" 
-              size="small" 
-              //style={{ color: '#94d400ff' }} // Cian para XML (CodeOutlined)
-              title={`Ver PDF Pedimento `} 
-              disabled={!(documento.id_pedimento > 0)}
-              style={{ 
-                    color: documento.id_pedimento > 0 ? '#94d400ff' : '#BDBDBD' // Color original si hay XML, gris si no hay
-                }}
-            >
-              <FaFolderOpen style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
-            </Button>
-            
-            
+          <Button
+            onClick={() => handleViewPDF(documento)}
+            variant="text"
+            size="small"
+            //style={{ color: '#E53935' }} // Rojo para PDF
+            title={`Ver PDF de Folio ${documento.factura}`}
+            disabled={!documento.xml}
+            style={{
+              color: documento.xml ? '#E53935' : '#BDBDBD' // Color original si hay XML, gris si no hay
+            }}
+          >
+            <FilePdfOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+          </Button>
+          <Button
+            onClick={() => handleViewXML(documento)}
+            variant="text"
+            size="small"
+            title={`Ver XML de Folio ${documento.factura}`}
+            // 💡 Condición de deshabilitación: TRUE si no hay XML
+            disabled={!documento.xml}
+            // 💡 CLAVE: Estilo condicional
+            style={{
+              color: documento.xml ? '#00BCD4' : '#BDBDBD' // Color original si hay XML, gris si no hay
+            }}
+          >
+            {/* El icono también toma el color del style del Button */}
+            <CodeOutlined style={{ fontSize: '18px' }} />
+          </Button>
+          <Button
+            onClick={() => handleViewPedimento(documento)}
+            variant="text"
+            size="small"
+            //style={{ color: '#94d400ff' }} // Cian para XML (CodeOutlined)
+            title={`Ver PDF Pedimento `}
+            disabled={!(documento.id_pedimento > 0)}
+            style={{
+              color: documento.id_pedimento > 0 ? '#94d400ff' : '#BDBDBD' // Color original si hay XML, gris si no hay
+            }}
+          >
+            <FaFolderOpen style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
+          </Button>
         </div>
       );
     },
@@ -453,6 +469,10 @@ const DashboardTrazabilidadPagos = () => {
         width: 80,
         align: 'center',
         headerAlign: 'center'
+      },
+      {
+        headerName: 'Documentos Ligados a Conceptos de Facturas',
+        collapsibleField: 'gxcc'
       }
     ],
     [AccionesCellRenderer]
@@ -464,7 +484,7 @@ const DashboardTrazabilidadPagos = () => {
       return;
     }
 
-    // Prepare data for export: map only visible/exportable fields
+    // Prepara los datos para exportar: mapea solo los campos visibles/exportables
     const headersMap = {
       tipo: 'Tipo',
       factura: 'Folio',
@@ -481,15 +501,15 @@ const DashboardTrazabilidadPagos = () => {
 
     const dataToExport = filasDocumentosRelacionados.map((row) => ({
       ...row,
-      // Format numbers if needed (optional)
+      // Formatea números si es necesario (opcional)
       total_factura: Number(row.total_factura),
       saldo_actual_factura: Number(row.saldo_actual_factura),
       total_movimiento: Number(row.total_movimiento)
     }));
-    console.log('data to export' ,dataToExport)
-    // Extract only the columns we want, mapped to friendly names
+    console.log('data to export', dataToExport);
+    // Extrae solo las columnas que queremos, mapeadas a nombres amigables
     const worksheetData = dataToExport.map((row) => {
-      console.log("Data to export map",row)
+      console.log('Data to export map', row);
       const mapped = {};
       Object.keys(headersMap).forEach((key) => {
         mapped[headersMap[key]] = row[key];
@@ -634,7 +654,7 @@ const DashboardTrazabilidadPagos = () => {
 
           {/* Boton de exportar */}
           <Button
-          sx={{marginTop:'4px', marginBottom:'12px'}}
+            sx={{ marginTop: '4px', marginBottom: '12px' }}
             variant="outlined"
             color="primary"
             size="medium"
@@ -648,7 +668,7 @@ const DashboardTrazabilidadPagos = () => {
             <Grid size={12}>
               <Box sx={{ backgroundColor: 'gray' }}>
                 {/* <DataTable rowsArray={[]} /> */}
-                <TablaBase
+                {/* <TablaBase
                   columnsConfig={columnsConfig}
                   data={filasDocumentosRelacionados}
                   // columnsConfig={[
@@ -665,8 +685,10 @@ const DashboardTrazabilidadPagos = () => {
                   // { headerName: 'Acciones', field: '' }
                   // ]}
                   // data={filasDocumentosRelacionados}
-                />
+                /> */}
               </Box>
+              <br />
+              <TablaColapsableTrazabilidadDashboard data={filasDocumentosRelacionados} columnsConfig={columnsConfig} />
             </Grid>
             {/* <Grid size={12}>
               <Typography>
