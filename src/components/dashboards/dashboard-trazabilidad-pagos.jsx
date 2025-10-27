@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import useSQL from '../../hooks/useSQL.js';
+import useDocumentDisplay from '../../hooks/useDocumentDisplay.js';
 
 import * as XLSX from 'xlsx';
 
@@ -54,6 +55,7 @@ import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColaps
 
 //Componente
 const DashboardTrazabilidadPagos = () => {
+  const { displayDocument, isLoading, error} = useDocumentDisplay();
   const navigate = useNavigate();
   const [cargandoIA, setCargandoIA] = useState(false);
   const [jsonIA, setJsonIA] = useState(true);
@@ -68,7 +70,7 @@ const DashboardTrazabilidadPagos = () => {
 
   const location = useLocation();
 
-  const { executeFetch, data, loading, error } = useSQL();
+  const { executeFetch, data, loading } = useSQL();
 
   const traerInfoDeDeposito = async () => {
     const objetoParametros = {
@@ -89,7 +91,8 @@ const DashboardTrazabilidadPagos = () => {
           'Fact. Prov': gxccItem.factura_prov, // Mapea factura_prov
           Concepto: gxccItem.concepto, // Mapea concepto
           'Nombre Concepto': gxccItem.nombre?.trim(), // Mapea nombre (y opcionalmente elimina espacios en blanco)
-          Pdf: gxccItem.documento // Mapea documento a Pdf (o cualquier propiedad que contenga el enlace/archivo PDF)
+          'Extensión': gxccItem.extension, 
+          'Acción': gxccItem.documento // Mapea documento a Pdf (o cualquier propiedad que contenga el enlace/archivo PDF)
           // Puedes agregar más mapeos aquí si es necesario desde gxccItem
         }));
 
@@ -128,6 +131,7 @@ const DashboardTrazabilidadPagos = () => {
       setInformacionDelDeposito(data[0][0]);
     }
   };
+
 
   //useEffect al montarse el componente
   useEffect(() => {
@@ -325,122 +329,110 @@ const DashboardTrazabilidadPagos = () => {
     }
   }, []);
 
-  const traePedimento = async (parametros) => {
-    // executeFetch debe ser una función asíncrona en tu backend (Node.js)
-    const result = await executeFetch('[Trae_PDF_pedimento_ADN]', parametros);
-
-    // Asumiendo que el campo 'datos' de tu consulta SQL Server (el PDF)
-    // llega a React como un array de bytes (ej: { type: 'Buffer', data: [...] })
-
-    if (result.success && result.data && result.data[0] && result.data[0].length > 0) {
-      // En lugar de guardar en un estado, DEVOLVEMOS los datos binarios del PDF.
-      // Asume que la columna del PDF en SQL se llama 'datos' o similar, y llega en result.data[0][0].datos
-      const pdfData = result.data[0][0].datos; // 👈 AJUSTA ESTA RUTA DE ACCESO SEGÚN CÓMO DEVUELVA TU BACKEND EL PDF.
-      return pdfData; // Devolvemos los datos binarios
-    } else {
-      return null;
-    }
-  };
-
-  const handleViewPedimento = useCallback(async (documento) => {
-    const Params = {
-      nFolio: `'${documento.id_pedimento}'`
-    };
-
-    const pdfObject = await traePedimento(Params);
-
-    // // La estructura es documento.pdf.data
-    // const bufferData = documento.pdfPedimento.data; // 👈 Accedemos al array de bytes
-    const bufferData = pdfObject?.data || pdfObject;
-
-    if (!bufferData || bufferData.length === 0) {
-      console.error('Los datos binarios del PDF están vacíos.');
-      // Notificación de error si usas Notistack
-      return;
-    }
-
-    // 1. Convertir el array de números (bytes) en un Typed Array (Uint8Array)
-    // Esto es el formato binario que el Blob espera.
-    const byteArray = new Uint8Array(bufferData);
-
-    // 2. Crear un objeto Blob con el Array Binario
-    // Usamos 'application/pdf' como MIME type
-    const blob = new Blob([byteArray], { type: 'application/pdf' });
-
-    // 3. Crear una URL de objeto temporal
-    const url = URL.createObjectURL(blob);
-
-    // 4. Abrir la nueva pestaña
-    const newWindow = window.open(url, '_blank');
-
-    // OPCIONAL: Liberación de memoria
-    if (newWindow) {
-      newWindow.onload = () => {
-        URL.revokeObjectURL(url);
-      };
-    } else {
-      console.error('No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
-    }
-  }, []);
-
-  // Renderizador de columna Acciones
-  const AccionesCellRenderer = useCallback(
+const AccionesCellRenderer = useCallback(
     (documento) => {
-      // <-- Cuerpo con llaves {}
-      // console.log('documento en acciones', documento); // <-- Aquí si quieres el log
+        
+        const handleViewFacturaPDF = () => {
+          // ...
+          displayDocument({ 
+                instruccionSQL: '[Trae_PDF_GXCC]', 
+                parametros: { 
+                    // ELIMINAR LAS COMILLAS SIMPLES
+                    '@cExtension': documento.Extensión, // ✅
+                    '@nFolio': documento.Acción         // ✅
+                },
+                tipoArchivo: 'pdf'
+            });
+        };
 
-      return (
-        // <-- Return explícito
-        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-          <Button
-            onClick={() => handleViewPDF(documento)}
-            variant="text"
-            size="small"
-            //style={{ color: '#E53935' }} // Rojo para PDF
-            title={`Ver PDF de Folio ${documento.factura}`}
-            disabled={!documento.xml}
-            style={{
-              color: documento.xml ? '#E53935' : '#BDBDBD' // Color original si hay XML, gris si no hay
-            }}
-          >
-            <FilePdfOutlined style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
-          </Button>
-          <Button
-            onClick={() => handleViewXML(documento)}
-            variant="text"
-            size="small"
-            title={`Ver XML de Folio ${documento.factura}`}
-            // 💡 Condición de deshabilitación: TRUE si no hay XML
-            disabled={!documento.xml}
-            // 💡 CLAVE: Estilo condicional
-            style={{
-              color: documento.xml ? '#00BCD4' : '#BDBDBD' // Color original si hay XML, gris si no hay
-            }}
-          >
-            {/* El icono también toma el color del style del Button */}
-            <CodeOutlined style={{ fontSize: '18px' }} />
-          </Button>
-          <Button
-            onClick={() => handleViewPedimento(documento)}
-            variant="text"
-            size="small"
-            //style={{ color: '#94d400ff' }} // Cian para XML (CodeOutlined)
-            title={`Ver PDF Pedimento `}
-            disabled={!(documento.id_pedimento > 0)}
-            style={{
-              color: documento.id_pedimento > 0 ? '#94d400ff' : '#BDBDBD' // Color original si hay XML, gris si no hay
-            }}
-          >
-            <FaFolderOpen style={{ fontSize: '18px' }} /> {/* ICONO AQUÍ */}
-          </Button>
-        </div>
-      );
+        
+
+        const handleViewPedimentoRefactored = () => {
+          // ...
+          displayDocument({ 
+              instruccionSQL: '[Trae_PDF_pedimento_ADN]', 
+              parametros: { 
+                  // ELIMINAR LAS COMILLAS SIMPLES
+                  'nFolio': `'${documento.id_pedimento}'`
+              },
+              tipoArchivo: 'pdf'
+          });
+      };
+        
+        return (
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                <Button
+                    //onClick={handleViewFacturaPDF} // ¡Usa la nueva función!
+                    onClick={() => handleViewPDF(documento)}
+                    variant="text"
+                    size="small"
+                    title={`Ver PDF de Folio ${documento.factura}`}
+                    disabled={!documento.xml} // Mantenemos la funcionalidad de deshabilitación original
+                    style={{
+                        color: documento.xml ? '#E53935' : '#BDBDBD'
+                    }}
+                >
+                    <FilePdfOutlined style={{ fontSize: '18px' }} />
+                </Button>
+                <Button
+                    //onClick={handleViewFacturaXML} // ¡Usa la nueva función!
+                    onClick={() => handleViewXML(documento)}
+                    variant="text"
+                    size="small"
+                    title={`Ver XML de Folio ${documento.factura}`}
+                    disabled={!documento.xml}
+                    style={{
+                        color: documento.xml ? '#00BCD4' : '#BDBDBD'
+                    }}
+                >
+                    <CodeOutlined style={{ fontSize: '18px' }} />
+                </Button>
+                <Button
+                    onClick={handleViewPedimentoRefactored} // ¡Usa la nueva función!
+                    variant="text"
+                    size="small"
+                    title={`Ver PDF Pedimento`}
+                    disabled={!(documento.id_pedimento > 0)}
+                    style={{
+                        color: documento.id_pedimento > 0 ? '#94d400ff' : '#BDBDBD'
+                    }}
+                >
+                    <FaFolderOpen style={{ fontSize: '18px' }} />
+                </Button>
+            </div>
+        );
     },
-    [handleViewPDF, handleViewXML]
-  );
+    // Es CRUCIAL que dependa del nuevo hook, no de las funciones eliminadas
+    [displayDocument] 
+);
 
-  // --- Configuración de Columnas para la Tabla ---
-  const columnsConfig = useMemo(
+// ... (Asegúrate de que la dependencia del useMemo de columnsConfig también se actualice)
+const columnsConfig = useMemo(
+    () => [
+        // ...
+    ],
+    [AccionesCellRenderer] // Correcto: AccionesCellRenderer ya depende de displayDocument
+);
+  
+const handleShowPDFGXCCIntegrado = useCallback( async(rowData) => {
+    displayDocument({
+        instruccionSQL: 'Trae_PDF_GXCC',
+        parametros: {
+            '@cExtension': `'${rowData.Extensión}'`, 
+            '@nFolio': `'${rowData.Acción}'`
+        },
+        tipoArchivo: rowData.Extensión === 'PDF' ? 'pdf' : rowData.Extensión === 'XML' ? 'xml' : 'other'
+    });
+}, [displayDocument]);
+
+
+
+// **IMPORTANTE**: Debes asegurarte de pasar `handleShowPDFGXCCIntegrado` 
+// como prop al componente `<TablaColapsableTrazabilidadDashboard.jsx>` 
+// si es allí donde se usan los botones de acción para los documentos ligados a conceptos.
+
+ // --- Configuración de Columnas para la Tabla ---
+  const columnsConfig2 = useMemo(
     () => [
       { headerName: 'Tipo', field: 'tipo' },
       { headerName: 'Folio', field: 'factura' },
@@ -472,10 +464,11 @@ const DashboardTrazabilidadPagos = () => {
       },
       {
         headerName: 'Documentos Ligados a Conceptos de Facturas',
-        collapsibleField: 'gxcc'
+        collapsibleField: 'gxcc',
+        onDocumentClick: handleShowPDFGXCCIntegrado // ✅ Usa un nombre claro
       }
     ],
-    [AccionesCellRenderer]
+    [AccionesCellRenderer, handleShowPDFGXCCIntegrado]
   );
 
   const handleExportToExcel = () => {
@@ -525,6 +518,88 @@ const DashboardTrazabilidadPagos = () => {
     // Trigger download
     XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${folioDepositoAConsultar}.xlsx`);
   };
+
+//   const handleShowPDFGXCC = useCallback( async(rowData) => {
+    
+       
+//     const Params = {
+//       cExtension: `'${rowData.Extensión}'`,
+//       nFolio: `'${rowData.Acción}'`
+      
+//     };
+
+//     const pdfObject = await traePedimento(Params, 'GXCC');
+
+//     let bufferData, byteArray , blob//, url, newindow
+//     let base64String = null;
+
+//     if (rowData.Extensión ==='CFDI')
+//     {
+//        bufferData = pdfObject?.data || pdfObject;
+
+//       if (!bufferData || bufferData.length === 0) {
+//         console.error('Los datos binarios del PDF están vacíos.');
+//         return;
+//       }
+
+//        byteArray = new Uint8Array(bufferData);
+
+//        blob = new Blob([byteArray], { type: 'application/pdf' });
+
+//     } else if(rowData.Extensión !=='CFDI'){
+
+//       if (typeof pdfObject === 'string') {
+//         base64String = pdfObject;
+//       }// Opción B: Si 'traePedimento' devuelve un objeto y necesitas acceder a una propiedad,
+//       // por ejemplo, si tu DB columna se llama 'PDF_DATA'
+//       else if (pdfObject && pdfObject.PDF_DATA) { // **AJUSTAR ESTE NOMBRE DE PROPIEDAD**
+//           base64String = pdfObject.PDF_DATA; 
+//       }
+//       // Opción C: Si viene como un objeto JSON con la estructura del Buffer de Node.js
+//       else if (pdfObject && pdfObject.data) {
+//           // En este caso, si tu backend NO está codificando a Base64 y simplemente
+//           // está serializando el Buffer de Node.js, tendrías que usarlo como array.
+//           // Pero como estamos en la Opción 2, asumiremos que no es el caso.
+//           base64String = pdfObject.data;
+//       }
+
+//         if (!base64String || typeof base64String !== 'string') {
+//           console.error('No se recibió una cadena Base64 válida. Tipo recibido:', typeof base64String, 'Valor:', base64String);
+//           alert('Error al cargar el archivo. El formato de datos es incorrecto.');
+//           return;
+//       }
+      
+//       // 💡 PASO CLAVE: Decodificar y convertir (esta lógica es correcta si base64String es válida)
+//       try {
+//           const binaryString = atob(base64String);
+          
+//           const bufferData = new Uint8Array(binaryString.length);
+//           for (let i = 0; i < binaryString.length; i++) {
+//               bufferData[i] = binaryString.charCodeAt(i);
+//           }
+
+          
+
+//           blob = new Blob([bufferData], { type: 'application/pdf' });
+//           } catch (e) {
+//           console.error('Error durante la decodificación Base64 o creación del Blob:', e);
+//           alert('Error de decodificación. Verifique que el servidor envíe Base64 válido.');
+//       }
+//     }
+//     const url = URL.createObjectURL(blob);
+
+//     const newWindow = window.open(url, '_blank');
+
+//     if (newWindow) {
+//       newWindow.onload = () => {
+//         URL.revokeObjectURL(url);
+//       };
+//     } else {
+//       console.error('No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
+//     }
+// }, []);
+
+
 
   return (
     <Box sx={{ backgroundColor: '' }}>
@@ -667,35 +742,14 @@ const DashboardTrazabilidadPagos = () => {
           <Grid container spacing={2}>
             <Grid size={12}>
               <Box sx={{ backgroundColor: 'gray' }}>
-                {/* <DataTable rowsArray={[]} /> */}
-                {/* <TablaBase
-                  columnsConfig={columnsConfig}
-                  data={filasDocumentosRelacionados}
-                  // columnsConfig={[
-                  // { headerName: 'Folio', field: 'factura' },
-                  // { headerName: 'Fiscal', field: 'fiscal' },
-                  // { headerName: 'Fecha', field: 'fecha_factura' },
-                  // { headerName: 'UUID', field: 'uuid_funcion' },
-                  // { headerName: 'Total', field: 'total_factura' },
-                  // { headerName: 'Saldo Actual', field: 'saldo_actual_factura' },
-                  // { headerName: 'Moneda', field: 'moneda' },
-                  // { headerName: 'Póliza', field: 'poliza' },
-                  // { headerName: 'Número Exportado', field: 'numero_exportado_poliza_factura' },
-                  // { headerName: 'Total Movimiento', field: 'total_movimiento' },
-                  // { headerName: 'Acciones', field: '' }
-                  // ]}
-                  // data={filasDocumentosRelacionados}
-                /> */}
+                
               </Box>
               <br />
-              <TablaColapsableTrazabilidadDashboard data={filasDocumentosRelacionados} columnsConfig={columnsConfig} />
+              <TablaColapsableTrazabilidadDashboard data={filasDocumentosRelacionados} columnsConfig={columnsConfig2} onPdfIconClick={handleShowPDFGXCCIntegrado}
+                   />
+              
             </Grid>
-            {/* <Grid size={12}>
-              <Typography>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus neque atque beatae itaque placeat dicta ullam laboriosam
-                aliquid voluptatum quaerat saepe, excepturi sequi repudiandae debitis deleniti molestias eum ratione sunt.
-              </Typography>
-            </Grid> */}
+            
           </Grid>
         </Box>
         <Divider />

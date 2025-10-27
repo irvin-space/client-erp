@@ -31,7 +31,7 @@ import MonedaFormatoMiles from './MonedaFormatoMiles';
  * Componente de tabla reutilizable con filas colapsables.
  * @param {CustomTableProps} props
  */
-const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
+const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig, onPdfIconClick }) => {
   if (!data || data.length === 0 || !columnsConfig || columnsConfig.length === 0) {
     return (
       <Typography variant="h6" align="center" sx={{ my: 4 }}>
@@ -39,6 +39,9 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
       </Typography>
     );
   }
+
+
+
 
   const colorAzulMarino = '#00345D';
 
@@ -60,17 +63,21 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
   // Helper function to render cell content for the NESTED table inside the collapsible section
   const renderNestedCellContent = (nestedItem, key, rowIndex, nestedIndex) => {
     // Example: Check if the key is 'actions' and render an icon
-    if (key === 'Pdf') {
+    if (key === 'ACCIÓN' || key == 'Acción') {
       // You can access the nestedItem to get its specific data if needed
       // e.g., const specificData = nestedItem.someField;
       return (
         <IconButton
           onClick={() => {
-            console.log(`Action clicked for row ${rowIndex}, nested item ${nestedIndex}`);
+            console.log(`Action clicked for row PDF by gxcc${rowIndex}, nested item ${nestedIndex}`);
+            if (onPdfIconClick) {
+                onPdfIconClick(nestedItem);
+            }
             // Add your specific action logic here
           }}
           aria-label="pdf"
           size="medium"
+          title={`Ver PDF GXCC `}
         >
           <FilePdfOutlined style={{color:'red'}} /> {/* Replace ActionIcon with your chosen icon */}
         </IconButton>
@@ -110,7 +117,7 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
         {/* Collapsible Section Row */}
         <TableRow>
           {/* The cell containing the collapsed content spans all main columns plus the toggle cell */}
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={mainColumns.length + 1}>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={mainColumns.length + 1} sx={{ bgcolor:'lightgrey'}}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ margin: 1 }}>
                 {/* Display header for the collapsible section */}
@@ -127,15 +134,15 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
                       {/* Dynamically generate headers based on keys in the first nested item */}
                       <TableRow>
                         {Object.keys(row[collapsibleColumn.collapsibleField][0]).map((key, idx) => (
-                          <TableCell key={idx} align="center">
-                            {key.charAt(0).toUpperCase() + key.slice(1)} {/* Simple header from key */}
+                          <TableCell key={idx} align="center" sx={{ color: 'white', bgcolor:'darkgrey'}}>
+                            {key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()} {/* Simple header from key */}
                           </TableCell>
                         ))}
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {row[collapsibleColumn.collapsibleField].map((nestedItem, nestedIndex) => (
-                        <TableRow key={nestedIndex}>
+                        <TableRow key={nestedIndex} sx={{ bgcolor:'lightgrey'}}>
                           {Object.keys(nestedItem).map((key, valueIndex) => (
                             <TableCell key={valueIndex} align="center">
                               {renderNestedCellContent(nestedItem, key, rowIndex, nestedIndex)}
@@ -179,7 +186,7 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig }) => {
             ))}
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody  >
           {data.map((row, rowIndex) => (
             <Row key={rowIndex} row={row} rowIndex={rowIndex} />
           ))}

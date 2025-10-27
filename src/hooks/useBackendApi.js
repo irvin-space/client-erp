@@ -13,7 +13,8 @@ const getBaseUrl = () => {
         return BASE_URL_PROD;
     }
     // Si es DEV o si PROD no está definida, usamos DEV
-    return BASE_URL_DEV || 'http://localhost:3001'; // Fallback final
+    // return BASE_URL_DEV || 'http://localhost:3001'; // Fallback final
+    return BASE_URL_DEV || 'https://apierp.spaceti.cloud'; // Fallback final
 };
 
 const API_BASE = getBaseUrl();
