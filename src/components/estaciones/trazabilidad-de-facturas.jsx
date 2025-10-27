@@ -18,14 +18,14 @@ import DataTable from '../../components/componentesBase/DataTable3';
 import ComponenteListaDinamica from '../../components/componentesBase/ComponenteListaDinamica';
 import BusquedaDeClientes from '../servicios/busqueda-de-clientes';
 import FirstComponent from '../../components/componentesBase/FirstComponent';
-// import
+import MuiTablaBase from '../componentesBase/MuiTablaBase';
 
 import dayjs from 'dayjs';
 
 import useSQL from '../../hooks/useSQL';
 
 //Componente
-const TrazabilidadDePagos = () => {
+const TrazabilidadDeFacturas = () => {
   const { user } = useAuth();
   console.log(user);
 
@@ -104,7 +104,7 @@ const TrazabilidadDePagos = () => {
   };
 
   const handleAplicarFiltros = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     let numeroCliente = numeroDeCliente;
     if (!numeroDeCliente) {
       numeroCliente = 0;
@@ -117,32 +117,35 @@ const TrazabilidadDePagos = () => {
       '@dFecha2': `'${hastaFecha.format('YYYY-MM-DD').replaceAll('-', '')}'`
     };
 
-    const { data, success } = await executeFetch('Trazabilidad_Pagos', objetoParametros);
+    const { data, success } = await executeFetch('Trazabilidad_Pagos_Facturas', objetoParametros);
 
     if (success) {
+      console.log('facturaS', data[0]);
+      //   setArregloDeConsulta(data[0]);
       setArregloDeConsulta(data[0]);
     }
-    setIsLoading(false)
+    setIsLoading(false);
   };
 
   const handleReiniciarValores = () => {
     setSucursal(user?.sucursal || '');
     setNombreDeCliente('');
-    setNumeroDeCliente(null)
+    setNumeroDeCliente(null);
     setDesdeFecha(dayjs().subtract(1, 'month'));
     setHastaFecha(dayjs());
     setArregloDeConsulta([]);
   };
 
   const handleRowSelect = (rowInfo) => {
-    navigate('/dashboard-trazabilidad-pagos', { state: { rowInfo } });
+    // navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
+    console.log("rowInfo desde trazabilidad de facturas",rowInfo)
   };
 
   return (
     <Box>
       <Box sx={{ marginBottom: '16px' /*, backgroundColor: 'white'*/ }}>
         <Typography sx={{ verticalAlign: 'baseline' }} variant="h2">
-          Trazabilidad de Pagos
+          Trazabilidad de Facturas
         </Typography>
       </Box>
       <Grid container spacing={2}>
@@ -196,13 +199,41 @@ const TrazabilidadDePagos = () => {
         </Grid>
       </Grid>
       {/* Tabla */}
-      <Box sx={{ width: '100', marginTop: '16px', height: '60vh', overflowX:'auto' }}>
-        <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} sucursalColumna={columnaSucursal} />
+      <Box sx={{ width: '100', marginTop: '16px', height: '60vh', overflowX: 'auto' }}>
+        <MuiTablaBase
+          seleccionable={true}
+          idPropiedad={'factura'}
+          datos={arregloDeConsulta}
+          onSelecteRow={()=>handleRowSelect()}
+          estructuraEncabezados={[
+            { propiedad: 'nombre_tipo', encabezadoTitulo: 'Tipo' },
+            { propiedad: 'sucursal', encabezadoTitulo: 'Sucursal' },
+            { propiedad: 'cliente', encabezadoTitulo: 'Cliente' },
+            { propiedad: 'factura', encabezadoTitulo: 'Factura' },
+            { propiedad: 'fiscal', encabezadoTitulo: 'Fiscal' },
+            { propiedad: 'fecha_factura', encabezadoTitulo: 'Fecha Factura' },
+            { propiedad: 'total', encabezadoTitulo: 'Total' },
+            { propiedad: 'importe_gasto_tramite', encabezadoTitulo: 'I.Gasto Tramite' },
+            { propiedad: 'saldo_actual', encabezadoTitulo: 'Saldo Actual' },
+            { propiedad: 'moneda', encabezadoTitulo: 'Moneda' },
+            { propiedad: 'poliza', encabezadoTitulo: 'Poliza' },
+            { propiedad: 'numero_exportada', encabezadoTitulo: 'Num. Exportada' },
+            { propiedad: 'fecha_exportada', encabezadoTitulo: 'Fecha Exportada' },
+            { propiedad: 'estado_actual', encabezadoTitulo: 'Estado Actual' }
+          ]}
+        />
+        {/* <DataTable rowsArray={arregloDeConsulta} onSelectRow={handleRowSelect} sucursalColumna={columnaSucursal} /> */}
       </Box>
       <br />
       {/* Botones Aplicar,Reinicar */}
       <Box sx={{ display: 'flex', justifyContent: 'l' }}>
-        <Button sx={{ marginRight: '8px' }} variant="contained" onClick={handleAplicarFiltros} disabled={isLoading} startIcon={isLoading ? <CircularProgress size={20} /> : null}>
+        <Button
+          sx={{ marginRight: '8px' }}
+          variant="contained"
+          onClick={handleAplicarFiltros}
+          disabled={isLoading}
+          startIcon={isLoading ? <CircularProgress size={20} /> : null}
+        >
           Consultar
         </Button>
         <Button variant="outlined" onClick={handleReiniciarValores}>
@@ -213,4 +244,4 @@ const TrazabilidadDePagos = () => {
   );
 };
 
-export default TrazabilidadDePagos;
+export default TrazabilidadDeFacturas;

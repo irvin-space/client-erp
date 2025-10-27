@@ -31,6 +31,8 @@ import {
   FireOutlined as TrendingUp // Renombrado para la Card de distribución
 } from '@ant-design/icons';
 
+import LinearProgress from '@mui/material/LinearProgress';
+
 import { FaFolderOpen } from 'react-icons/fa';
 
 // Y si tu botón es de AntD:
@@ -56,6 +58,7 @@ import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColaps
 //Componente
 const DashboardTrazabilidadPagos = () => {
   const { displayDocument, isLoading, error} = useDocumentDisplay();
+  const [isInfoLoading,setIsInfoLoading] = useState(true)
   const navigate = useNavigate();
   const [cargandoIA, setCargandoIA] = useState(false);
   const [jsonIA, setJsonIA] = useState(true);
@@ -79,6 +82,7 @@ const DashboardTrazabilidadPagos = () => {
 
     const { data, success } = await executeFetch('Trazabilidad_Pagos2', objetoParametros);
     console.log(success);
+    console.log(isLoading)
     if (success) {
       setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
 
@@ -129,6 +133,7 @@ const DashboardTrazabilidadPagos = () => {
       console.log(facturasNoRepetidas.length);
       setFacturasRelacionadasUnicas(cantidadFacturasNoRepetidas);
       setInformacionDelDeposito(data[0][0]);
+      setIsInfoLoading(false)
     }
   };
 
@@ -601,8 +606,9 @@ const handleShowPDFGXCCIntegrado = useCallback( async(rowData) => {
 
 
 
-  return (
-    <Box sx={{ backgroundColor: '' }}>
+
+  if(!isInfoLoading){
+    return (<Box sx={{ backgroundColor: '' }}>
       <Typography variant="h2">Dashboard de Trazabilidad</Typography>
       <br />
       <Divider />
@@ -812,8 +818,10 @@ const handleShowPDFGXCCIntegrado = useCallback( async(rowData) => {
           </Box>
         </Box>
       </Stack>
-    </Box>
-  );
+    </Box>)
+  }else{
+    return (<LinearProgress/>)
+  }
 };
 
 //Exportar componente

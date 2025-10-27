@@ -18,6 +18,7 @@ import FileToJson from '@/components/estaciones/file-to-json';
 //Pages
 import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos';
 import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-trazabilidad-pagos';
+import TrazabilidadDeFacturas from '@/components/estaciones/trazabilidad-de-facturas';
 
 
 // pages routing
@@ -61,6 +62,10 @@ const MainRoutes = {
         {
           path: 'trazabilidad-de-pagos',
           element: <TrazabilidadDePagos/>
+        },
+        {
+          path: 'trazabilidad-de-facturas',
+          element: <TrazabilidadDeFacturas/>
         },
         {
           path: 'dashboard-trazabilidad-pagos',

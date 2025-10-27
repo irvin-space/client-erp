@@ -1,5 +1,5 @@
 import React from 'react';
-import {useState} from 'react'
+import { useState } from 'react';
 
 //MUI
 //Componentes para tabla MUI
@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 
 //Componentes propios del proyecto
-import MonedaFormatoMiles from './MonedaFormatoMiles.jsx'
+import MonedaFormatoMiles from './MonedaFormatoMiles.jsx';
 
 //Idioma para tabla
 import { esES } from '@mui/x-data-grid/locales';
@@ -21,8 +21,11 @@ import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-de
 
 //Componente MuiTablaBase
 //Ejemplo de como utilizar:
-{/* <MuiTablaBase
+{
+  /* <MuiTablaBase
           tieneSeleccion={true} //Valor puede ser true o false
+          idPropiedad={''}
+          datos=[{},{},{},{},{}]
           estructuraEncabezados={[
             { propiedad: 'test1', encabezadoTitulo: 'prueba1abcdefghijklmnopqrstuvwxyz' },
             { propiedad: 'test2', encabezadoTitulo: 'prueba2' },
@@ -33,28 +36,20 @@ import { FilterOutlined, CheckCircleOutlined, CheckCircleTwoTone } from '@ant-de
             { propiedad: 'test7', encabezadoTitulo: 'prueba7' },
             { propiedad: 'test8', encabezadoTitulo: 'prueba8' },
             { propiedad: 'test9', encabezadoTitulo: 'prueba9' },
-            { propiedad: 'test10', encabezadoTitulo: 'prueba10' }
+            { propiedad: 'test10', encabezadoTitulo: 'prueba10'}
           ]}
-        /> */}
-const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
-
+        /> */
+}
+const MuiTablaBase = ({ estructuraEncabezados, datos, onSelectRow, seleccionable = false, idPropiedad = 'id' }) => {
   const [selectedRowId, setSelectedRowId] = useState(null);
 
-  // Funcion auxiliar
-  const generateRowId = (row) => {
-    return row.documento != null ? row.documento : `fallback-${row.ficha_deposito}-${row.nombre_tipo}-fecha`;
-  };
-
-  console.log(seleccionable)
-
-
   const encabezados = estructuraEncabezados.map((item) => {
-    const calculatedFlex = item.encabezadoTitulo.length > 20 ? 2 : 1;
+    const calculatedFlex = item.encabezadoTitulo.length > 15 ? 2 : 1;
 
-    return { field: item.propiedad, headerName: item.encabezadoTitulo, flex: calculatedFlex};
+    return { field: item.propiedad, headerName: item.encabezadoTitulo, flex: calculatedFlex };
   });
 
-  if(seleccionable){
+  if (seleccionable) {
     const columnaSeleccion = {
       field: 'seleccion',
       headerName: 'Selección',
@@ -65,14 +60,23 @@ const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
       sortable: false,
       headerAlign: 'center',
       renderCell: (params) => {
-        const generatedId = generateRowId(params.row);
-        const isSelected = selectedRowId === generatedId;
+        // Use the same ID logic as DataGrid
+        const rowId = params.row[idPropiedad]; // e.g., factura
+        const isSelected = selectedRowId === rowId;
 
         const handleSelect = () => {
-          setSelectedRowId(generatedId); // guardar id
+          const newSelectedId = isSelected ? null : rowId;
+          setSelectedRowId(newSelectedId);
+
+          // 👉 Log the factura or whatever you want
+          console.log('Selected row factura:', params.row.factura);
+
+          // Optional: Call a callback if provided
           if (onSelectRow) {
-            onSelectRow(params.row); // pasar data
-          }
+            onSelectRow(params.row);}
+          // } else if (onDeselectRow && isSelected) {
+          //   onDeselectRow(params.row);
+          // }
         };
 
         return (
@@ -89,7 +93,7 @@ const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
           >
             <IconButton
               onClick={handleSelect}
-              aria-label={isSelected ? `Deseleccionar ${params.row.nombre_cliente}` : `Seleccionar ${params.row.nombre_cliente}`}
+              aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
               color="success"
               size="medium"
               sx={{ width: '100%', height: '100%' }}
@@ -99,19 +103,10 @@ const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
           </Box>
         );
       }
-    }
+    };
 
-    encabezados.push(columnaSeleccion)
+    encabezados.push(columnaSeleccion);
   }
-
-  // const columns = [
-  //   { field: 'field', headerName: 'NombreColumna', flex: 1 },
-  //   { field: 'field2', headerName: 'NombreColumna2', flex: 1 }
-  // ];
-
-  const filas = [
-    { id:546, test1: 'Lorem Ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',test2: <MonedaFormatoMiles cantidad={555} />}
-  ]
 
   return (
     //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
@@ -120,7 +115,8 @@ const MuiTablaBase = ({ estructuraEncabezados, seleccionable=false }) => {
         sx={{ '& .MuiDataGrid-columnHeader': { backgroundColor: 'primary.dark', color: 'primary.contrastText' } }}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         columns={encabezados}
-        // rows={filas}
+        rows={datos}
+        getRowId={(row) => row[idPropiedad]}
       />
     </Paper>
   );

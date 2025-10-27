@@ -3,18 +3,19 @@ import { useState, useCallback } from 'react';
 import { mensajes } from '../utils/mensajes.js'; 
 
 // 1. Acceso a variables de entorno (como definimos anteriormente)
-const BASE_URL_DEV = import.meta.env.VITE_DEV_API_URL;
-const BASE_URL_PROD = import.meta.env.VITE_PROD_API_URL;
-const DATA_MODE = import.meta.env.VITE_DATA_MODE || 'DEV'; // Fallback a DEV
+// const BASE_URL_DEV = import.meta.env.VITE_DEV_API_URL;
+// const BASE_URL_PROD = import.meta.env.VITE_PROD_API_URL;
+// const DATA_MODE = import.meta.env.VITE_DATA_MODE || 'DEV'; // Fallback a DEV
+
+    const BASE_URL = import.meta.env.VITE_URL_ENVIRONMENT;
 
 // Elige la URL base según el modo (dev o prod)
 const getBaseUrl = () => {
-    if (DATA_MODE === 'PROD' && BASE_URL_PROD) {
-        return BASE_URL_PROD;
-    }
+    // if (DATA_MODE === 'PROD' && BASE_URL_PROD) {
+    //     return BASE_URL_PROD;
+    // }
     // Si es DEV o si PROD no está definida, usamos DEV
-    // return BASE_URL_DEV || 'http://localhost:3001'; // Fallback final
-    return BASE_URL_DEV || 'https://apierp.spaceti.cloud'; // Fallback final
+    return BASE_URL
 };
 
 const API_BASE = getBaseUrl();
