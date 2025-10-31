@@ -18,6 +18,7 @@ import FileToJson from '@/components/estaciones/file-to-json';
 //Pages
 import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos';
 import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-trazabilidad-pagos';
+import DashboardTrazabilidadFacturas from '../components/dashboards/dashboard-trazabilidad-facturas';
 import TrazabilidadDeFacturas from '@/components/estaciones/trazabilidad-de-facturas';
 
 //Chatbot UI
@@ -72,6 +73,10 @@ const MainRoutes = {
         {
           path: 'dashboard-trazabilidad-pagos',
           element: <DashboardTrazabilidadPagos/>
+        },
+        {
+          path: 'dashboard-trazabilidad-facturas',
+          element: <DashboardTrazabilidadFacturas />
         },
         {
           path: 'file-to-json',

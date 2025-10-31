@@ -20,7 +20,7 @@ import MonedaFormatoMiles from '../../componentesBase/MonedaFormatoMiles';
 
 // ==============================|| INVOICE - PIE CHART ||============================== //
 
-export default function GraficoDePastel({ cantidad1, cantidad2 }) {
+export default function GraficoDePastel({ cantidad1, cantidad2, cantidad3, moneda='indiqueLaMoneda' }) {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -35,70 +35,143 @@ export default function GraficoDePastel({ cantidad1, cantidad2 }) {
   };
   const total = cantidad1 + cantidad2;
   const data = [
-    { value: cantidad1, label: 'Total distribuido', color: theme.palette.secondary.main },
-    { value: cantidad2, label: 'Importe total depositado', color: theme.palette.primary.main }
+    { value: cantidad1, label: 'IVA', color: theme.palette.secondary.main },
+    { value: cantidad2, label: 'Subtotal', color: theme.palette.primary.main },
+    { value: cantidad3, label: 'Importe total depositado', color: theme.palette.info.main }
   ];
 
   //sx style
   const DotSize = { display: 'flex', alignItems: 'center', gap: 1 };
   const ExpenseSize = { fontSize: '1rem', lineHeight: '1.5rem', fontWeight: 500 };
 
-  return (
-    <Grid container alignItems="center" spacing={1}>
-      <Grid size={12}>
-        <PieChart
-          hideLegend
-          height={247}
-          margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-          slotProps={{
-            legend: { hidden: false },
-            tooltip: {
-              formatter: (params) => {
-                const percentage = ((params.value / total) * 100).toFixed(2);
-                return `${params.label}: ${percentage}%`;
+  if (!cantidad3) {
+    return (
+      <Grid container alignItems="center" spacing={1}>
+        <Grid size={12}>
+          <PieChart
+            hideLegend
+            height={247}
+            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+            slotProps={{
+              legend: { hidden: false },
+              tooltip: {
+                formatter: (params) => {
+                  const percentage = ((params.value / total) * 100).toFixed(2);
+                  return `${params.label}: ${percentage}%`;
+                }
               }
-            }
-          }}
-          series={[
-            {
-              data,
-              innerRadius: 60,
-              outerRadius: 100,
-              type: 'pie',
-              highlightScope: { highlight: 'item' },
-              // valueFormatter: (value) => `${value.value}`
-              valueFormatter: (params) => {
-                const percentage = ((params.value / total) * 100).toFixed(2);
-                return `${percentage}%`;
+            }}
+            series={[
+              {
+                data,
+                innerRadius: 60,
+                outerRadius: 100,
+                type: 'pie',
+                highlightScope: { highlight: 'item' },
+                // valueFormatter: (value) => `${value.value}`
+                valueFormatter: (params) => {
+                  const percentage = ((params.value / total) * 100).toFixed(2);
+                  return `${percentage}%`;
+                }
               }
-            }
-          ]}
-        />
-      </Grid>
-      <Grid size={12}>
-        <Grid container>
-          <Grid></Grid>
-          <Grid sx={DotSize} size="grow">
-            <Dot color="primary" size={12} />
-            <Typography variant="subtitle1" color="text.secondary">
-              Importe total depositado
-            </Typography>
+            ]}
+          />
+        </Grid>
+        <Grid size={12}>
+          <Grid container>
+            <Grid></Grid>
+            <Grid sx={DotSize} size="grow">
+              <Dot color="primary" size={12} />
+              <Typography variant="subtitle1" color="text.secondary">
+                Importe total depositado
+              </Typography>
+            </Grid>
+            <Grid sx={ExpenseSize}>{cantidad2 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad2} etiquetaHTML={'h5'} /> : ''}</Grid>
           </Grid>
-          <Grid sx={ExpenseSize}>{cantidad2 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad2} etiquetaHTML={'h5'} /> : ''}</Grid>
+        </Grid>
+        <Grid size={12}>
+          <Grid container>
+            <Grid></Grid>
+            <Grid sx={DotSize} size="grow">
+              <Dot color="secondary" size={12} />
+              <Typography variant="subtitle1" color="text.secondary">
+                Total distribuido
+              </Typography>
+            </Grid>
+            <Grid sx={ExpenseSize}>{cantidad1 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad1} etiquetaHTML={'h5'} /> : ''}</Grid>
+          </Grid>
         </Grid>
       </Grid>
-      <Grid size={12}>
-        <Grid container>
-          <Grid></Grid>
-          <Grid sx={DotSize} size="grow">
-            <Dot color="secondary" size={12} />
-            <Typography variant="subtitle1" color="text.secondary">
-              Total distribuido
-            </Typography>
-          </Grid>
-          <Grid sx={ExpenseSize}>{cantidad1 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad1} etiquetaHTML={'h5'} /> : ''}</Grid>
+    );
+  } else {
+    return (<Grid container alignItems="center" spacing={1}>
+        <Grid size={12}>
+          <PieChart
+            hideLegend
+            height={247}
+            margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+            slotProps={{
+              legend: { hidden: false },
+              tooltip: {
+                formatter: (params) => {
+                  const percentage = ((params.value / total) * 100).toFixed(2);
+                  return `${params.label}: ${percentage}%`;
+                }
+              }
+            }}
+            series={[
+              {
+                data,
+                innerRadius: 60,
+                outerRadius: 100,
+                type: 'pie',
+                highlightScope: { highlight: 'item' },
+                // valueFormatter: (value) => `${value.value}`
+                valueFormatter: (params) => {
+                  const percentage = ((params.value / total) * 100).toFixed(2);
+                  return `${percentage}%`;
+                }
+              }
+            ]}
+          />
         </Grid>
-      </Grid>
-    </Grid>
-  );
+        <Grid size={12}>
+          <Grid container>
+            <Grid></Grid>
+            <Grid sx={DotSize} size="grow">
+              <Dot color="primary" size={12} />
+              <Typography variant="subtitle1" color="text.secondary">
+                Subtotal
+              </Typography>
+            </Grid>
+            <Grid sx={ExpenseSize}>{cantidad2 ? <MonedaFormatoMiles moneda={moneda} cantidad={cantidad2} etiquetaHTML={'h5'} /> : ''}</Grid>
+          </Grid>
+        </Grid>
+        <Grid size={12}>
+          <Grid container>
+            <Grid></Grid>
+            <Grid sx={DotSize} size="grow">
+              <Dot color="secondary" size={12} />
+              <Typography variant="subtitle1" color="text.secondary">
+                IVA
+              </Typography>
+            </Grid>
+            <Grid sx={ExpenseSize}>{cantidad1 ? <MonedaFormatoMiles moneda={moneda} cantidad={cantidad1} etiquetaHTML={'h5'} /> : ''}</Grid>
+          </Grid>
+        </Grid>
+        <Grid size={12}>
+          <Grid container>
+            <Grid></Grid>
+            <Grid sx={DotSize} size="grow">
+              <Dot color='info' size={12} />
+              <Typography variant="subtitle1" color="text.secondary">
+                Importe gasto tramite
+              </Typography>
+            </Grid>
+            {/* <Grid sx={ExpenseSize}>{cantidad1 ? <MonedaFormatoMiles moneda={'MXN'} cantidad={cantidad1} etiquetaHTML={'h5'} /> : ''}</Grid> */}
+            <Grid sx={ExpenseSize}>{cantidad3 ? <MonedaFormatoMiles moneda={moneda} cantidad={cantidad3} etiquetaHTML={'h5'} /> : ''}</Grid> 
+          </Grid>
+        </Grid>
+      </Grid>)
+  }
 }

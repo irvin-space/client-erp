@@ -2,9 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import useSQL from '../../hooks/useSQL.js';
-import useDocumentDisplay from '../../hooks/useDocumentDisplay.js';
-
 import * as XLSX from 'xlsx';
 
 //MUI
@@ -15,12 +12,10 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
-import Skeleton from '@mui/material/Skeleton';
 
 //Ant design
 import {
   DollarCircleOutlined,
-  EyeOutlined,
   DatabaseOutlined,
   DollarOutlined,
   FileTextOutlined,
@@ -45,21 +40,23 @@ import { FaFolderOpen } from 'react-icons/fa';
 import MainCard from '../MainCard.jsx';
 import ReportCard from '../cards/estadisticas/ReportCard.jsx';
 import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
-import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
+// import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
 import LineaDelTiempo2 from '../componentesBase/LineaDelTiempo2.jsx';
 import LineaDelTiempo3 from '../componentesBase/LineaDelTiempo3.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
 import TablaBase from '../componentesBase/TablaBase.jsx';
-
+import MuiTablaBase from '../componentesBase/MuiTablaBase.jsx';
 import MonedaFormatoMiles from '../componentesBase/MonedaFormatoMiles.jsx';
 
+import useSQL from '../../hooks/useSQL.js';
+import useDocumentDisplay from '../../hooks/useDocumentDisplay.js';
 import { mensajes } from '../../utils/mensajes.js';
 
 import ReactMarkdown from 'react-markdown';
 import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColapsableTrazabilidadDashboard.jsx';
 
 //Componente
-const DashboardTrazabilidadPagos = () => {
+const DashboardTrazabilidadFacturas = () => {
   const { displayDocument, isLoading, error } = useDocumentDisplay();
   const [isInfoLoading, setIsInfoLoading] = useState(true);
   const navigate = useNavigate();
@@ -68,96 +65,105 @@ const DashboardTrazabilidadPagos = () => {
   const [analisisIA, setAnalisisIA] = useState('');
   const [eventos, setEventos] = useState([]);
 
-  const [folioDepositoAConsultar, setFolioDepostioAConsultar] = useState(0);
+  const [facturaAConsultar, setFacturaAConsultar] = useState(0);
   const [facturasRelacionadasUnicas, setFacturasRelacionadasUnicas] = useState(0);
   const [totalDistribuido, setTotalDistribuido] = useState(0);
-  const [informacionDelDeposito, setInformacionDelDeposito] = useState({});
+  const [informacionDeFactura, setInformacionDeFactura] = useState({});
   const [filasDocumentosRelacionados, setFilasDocumentosRelacionados] = useState([]);
 
   const location = useLocation();
 
   const { executeFetch, data, loading } = useSQL();
 
-  const traerInfoDeDeposito = async () => {
+  const traerInfoFactura = async () => {
     const objetoParametros = {
-      '@nFicha_Deposito': `'${folioDepositoAConsultar}'` //167443 `'${folioDepositoAConsultar}'`
+      '@nFactura': `'${facturaAConsultar}'` //167443 `'${facturaAConsultar}'`
     };
 
-    const { data, success } = await executeFetch('Trazabilidad_Pagos2', objetoParametros);
+    const { data, success } = await executeFetch('Trazabilidad_Pagos_Facturas2', objetoParametros);
     console.log(success);
+    console.log(data);
     console.log(isLoading);
     if (success) {
-      setJsonIA(data[2][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
+      setJsonIA(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
 
-      const filasDocumentosRelacionadosConGxcc = data[1].map((item) => {
-        const itemsGxcc = data[4].filter((gxccItem) => gxccItem.tramite === item.tramite_aduanal);
+      //Datos para tabla crear hijos en tabla colapsable
+      //   const filasDocumentosRelacionadosConGxcc = data[1].map((item) => {
+      //     const itemsGxcc = data[4].filter((gxccItem) => gxccItem.tramite === item.tramite_aduanal);
 
-        // Transforma los elementos coincidentes al formato deseado de gxcc
-        const formattedGxcc = itemsGxcc.map((gxccItem) => ({
-          'Fact. Prov': gxccItem.factura_prov, // Mapea factura_prov
-          Concepto: gxccItem.concepto, // Mapea concepto
-          'Nombre Concepto': gxccItem.nombre?.trim(), // Mapea nombre (y opcionalmente elimina espacios en blanco)
-          'Tipo ': gxccItem.extension,
-          Acción: gxccItem.documento // Mapea documento a Pdf (o cualquier propiedad que contenga el enlace/archivo PDF)
-          // Puedes agregar más mapeos aquí si es necesario desde gxccItem
-        }));
+      //     // Transforma los elementos coincidentes al formato deseado de gxcc
+      //     const formattedGxcc = itemsGxcc.map((gxccItem) => ({
+      //       'Fact. Prov': gxccItem.factura_prov, // Mapea factura_prov
+      //       Concepto: gxccItem.concepto, // Mapea concepto
+      //       'Nombre Concepto': gxccItem.nombre?.trim(), // Mapea nombre (y opcionalmente elimina espacios en blanco)
+      //       'Extensión': gxccItem.extension,
+      //       'Acción': gxccItem.documento // Mapea documento a Pdf (o cualquier propiedad que contenga el enlace/archivo PDF)
+      //       // Puedes agregar más mapeos aquí si es necesario desde gxccItem
+      //     }));
 
-        // Devuelve el elemento original con la propiedad 'gxcc' añadida
-        return {
-          ...item, // Extiende las propiedades originales
-          gxcc: formattedGxcc // Agrega el nuevo array gxcc
-        };
-      });
-
-      setFilasDocumentosRelacionados(filasDocumentosRelacionadosConGxcc); // Establece los datos modificados
-
+      //     // Devuelve el elemento original con la propiedad 'gxcc' añadida
+      //     return {
+      //       ...item, // Extiende las propiedades originales
+      //       gxcc: formattedGxcc // Agrega el nuevo array gxcc
+      //     };
+      //   });
+      //   setFilasDocumentosRelacionados(filasDocumentosRelacionadosConGxcc); // Establece los datos modificados
       // setFilasDocumentosRelacionados(data[1])
-      console.log('abcabc', data[4]);
+
+      // console.log('datos segundo arreglo', data[1]);
       // console.log('filasModificadas1',filasDocumentosRelacionadosModificado)
-      console.log('complementos', data[4]);
-      console.log('eventos para timeline', data[3]);
+      //   console.log('complementos', data[4]);
+      setFilasDocumentosRelacionados(data[1]);
+      // console.log('eventos para timeline', data[2]);
 
-      setEventos(data[3]);
+      setEventos(data[2]);
 
-      let cantidadesTotalDistribuido = data[0].map((item) => {
-        return item.total_movimiento;
-      });
-      console.log('sumatoria = ', cantidadesTotalDistribuido);
-      const sumatoriaCantidadTotalDistribuido = cantidadesTotalDistribuido.reduce((acumulador, sigValor) => acumulador + sigValor, 0);
-      console.log('sumatoria', sumatoriaCantidadTotalDistribuido);
-      setTotalDistribuido(sumatoriaCantidadTotalDistribuido);
+      // let cantidadesTotalDistribuido = data[0].map((item) => {
+      //   return item.total_movimiento;
+      // });
+      // console.log('sumatoria = ', cantidadesTotalDistribuido);
+      // const sumatoriaCantidadTotalDistribuido = cantidadesTotalDistribuido.reduce((acumulador, sigValor) => acumulador + sigValor, 0);
+      // console.log('sumatoria', sumatoriaCantidadTotalDistribuido);
+      // setTotalDistribuido(sumatoriaCantidadTotalDistribuido);
       let totalFacturasRelacionadasEncontradas = data[0].map((item) => {
         return item.factura;
       });
-      console.log(totalFacturasRelacionadasEncontradas);
+      // console.log(totalFacturasRelacionadasEncontradas);
       const facturasNoRepetidas = [...new Set(totalFacturasRelacionadasEncontradas)];
       const cantidadFacturasNoRepetidas = facturasNoRepetidas.length;
-      console.log(facturasNoRepetidas.length);
+      // console.log(facturasNoRepetidas.length);
       setFacturasRelacionadasUnicas(cantidadFacturasNoRepetidas);
-      setInformacionDelDeposito(data[0][0]);
+      setInformacionDeFactura(data[0][0]);
       setIsInfoLoading(false);
     }
   };
+
+  useEffect(() => {}, [filasDocumentosRelacionados]);
 
   //useEffect al montarse el componente
   useEffect(() => {
     const { rowInfo } = location.state || {};
 
-    console.log('Received rowInfo:', rowInfo);
-    if (rowInfo?.ficha_deposito) {
-      setFolioDepostioAConsultar(rowInfo.ficha_deposito);
+    console.log('Informacion de fila:', rowInfo);
+    // console.log(rowInfo.factura);
+    // console.log(rowInfo?.factura);
+    if (rowInfo?.factura) {
+      // console.log('existe factura');
+      setFacturaAConsultar(rowInfo.factura);
     } else {
       //No existe ficha de deposito,redirecciona a pantalla trazabilidad de pagos
-      navigate('/trazabilidad-de-pagos');
+      //   navigate('/trazabilidad-de-pagos');
+      console.log('revisar informacion de factura');
     }
   }, []);
 
   //useEffect al montarse el componente
   useEffect(() => {
-    if (folioDepositoAConsultar) {
-      traerInfoDeDeposito();
+    console.log(facturaAConsultar);
+    if (facturaAConsultar) {
+      traerInfoFactura();
     }
-  }, [folioDepositoAConsultar]);
+  }, [facturaAConsultar]);
 
   const formatFecha = (isoString) => {
     if (!isoString) return '';
@@ -166,18 +172,18 @@ const DashboardTrazabilidadPagos = () => {
   };
 
   const handleAnalisisIA = async (servicio) => {
-    if (!folioDepositoAConsultar) {
+    if (!facturaAConsultar) {
       mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
       return;
     }
 
     // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
     setCargandoIA(true);
-    console.log('iaiaia', folioDepositoAConsultar);
+    // console.log('factura a consultar', facturaAConsultar);
     const Params = {
-      ficha_deposito: folioDepositoAConsultar
+      ficha_deposito: facturaAConsultar
     };
-    const instruccionSQL = 'Trazabilidad_Pagos2'; // El mismo SP que usas en handleFetch
+    const instruccionSQL = 'Trazabilidad_Pagos_Facturas2'; // El mismo SP que usas en handleFetch
     const parametros = Params; // Usa el folio del trámite seleccionado
     // const promptAI =
     //   'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
@@ -205,6 +211,29 @@ const DashboardTrazabilidadPagos = () => {
       '* **Atípico:** [Gasto inusual si aplica, sino omitir]\n\n' +
       '## 🧭 Recomendación Auditora (Una Sentencia)\n' +
       '[Acción clara y directa: requerir documentación faltante, cerrar trámite o investigar $X.]';
+
+    const promptAIPrueba =
+      'AUDITORÍA EXPRESS: FACTURACIÓN Y COBRANZA\n\n' +
+      'Eres un auditor financiero externo de alto nivel. Analiza exclusivamente los datos de la factura principal y su array de pagos/aplicaciones (detalle_documentos). Responde en responde en **Markdown estricto** y ultra-conciso. Tu audiencia (Alta Dirección/Auditores) requiere identificar el riesgo en menos de 30 segundos. Máximo 150 palabras totales.\n\n' +
+      'PREMISAS DE CÁLCULO:\n' +
+      '1. Total Pagado: Sumatoria de importe de todos los objetos en detalle_documentos.\n' +
+      '2. Total Factura: Usar total (o total_me si moneda != "MXP").\n' +
+      '3. Validación Saldo: Comparar (Total Factura - Total Pagado) con el saldo_actual de la factura.\n\n' +
+      'ENFOQUE EN RIESGO (Prioridad Máxima):\n' +
+      '1. Discrepancias de Saldo: Señalar inmediatamente si (Total Factura - Total Pagado) NO coincide con saldo_actual. Usar el valor numérico de la diferencia.\n' +
+      '2. Póliza Principal: Verificar si la factura principal tiene poliza, numero_exportado y fecha_aplicada (de la póliza) registrados. Usar ✅/❌.\n' +
+      '3. Cronología Crítica: Alertar si el lapso entre fecha_factura y el primer fecha_aplicado (del detalle) excede los 15 días o si las fechas de póliza son ilógicas.\n' +
+      '4. Total Conformidad: Si no hay riesgos ni anomalías críticas (saldo coincide, póliza existe y es oportuna), la primera sección debe ser una sola oración indicando conformidad.\n\n' +
+      'FORMATO DE SALIDA (Máximo 2 secciones):\n' +
+      '---\n' +
+      '# 🚨 RIESGO AUDITORÍA: [uuid DE LA FACTURA]\n' +
+      '---\n' +
+      '## ⚠️ Hallazgos Clave y Puntos de Atención (Lista Concisa)\n' +
+      '* Balance: [Discrepancia monetaria o conformidad del saldo. Usar el balance numérico clave (e.g., $5,400 de diferencia)]\n' +
+      '* Póliza Principal: [Estado de la póliza de la factura principal. Usar ✅ o ❌]\n' +
+      '* Timing Aplicación: [Máximo desfase en días (e.g., +21 días) entre facturación y primer pago. Usar 🗓️]\n\n' +
+      '## 🧭 Recomendación Auditora (Una Sentencia)\n' +
+      '[Acción clara y directa: Cierre conforme, investigar diferencia de $X, o requerir registro contable.]';
 
     const promptAI2 =
       '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
@@ -247,7 +276,8 @@ const DashboardTrazabilidadPagos = () => {
         body: JSON.stringify({
           instruccionSQL: instruccionSQL,
           parametros: parametros,
-          promptAI: promptAI
+          promptAI: promptAIPrueba
+          //   promptAI: promptAI
         })
       });
 
@@ -301,16 +331,6 @@ const DashboardTrazabilidadPagos = () => {
     }
   }, []);
 
-
-  const handleVerFactura = useCallback((documento)=>{
-     console.log('hello World desde dashboard trazabilidad')
-          console.log(documento.factura)
-          console.log(documento)
-          const rowInfo = {factura:documento.factura}
-          navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
-  },[])
-
-
   const handleViewXML = useCallback((documento) => {
     // 1. Obtener el contenido del XML
     const xmlContent = documento.xml;
@@ -359,8 +379,6 @@ const DashboardTrazabilidadPagos = () => {
           tipoArchivo: 'pdf'
         });
       };
-
-      
 
       const handleViewPedimentoRefactored = () => {
         // ...
@@ -413,19 +431,6 @@ const DashboardTrazabilidadPagos = () => {
             }}
           >
             <FaFolderOpen style={{ fontSize: '18px' }} />
-          </Button>
-
-          <Button
-            onClick={()=>handleVerFactura(documento)} // ¡Usa la nueva función!
-            variant="text"
-            size="small"
-            title={`Ver PDF Pedimento`}
-            disabled={!(documento.factura > 0)}
-            style={{
-              color: documento.factura > 0 ? '#94d400ff' : '#BDBDBD'
-            }}
-          >
-            <EyeOutlined style={{ fontSize: '18px' }} />
           </Button>
         </div>
       );
@@ -545,7 +550,7 @@ const DashboardTrazabilidadPagos = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Documentos Relacionados');
 
     // Trigger download
-    XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${folioDepositoAConsultar}.xlsx`);
+    XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${facturaAConsultar}.xlsx`);
   };
 
   //   const handleShowPDFGXCC = useCallback( async(rowData) => {
@@ -628,7 +633,7 @@ const DashboardTrazabilidadPagos = () => {
   if (!isInfoLoading) {
     return (
       <Box style={{ cursor: cargandoIA ? 'wait' : 'default' }} sx={{ backgroundColor: '' }}>
-        <Typography variant="h2">Dashboard de Trazabilidad</Typography>
+        <Typography variant="h2">Dashboard de Trazabilidad de Facturas</Typography>
         <br />
         <Divider />
         <br />
@@ -637,11 +642,12 @@ const DashboardTrazabilidadPagos = () => {
           {/* Encabezado */}
           <Box>
             <Typography variant="h3" align="center">
-              Trazabilidad de Depósito #<span>{informacionDelDeposito?.ficha_deposito}</span>
+              Trazabilidad de Factura #<span>{informacionDeFactura?.factura}</span>
             </Typography>
             <Typography variant="h5" align="center">
-              Cliente: <span>{informacionDelDeposito?.cliente_factura}</span> | Fecha:{' '}
-              <span>{formatFecha(informacionDelDeposito?.fecha_deposito_documento)}</span>
+              Cliente: <span>{informacionDeFactura?.cliente}</span> | Fecha:{' '}
+              {/* <span>{formatFecha(informacionDeFactura?.fecha_aplicada)}</span> */}
+              <span>{informacionDeFactura?.fecha_factura}</span>
             </Typography>
           </Box>
           {/* Cards */}
@@ -649,35 +655,67 @@ const DashboardTrazabilidadPagos = () => {
             <Grid sx={{ height: '100%' }} container spacing={2}>
               <Grid sx={{ height: '100%', width: '100%' }} size={{ sm: 12, md: 12, lg: 4 }}>
                 {/* Card 1 */}
-                <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Resumen del Depósito">
+                <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Resumen de la factura">
                   <Stack spacing={1}>
                     <ReportCard
                       primary={
-                        informacionDelDeposito?.importe_ficha_deposito ? (
+                        informacionDeFactura?.subtotal || informacionDeFactura?.subtotal == 0 ? (
                           <MonedaFormatoMiles
-                            moneda={'MXN'}
-                            cantidad={informacionDelDeposito?.importe_ficha_deposito}
+                            moneda={informacionDeFactura?.moneda}
+                            cantidad={informacionDeFactura?.subtotal}
                             etiquetaHTML={'h3'}
                           />
                         ) : (
                           'N/A'
                         )
                       }
-                      secondary="Importe total depositado"
+                      secondary="Subtotal"
                       color="secondary.main"
                       iconPrimary={DollarOutlined}
                     />
                     <ReportCard
                       //primary={facturasRelacionadasUnicas ? facturasRelacionadasUnicas : 'N/A'}
-                      primary={informacionDelDeposito?.cntDoctos}
-                      secondary="Documentos relacionados"
+                      primary={
+                        informacionDeFactura?.iva ? (
+                          <MonedaFormatoMiles
+                            moneda={informacionDeFactura?.moneda}
+                            cantidad={informacionDeFactura?.iva}
+                            etiquetaHTML={'h3'}
+                          />
+                        ) : (
+                          'N/A'
+                        )
+                      }
+                      secondary="IVA"
                       color="secondary.main"
-                      iconPrimary={NumberOutlined}
+                      iconPrimary={DollarOutlined}
+                      etiquetaHtml="h3"
                     />
                     <ReportCard
                       primary={
-                        informacionDelDeposito?.importe_ficha_deposito ? (
-                          <MonedaFormatoMiles moneda={'MXN'} cantidad={informacionDelDeposito?.saldo_actual} etiquetaHTML={'h3'} />
+                        informacionDeFactura?.total ? (
+                          <MonedaFormatoMiles
+                            moneda={informacionDeFactura?.moneda}
+                            cantidad={informacionDeFactura?.total}
+                            etiquetaHTML={'h3'}
+                          />
+                        ) : (
+                          'N/A'
+                        )
+                      }
+                      secondary="Total"
+                      color="secondary.main"
+                      iconPrimary={DollarOutlined}
+                      bgColoR={'#2636eaff'}
+                    />
+                    <ReportCard
+                      primary={
+                        informacionDeFactura?.total ? (
+                          <MonedaFormatoMiles
+                            moneda={informacionDeFactura?.moneda}
+                            cantidad={informacionDeFactura?.saldo_actual}
+                            etiquetaHTML={'h3'}
+                          />
                         ) : (
                           'N/A'
                         )
@@ -694,7 +732,12 @@ const DashboardTrazabilidadPagos = () => {
                 {/* Card 2 */}
                 <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Distribución">
                   <Stack spacing={1}>
-                    <GraficoDePastel cantidad1={totalDistribuido} cantidad2={informacionDelDeposito?.importe_ficha_deposito} />
+                    <GraficoDePastel
+                      cantidad1={informacionDeFactura?.iva}
+                      cantidad2={informacionDeFactura?.subtotal}
+                      cantidad3={informacionDeFactura?.importe_gasto_tramite}
+                      moneda={informacionDeFactura?.moneda}
+                    />
                   </Stack>
                 </MainCard>
               </Grid>
@@ -703,20 +746,27 @@ const DashboardTrazabilidadPagos = () => {
                 <MainCard sx={{ height: '100%', '&:hover': { boxShadow: 15 } }} title="Documentos Clave">
                   <Stack spacing={1}>
                     <ReportCard
-                      primary={informacionDelDeposito?.anticipo_cliente ? informacionDelDeposito?.anticipo_cliente : 'N/A'}
-                      secondary="Anticipo de Cliente"
+                      primary={informacionDeFactura?.fiscal ? informacionDeFactura?.fiscal : 'N/A'}
+                      secondary="Fiscal"
                       color="secondary.main"
                       iconPrimary={FileTextOutlined}
                     />
                     <ReportCard
-                      primary={informacionDelDeposito?.poliza_ficha ? informacionDelDeposito?.poliza_ficha : 'N/A'}
-                      secondary="Póliza ContPaq"
+                      sx={{ backgroundColor: 'red' }}
+                      primary={informacionDeFactura?.uuid ? informacionDeFactura?.uuid : 'N/A'}
+                      secondary="UUID"
                       color="secondary.main"
                       iconPrimary={ProfileOutlined}
                     />
                     <ReportCard
-                      primary={informacionDelDeposito?.numero_exportado_ficha ? informacionDelDeposito?.numero_exportado_ficha : 'N/A'}
+                      primary={informacionDeFactura?.poliza ? informacionDeFactura?.poliza : 'N/A'}
                       secondary="Folio CONTPAQ"
+                      color="secondary.main"
+                      iconPrimary={DatabaseOutlined}
+                    />
+                    <ReportCard
+                      primary={informacionDeFactura?.poliza ? informacionDeFactura?.poliza : 'N/A'}
+                      secondary="Número exportado"
                       color="secondary.main"
                       iconPrimary={DatabaseOutlined}
                     />
@@ -726,30 +776,7 @@ const DashboardTrazabilidadPagos = () => {
             </Grid>
           </Box>
           <Divider />
-          {/* Analisis de consistencia */}
-          <Box sx={{ backgroundColor: '' }} component="section">
-            <Box>
-              <Typography variant="h3">Análisis de Consistencia</Typography>
-            </Box>
-            <br />
-            <Grid container spacing={2}>
-              <Grid sx={{ overflow: 'visible' }} size={12}>
-                {typeof informacionDelDeposito?.importe_ficha_deposito === 'number' && (
-                  <GraficoDeBarras
-                    data={[
-                      informacionDelDeposito.cntDoctos,
-                      informacionDelDeposito.saldo_actual,
-                      totalDistribuido,
-                      informacionDelDeposito.importe_ficha_deposito
-                    ]}
-                    valorMaximoEjeY={Number(informacionDelDeposito.importe_ficha_deposito)}
-                  />
-                )}
-              </Grid>
-              {/* <Grid size={8}>...</Grid> */}
-            </Grid>
-          </Box>
-          <Divider />
+
           {/* Documentos Relacionados */}
           <Box component="section">
             <Box>
@@ -758,7 +785,7 @@ const DashboardTrazabilidadPagos = () => {
 
             {/* Boton de exportar */}
             <Button
-              sx={{ marginTop: '4px', marginBottom: '12px' }}
+              sx={{ marginTop: '4px', marginBottom: '12px', display: 'none' }}
               variant="outlined"
               color="primary"
               size="medium"
@@ -772,11 +799,30 @@ const DashboardTrazabilidadPagos = () => {
               <Grid size={12}>
                 <Box sx={{ backgroundColor: 'gray' }}></Box>
                 <br />
-                <TablaColapsableTrazabilidadDashboard
+                {/* <TablaColapsableTrazabilidadDashboard
                   data={filasDocumentosRelacionados}
                   columnsConfig={columnsConfig2}
                   onPdfIconClick={handleShowPDFGXCCIntegrado}
-                />
+                /> */}
+                {filasDocumentosRelacionados && filasDocumentosRelacionados.length > 0 ? (
+                  <MuiTablaBase
+                    seleccionable={true} //Valor puede ser true o false
+                    encabezadoSeleccionable="Acciones" //Nombre de la columna
+                    idPropiedad={'documento'} //Identificador de documentos relacionados
+                    datos={filasDocumentosRelacionados}
+                    estructuraEncabezados={[
+                      { propiedad: 'tipo_movimiento', encabezadoTitulo: 'Movimiento' },
+                      { propiedad: 'documento', encabezadoTitulo: 'Documento' },
+                      { propiedad: 'fiscal', encabezadoTitulo: 'Fiscal' },
+                      { propiedad: 'fecha_documento', encabezadoTitulo: 'Fecha' },
+                      { propiedad: 'folio_electronico', encabezadoTitulo: 'Folio Electrónico' },
+                      { propiedad: 'importe', encabezadoTitulo: 'Importe', formato: 'moneda' },
+                      { propiedad: 'moneda', encabezadoTitulo: 'Moneda' }
+                    ]}
+                  />
+                ) : (
+                  <Typography variant="p">No se encontraron documentos relacionados.</Typography>
+                )}
               </Grid>
             </Grid>
           </Box>
@@ -835,13 +881,90 @@ const DashboardTrazabilidadPagos = () => {
             </Button>
 
             <Box sx={{ mt: 2 }}>
-              <Typography variant="h4">Análisis de IA</Typography>
+              {/* <Typography variant="h4">Análisis de IA</Typography> */}
               <br />
               {cargandoIA ? (
                 <Typography>Cargando análisis, por favor espera...</Typography>
               ) : (
                 // <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
-                <ReactMarkdown>{analisisIA}</ReactMarkdown>
+                <Box
+                  sx={{
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'dark'
+                        ? 'primary.800' // Dark background from your primary scale
+                        : 'primary.50', // Light blue tint for light mode
+                    borderRadius: '12px',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'primary.600' : 'primary.200'}`,
+                    p: { xs: 2, sm: 3 },
+                    my: 2,
+                    boxShadow: (theme) =>
+                      theme.palette.mode === 'dark' ? '0px 4px 12px rgba(0, 0, 0, 0.5)' : '0px 4px 12px rgba(0, 52, 93, 0.1)', // Soft shadow using your main blue
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '4px',
+                      height: '100%',
+                      backgroundColor: 'primary.main' // Vertical accent bar
+                    },
+                    '& .react-markdown': {
+                      fontSize: '0.95rem',
+                      color: (theme) => (theme.palette.mode === 'dark' ? 'grey.A100' : 'text.primary'),
+                      lineHeight: 1.7
+                    },
+                    '& .react-markdown h1, & .react-markdown h2': {
+                      fontSize: '1.25rem',
+                      fontWeight: 600,
+                      mb: 1,
+                      color: (theme) => theme.palette.primary.main
+                    },
+                    '& .react-markdown p': {
+                      mt: 1,
+                      mb: 1.5
+                    },
+                    '& .react-markdown ul, & .react-markdown ol': {
+                      ml: 2.5,
+                      mt: 1,
+                      mb: 1.5
+                    },
+                    '& .react-markdown code': {
+                      backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.100'),
+                      px: '6px',
+                      py: '2px',
+                      borderRadius: '6px',
+                      fontSize: '0.9em'
+                    },
+                    '& .react-markdown pre': {
+                      backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50'),
+                      p: 2,
+                      borderRadius: '8px',
+                      overflowX: 'auto',
+                      my: 2,
+                      fontSize: '0.85rem'
+                    }
+                  }}
+                >
+                  <Box sx={{ pl: 1 }}>
+                    <Typography
+                      variant="h3"
+                      component="div"
+                      sx={{
+                        color: 'primary.main',
+                        fontWeight: 600,
+                        mb: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}
+                    >
+                      📊 Análisis IA
+                    </Typography>
+                    <ReactMarkdown>{analisisIA}</ReactMarkdown>
+                  </Box>
+                </Box>
               )}
             </Box>
           </Box>
@@ -869,4 +992,4 @@ const DashboardTrazabilidadPagos = () => {
 };
 
 //Exportar componente
-export default DashboardTrazabilidadPagos;
+export default DashboardTrazabilidadFacturas;

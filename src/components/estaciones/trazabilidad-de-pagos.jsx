@@ -120,6 +120,7 @@ const TrazabilidadDePagos = () => {
     const { data, success } = await executeFetch('Trazabilidad_Pagos', objetoParametros);
 
     if (success) {
+      console.log(data[0])
       setArregloDeConsulta(data[0]);
     }
     setIsLoading(false)

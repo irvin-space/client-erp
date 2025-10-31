@@ -39,7 +39,11 @@ export default function DataTable({ rowsArray, onSelectRow, sucursalColumna }) {
   const columns = [
     // ...(sucursalColumna ? [sucursalColumna] : []),
     { field: 'sucursal', headerName: 'Sucursal', flex: 2, minWidth: 150, height: 500 },
-    { field: 'nombre_tipo', headerName: 'Tipo', flex: 2, minWidth: 150, height: 500 },
+    { field: 'nombre_tipo', headerName: 'Tipo', flex: 2, minWidth: 150, height: 500, valueFormatter:(value)=> { 
+      if(value.includes('Ancipo')){
+        return 'Anticipo de Cliente'
+      }
+    } },
     { field: 'cliente_documento', headerName: 'Cliente', flex: 2, minWidth: 250, height: 500 },
     { field: 'anticipo', headerName: 'Anticipo', flex: 1, minWidth: 100, height: 500 },
     { field: 'ficha_deposito', headerName: 'Ficha Depósito', flex: 1.2, minWidth: 100, align: 'right', headerAlign: 'right' },

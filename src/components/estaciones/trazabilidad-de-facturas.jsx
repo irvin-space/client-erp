@@ -138,7 +138,9 @@ const TrazabilidadDeFacturas = () => {
 
   const handleRowSelect = (rowInfo) => {
     // navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
+    console.log("esto se envia desde trazabilidad")
     console.log("rowInfo desde trazabilidad de facturas",rowInfo)
+    navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
   };
 
   return (
@@ -204,7 +206,7 @@ const TrazabilidadDeFacturas = () => {
           seleccionable={true}
           idPropiedad={'factura'}
           datos={arregloDeConsulta}
-          onSelecteRow={()=>handleRowSelect()}
+          onSelectRow={handleRowSelect}
           estructuraEncabezados={[
             { propiedad: 'nombre_tipo', encabezadoTitulo: 'Tipo' },
             { propiedad: 'sucursal', encabezadoTitulo: 'Sucursal' },
@@ -212,8 +214,8 @@ const TrazabilidadDeFacturas = () => {
             { propiedad: 'factura', encabezadoTitulo: 'Factura' },
             { propiedad: 'fiscal', encabezadoTitulo: 'Fiscal' },
             { propiedad: 'fecha_factura', encabezadoTitulo: 'Fecha Factura' },
-            { propiedad: 'total', encabezadoTitulo: 'Total' },
-            { propiedad: 'importe_gasto_tramite', encabezadoTitulo: 'I.Gasto Tramite' },
+            { propiedad: 'total', encabezadoTitulo: 'Total', formato: 'moneda' },
+            { propiedad: 'importe_gasto_tramite', encabezadoTitulo: 'I.Gasto Tramite',formato:'moneda' },
             { propiedad: 'saldo_actual', encabezadoTitulo: 'Saldo Actual' },
             { propiedad: 'moneda', encabezadoTitulo: 'Moneda' },
             { propiedad: 'poliza', encabezadoTitulo: 'Poliza' },

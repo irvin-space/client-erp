@@ -9,22 +9,25 @@ import MainCard from 'components/MainCard';
 
 // ==============================|| REPORT CARD ||============================== //
 
-export default function ReportCard({ primary, secondary, iconPrimary, color }) {
+export default function ReportCard({ primary, secondary, iconPrimary, color, etiquetaHtml = 'h4' }) {
   const IconPrimary = iconPrimary;
   const primaryIcon = iconPrimary ? <IconPrimary fontSize="large" /> : null;
 
   return (
     <MainCard>
       <Grid container justifyContent="space-between" alignItems="center">
-        <Grid>
-          <Stack sx={{ gap: 1 }}>
-            <Typography variant="h4">{primary}</Typography>
+        <Grid sx={primary.length > 20 ? {width:'80%'}: ''}>
+          <Stack sx={{ gap: 0.5 }}>
+            <Typography sx={{ lineHeight: 1.2 }} variant={etiquetaHtml}>
+              {primary}
+            </Typography>
+            {/* <Typography variant={etiquetaHtml}>{primary.length > 20 ?  }</Typography> */}
             <Typography variant="body1" color="secondary">
               {secondary}
             </Typography>
           </Stack>
         </Grid>
-        <Grid>
+        <Grid >
           <Typography variant="h2" sx={{ color }}>
             {primaryIcon}
           </Typography>
