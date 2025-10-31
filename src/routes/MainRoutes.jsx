@@ -20,6 +20,8 @@ import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos'
 import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-trazabilidad-pagos';
 import TrazabilidadDeFacturas from '@/components/estaciones/trazabilidad-de-facturas';
 
+//Chatbot UI
+import ChatbotUI from '../components/comun/ChatbotUI'; // Importa el componente ChatbotUI si es necesario
 
 // pages routing
 const MaintenanceError = Loadable(lazy(() => import('../pages/maintenance/404')));
@@ -74,6 +76,10 @@ const MainRoutes = {
         {
           path: 'file-to-json',
           element: <FileToJson/>
+        },
+        {
+          path: 'chatbot-ui',
+          element: <ChatbotUI/>
         },
         {
           path: 'sample-page2', 
