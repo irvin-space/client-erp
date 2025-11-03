@@ -207,6 +207,7 @@ const TrazabilidadDeFacturas = () => {
           idPropiedad={'factura'}
           datos={arregloDeConsulta}
           onSelectRow={handleRowSelect}
+          filtro='true'
           estructuraEncabezados={[
             { propiedad: 'nombre_tipo', encabezadoTitulo: 'Tipo' },
             { propiedad: 'sucursal', encabezadoTitulo: 'Sucursal' },

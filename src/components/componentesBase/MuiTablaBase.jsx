@@ -6,15 +6,12 @@ import { useNavigate } from 'react-router';
 
 //MUI
 //Componentes para tabla MUI
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, Toolbar, ToolbarButton, FilterPanelTrigger } from '@mui/x-data-grid';
 //Componentes generales MUI
 import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-
-//Componentes propios del proyecto
-import MonedaFormatoMiles from './MonedaFormatoMiles.jsx';
 
 //Idioma para tabla
 import { esES } from '@mui/x-data-grid/locales';
@@ -29,7 +26,6 @@ import {
   CodeOutlined,
   FolderOpenOutlined
 } from '@ant-design/icons';
-import { Typography } from '@mui/material';
 
 //Componente MuiTablaBase
 //Ejemplo de como utilizar:
@@ -39,6 +35,7 @@ import { Typography } from '@mui/material';
           encabezadoSeleccionable="Acciones"
           idPropiedad={'ID_DEBE_SER_UNICO_PARA_QUE_LA_TABLA_LO_PUEDA_IDENTIFICAR'}
           datos={data[1]}
+          filtro=true/false
           estructuraEncabezados={[
             { propiedad: 'test1', encabezadoTitulo: 'prueba1abcdefghijklmnopqrstuvwxyz' },
             { propiedad: 'test2', encabezadoTitulo: 'prueba2' },
@@ -53,13 +50,28 @@ import { Typography } from '@mui/material';
           ]}
         /> */
 }
+
+//Filtro que se muestra por encima de la tabla
+function CustomToolbar({ setFilterButton }) {
+  return (
+    <Toolbar sx={{ height: '80px', display: 'flex', justifyContent: 'left' }}>
+      <Tooltip title="Filtros">
+        <FilterPanelTrigger render={<ToolbarButton />} ref={setFilterButton}>
+          <FilterOutlined fontSize="40px" />
+        </FilterPanelTrigger>
+      </Tooltip>
+    </Toolbar>
+  );
+}
+
 const MuiTablaBase = ({
   estructuraEncabezados,
   datos,
   onSelectRow,
   encabezadoSeleccionable = 'Selección',
   seleccionable = false,
-  idPropiedad = 'id'
+  idPropiedad = 'id',
+  filtro = false
 }) => {
   const [selectedRowId, setSelectedRowId] = useState(null);
 
@@ -96,7 +108,6 @@ const MuiTablaBase = ({
     return columnaBase;
   });
 
-
   if (seleccionable && encabezadoSeleccionable == 'Acciones') {
     const columnaSeleccion = {
       field: 'seleccion',
@@ -114,6 +125,7 @@ const MuiTablaBase = ({
 
         const handleSelect = () => {
           const newSelectedId = isSelected ? null : rowId;
+          console.log(newSelectedId);
           setSelectedRowId(newSelectedId);
 
           // 👉 Log the factura or whatever you want
@@ -132,9 +144,19 @@ const MuiTablaBase = ({
         const rowInfo = { ficha_deposito: params.row.ficha_deposito };
 
         const handleVisualizar = () => {
-          // console.log('hello World')
-          // console.log(params.row)
           navigate('/dashboard-trazabilidad-pagos', { state: { rowInfo } });
+        };
+
+        const handleIconFolder = () => {
+          console.log('handle folder');
+        };
+
+        const handleIconXml = () => {
+          console.log('handle xml');
+        };
+
+        const handleIconPdf = () => {
+          console.log('handle pdf');
         };
 
         return (
@@ -149,33 +171,39 @@ const MuiTablaBase = ({
               py: 0
             }}
           >
-            <IconButton
-              onClick={handleSelect}
-              aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
-              color="error"
-              size="large"
-              sx={{ width: '25%', height: '100%' }}
-            >
-              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <FilePdfOutlined fontSize="large" />}
-            </IconButton>
-            <IconButton
-              onClick={handleSelect}
-              aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
-              color="success"
-              size="large"
-              sx={{ width: '25%', height: '100%' }}
-            >
-              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CodeOutlined fontSize="large" />}
-            </IconButton>
-            <IconButton
-              onClick={handleSelect}
-              aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
-              color="success"
-              size="large"
-              sx={{ width: '25%', height: '100%' }}
-            >
-              {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <FolderOpenOutlined fontSize="large" />}
-            </IconButton>
+            <Tooltip title="Pdf">
+              <IconButton
+                onClick={handleIconPdf}
+                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
+                color="error"
+                size="large"
+                sx={{ width: '25%', height: '100%' }}
+              >
+                {isSelected ? <FilePdfOutlined fontSize="large" /> : <FilePdfOutlined fontSize="large" />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="XML">
+              <IconButton
+                onClick={handleIconXml}
+                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
+                color="success"
+                size="large"
+                sx={{ width: '25%', height: '100%' }}
+              >
+                {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CodeOutlined fontSize="large" />}
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Pdf">
+              <IconButton
+                onClick={handleIconFolder}
+                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
+                color="success"
+                size="large"
+                sx={{ width: '25%', height: '100%' }}
+              >
+                {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <FolderOpenOutlined fontSize="large" />}
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Visualizar">
               <IconButton
                 onClick={handleVisualizar}
@@ -253,16 +281,47 @@ const MuiTablaBase = ({
     };
     encabezados.push(columnaSeleccion);
   }
+
+  const validRows = Array.isArray(datos) ? datos.filter((row) => row[idPropiedad] !== undefined && row[idPropiedad] !== null) : [];
+
   return (
     //Altura default altura 400 -->   <Paper sx={{ height: 400, width: '100%' }}>
     <Paper sx={{ height: '100%', width: '100%' }}>
-      <DataGrid
-        sx={{ '& .MuiDataGrid-columnHeader': { backgroundColor: 'primary.dark', color: 'primary.contrastText' } }}
-        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
-        columns={encabezados}
-        rows={datos}
-        getRowId={(row) => row[idPropiedad]}
-      />
+      {filtro ? (
+        <DataGrid
+          sx={{
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: 'primary.dark',
+              color: 'primary.contrastText'
+            }
+          }}
+          showToolbar
+          slots={{ toolbar: CustomToolbar }}
+          localeText={{
+            ...esES.components.MuiDataGrid.defaultProps.localeText,
+            noRowsLabel: 'No hay datos disponibles para mostrar.'
+          }}
+          columns={encabezados}
+          rows={validRows}
+          getRowId={(row) => row[idPropiedad]}
+        />
+      ) : (
+        <DataGrid
+          sx={{
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: 'primary.dark',
+              color: 'primary.contrastText'
+            }
+          }}
+          localeText={{
+            ...esES.components.MuiDataGrid.defaultProps.localeText,
+            noRowsLabel: 'No hay datos disponibles para mostrar.'
+          }}
+          columns={encabezados}
+          rows={validRows}
+          getRowId={(row) => row[idPropiedad]}
+        />
+      )}
     </Paper>
   );
 };

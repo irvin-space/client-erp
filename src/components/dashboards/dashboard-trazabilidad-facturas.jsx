@@ -41,7 +41,6 @@ import MainCard from '../MainCard.jsx';
 import ReportCard from '../cards/estadisticas/ReportCard.jsx';
 import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
 // import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
-import LineaDelTiempo2 from '../componentesBase/LineaDelTiempo2.jsx';
 import LineaDelTiempo3 from '../componentesBase/LineaDelTiempo3.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
 import TablaBase from '../componentesBase/TablaBase.jsx';
@@ -81,9 +80,9 @@ const DashboardTrazabilidadFacturas = () => {
     };
 
     const { data, success } = await executeFetch('Trazabilidad_Pagos_Facturas2', objetoParametros);
-    console.log(success);
-    console.log(data);
-    console.log(isLoading);
+    // console.log(success);
+    // console.log(data);
+    // console.log(isLoading);
     if (success) {
       setJsonIA(data[3][0]['JSON_F52E2B61-18A1-11d1-B105-00805F49916B']);
 

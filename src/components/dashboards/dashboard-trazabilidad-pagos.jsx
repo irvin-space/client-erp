@@ -19,14 +19,12 @@ import Skeleton from '@mui/material/Skeleton';
 
 //Ant design
 import {
-  DollarCircleOutlined,
   EyeOutlined,
   DatabaseOutlined,
   DollarOutlined,
   FileTextOutlined,
   NumberOutlined,
   ProfileOutlined,
-  UnorderedListOutlined,
   FilePdfOutlined,
   CodeOutlined, // Reemplazo para FileXmlOutlined
   CheckCircleOutlined,
@@ -46,7 +44,6 @@ import MainCard from '../MainCard.jsx';
 import ReportCard from '../cards/estadisticas/ReportCard.jsx';
 import GraficoDePastel from '../cards/estadisticas/GraficoDePastel.jsx';
 import GraficoDeBarras from '../cards/estadisticas/GraficoDeBarras.jsx';
-import LineaDelTiempo2 from '../componentesBase/LineaDelTiempo2.jsx';
 import LineaDelTiempo3 from '../componentesBase/LineaDelTiempo3.jsx';
 import DataTable from '../componentesBase/DataTable3.jsx';
 import TablaBase from '../componentesBase/TablaBase.jsx';
@@ -517,7 +514,7 @@ const DashboardTrazabilidadPagos = () => {
       saldo_actual_factura: 'Saldo Actual',
       moneda: 'Moneda',
       total_movimiento: 'Total Movimiento',
-      cntDoctos: 'test1'
+      // cntDoctos: 'test1'
       // Acciones no se exporta
     };
 
@@ -528,10 +525,10 @@ const DashboardTrazabilidadPagos = () => {
       saldo_actual_factura: Number(row.saldo_actual_factura),
       total_movimiento: Number(row.total_movimiento)
     }));
-    console.log('data to export', dataToExport);
     // Extrae solo las columnas que queremos, mapeadas a nombres amigables
+  
     const worksheetData = dataToExport.map((row) => {
-      console.log('Data to export map', row);
+      // console.log('Data to export map', row);
       const mapped = {};
       Object.keys(headersMap).forEach((key) => {
         mapped[headersMap[key]] = row[key];
