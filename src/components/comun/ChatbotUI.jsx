@@ -89,7 +89,7 @@ const App = () => {
           {/* <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16l3-3m0 0l3 3m-3-3v8m0 0H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-3 3z"></path>
           </svg> */}
-          <h1 className="text-xl font-semibold">ESPACito</h1>
+          <h3 className="text-xl font-semibold">SPACE Ayudante Virtual</h3>
         </div>
 
         {/* Área de Mensajes */}
@@ -97,7 +97,7 @@ const App = () => {
         <div className="flex-grow p-5 overflow-y-auto space-y-3">
           {messages.length === 0 && (
              <div className="text-center text-gray-400 mt-10 p-4 border-2 border-dashed border-gray-200 rounded-lg">
-                <p>Hola, soy el asistente de tu ERP. Puedo ayudarte con consultas sobre facturas, saldos, y procesos internos. ¡Pregúntame algo!</p>
+                <p>Soy tu asistente. Puedo ayudarte con consultas sobre facturas, saldos, y procesos internos. ¡Pregúntame algo!</p>
              </div>
           )}
           {messages.map((msg, index) => (

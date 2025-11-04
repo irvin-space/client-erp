@@ -419,10 +419,10 @@ const DashboardTrazabilidadPagos = () => {
             onClick={()=>handleVerFactura(documento)} // ¡Usa la nueva función!
             variant="text"
             size="small"
-            title={`Ver PDF Pedimento`}
-            disabled={!(documento.factura > 0)}
+            title={`Ver Dashboard de Factura ${documento.factura}`}
+            disabled={!(documento.factura > 0 && documento.tipo == 'Factura')}
             style={{
-              color: documento.factura > 0 ? '#94d400ff' : '#BDBDBD'
+              color: documento.factura > 0  && documento.tipo == 'Factura'? '#94d400ff' : '#BDBDBD'
             }}
           >
             <EyeOutlined style={{ fontSize: '18px' }} />
