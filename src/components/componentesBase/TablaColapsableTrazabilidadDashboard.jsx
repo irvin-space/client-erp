@@ -71,6 +71,7 @@ const TablaColapsableTrazabilidadDashboard = ({ data, columnsConfig, onPdfIconCl
           onClick={() => {
             console.log(`Action clicked for row PDF by gxcc${rowIndex}, nested item ${nestedIndex}`);
             if (onPdfIconClick) {
+              console.log(nestedItem)
                 onPdfIconClick(nestedItem);
             }
             // Add your specific action logic here

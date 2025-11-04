@@ -113,7 +113,7 @@ const DashboardTrazabilidadFacturas = () => {
       // console.log('filasModificadas1',filasDocumentosRelacionadosModificado)
       //   console.log('complementos', data[4]);
       setFilasDocumentosRelacionados(data[1]);
-      // console.log('eventos para timeline', data[2]);
+      console.log('data', data);
 
       setEventos(data[2]);
 
@@ -296,9 +296,14 @@ const DashboardTrazabilidadFacturas = () => {
     }
   };
 
-  const handleViewPDF = useCallback((documento) => {
-    // La estructura es documento.pdf.data
-    const bufferData = documento.pdf.data; // 👈 Accedemos al array de bytes
+  const handleViewPDF = (documento) => {
+    console.log('a');
+    console.log(documento);
+    console.log('params row', documento.row);
+    console.log('pdf data', documento.row.pdf);
+    console.log("data", documento.row.pdf.data)
+
+    const bufferData = documento.row.pdf.data; // 👈 Accedemos al array de bytes
 
     if (!bufferData || bufferData.length === 0) {
       console.error('Los datos binarios del PDF están vacíos.');
@@ -328,11 +333,12 @@ const DashboardTrazabilidadFacturas = () => {
     } else {
       console.error('No se pudo abrir la nueva ventana. Verifique el bloqueador de pop-ups.');
     }
-  }, []);
+  };
+
 
   const handleViewXML = useCallback((documento) => {
     // 1. Obtener el contenido del XML
-    const xmlContent = documento.xml;
+    const xmlContent = documento.row.xml;
 
     if (!xmlContent) {
       mensajes('error', "El campo 'documento.xml' está vacío.");
@@ -818,6 +824,8 @@ const DashboardTrazabilidadFacturas = () => {
                       { propiedad: 'importe', encabezadoTitulo: 'Importe', formato: 'moneda' },
                       { propiedad: 'moneda', encabezadoTitulo: 'Moneda' }
                     ]}
+                    viewPdfFunction={handleViewPDF}
+                    viewXmlFunction={handleViewXML}
                   />
                 ) : (
                   <Typography variant="p">No se encontraron documentos relacionados.</Typography>

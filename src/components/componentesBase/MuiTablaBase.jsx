@@ -71,7 +71,9 @@ const MuiTablaBase = ({
   encabezadoSeleccionable = 'Selección',
   seleccionable = false,
   idPropiedad = 'id',
-  filtro = false
+  filtro = false,
+  viewPdfFunction,
+  viewXmlFunction
 }) => {
   const [selectedRowId, setSelectedRowId] = useState(null);
 
@@ -147,17 +149,6 @@ const MuiTablaBase = ({
           navigate('/dashboard-trazabilidad-pagos', { state: { rowInfo } });
         };
 
-        const handleIconFolder = () => {
-          console.log('handle folder');
-        };
-
-        const handleIconXml = () => {
-          console.log('handle xml');
-        };
-
-        const handleIconPdf = () => {
-          console.log('handle pdf');
-        };
 
         return (
           <Box
@@ -173,10 +164,11 @@ const MuiTablaBase = ({
           >
             <Tooltip title="Pdf">
               <IconButton
-                onClick={handleIconPdf}
-                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
+                onClick={()=>viewPdfFunction(params)}
+                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.pdf}`}
                 color="error"
                 size="large"
+                disabled={!params.row.pdf}
                 sx={{ width: '25%', height: '100%' }}
               >
                 {isSelected ? <FilePdfOutlined fontSize="large" /> : <FilePdfOutlined fontSize="large" />}
@@ -184,24 +176,14 @@ const MuiTablaBase = ({
             </Tooltip>
             <Tooltip title="XML">
               <IconButton
-                onClick={handleIconXml}
+                onClick={()=>viewXmlFunction(params)}
                 aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
                 color="success"
                 size="large"
+                disabled={!params.row.xml}
                 sx={{ width: '25%', height: '100%' }}
               >
                 {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <CodeOutlined fontSize="large" />}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Pdf">
-              <IconButton
-                onClick={handleIconFolder}
-                aria-label={isSelected ? `Deseleccionar ${params.row.factura}` : `Seleccionar ${params.row.poliza}`}
-                color="success"
-                size="large"
-                sx={{ width: '25%', height: '100%' }}
-              >
-                {isSelected ? <CheckCircleTwoTone fontSize="large" /> : <FolderOpenOutlined fontSize="large" />}
               </IconButton>
             </Tooltip>
             <Tooltip title="Visualizar">

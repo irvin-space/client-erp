@@ -441,6 +441,8 @@ const DashboardTrazabilidadPagos = () => {
 
   const handleShowPDFGXCCIntegrado = useCallback(
     async (rowData) => {
+      console.log('rowdatagxcc',rowData)
+      console.log(rowData.Extensión)
       displayDocument({
         instruccionSQL: 'Trae_PDF_GXCC',
         parametros: {
