@@ -55,6 +55,7 @@ import { mensajes } from '../../utils/mensajes.js';
 import ReactMarkdown from 'react-markdown';
 import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColapsableTrazabilidadDashboard.jsx';
 
+
 //Componente
 const DashboardTrazabilidadPagos = () => {
   const { displayDocument, isLoading, error } = useDocumentDisplay();
@@ -74,6 +75,13 @@ const DashboardTrazabilidadPagos = () => {
   const location = useLocation();
 
   const { executeFetch, data, loading } = useSQL();
+
+  // ✅ SOLUCIÓN MÁS PROBABLE (Desestructuración)
+  //const { GoogleGenAI } = require("@google/genai"); 
+  
+
+  // ... luego en tu código:
+  //ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
   const traerInfoDeDeposito = async () => {
     const objetoParametros = {
