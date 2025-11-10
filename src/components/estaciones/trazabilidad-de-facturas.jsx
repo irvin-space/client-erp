@@ -40,7 +40,8 @@ const TrazabilidadDeFacturas = () => {
   const [clienteFolioPedimento, setClienteFolioPedimento] = useState(null);
   const [nombreDeCliente, setNombreDeCliente] = useState('');
   const [numeroDeCliente, setNumeroDeCliente] = useState(null);
-  const [arregloDeConsulta, setArregloDeConsulta] = useState([]);
+  //const [arregloDeConsulta, setArregloDeConsulta] = useState([]);
+  const [arregloDeConsulta, setArregloDeConsulta] = useState(savedState.arregloDeConsulta || []);
 
   const [desdeFecha, setDesdeFecha] = useState(savedState.desdeFecha ? dayjs(savedState.desdeFecha) : dayjs().subtract(1, 'month'));
   const [hastaFecha, setHastaFecha] = useState(savedState.hastaFecha ? dayjs(savedState.hastaFecha) : dayjs());
@@ -56,7 +57,8 @@ const TrazabilidadDeFacturas = () => {
     const stateToSave = {
       sucursal,
       desdeFecha: desdeFecha?.format('YYYY-MM-DD HH:mm:ss'),
-      hastaFecha: hastaFecha?.format('YYYY-MM-DD HH:mm:ss')
+      hastaFecha: hastaFecha?.format('YYYY-MM-DD HH:mm:ss'),
+      arregloDeConsulta, // <--- LÍNEA AGREGADA
       // clienteFolioPedimento,
       // nombreDeCliente,
       // numeroDeCliente,
@@ -71,7 +73,8 @@ const TrazabilidadDeFacturas = () => {
   }, [
     sucursal,
     desdeFecha,
-    hastaFecha
+    hastaFecha,
+    arregloDeConsulta
     // clienteFolioPedimento,
     // nombreDeCliente,
     // numeroDeCliente,
