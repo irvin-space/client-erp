@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react'; // Usamos íconos lucide-react
 
 // La URL de tu endpoint de Node.js, donde se procesará la solicitud de Gemini
-const NODE_API_ENDPOINT = 'http://localhost:3001/api/chat'; 
+//import.meta.env.VITE_URL_ENVIRONMENT
+const NODE_API_ENDPOINT = `${import.meta.env.VITE_URL_ENVIRONMENT}/api/chat`
 // NOTA: Asegúrate de que este endpoint coincida con la URL de tu servidor Node.js/Express.
 
 // Componente principal de la aplicación

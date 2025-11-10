@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 
 // --- CONFIGURATION ---
-const NODE_API_ENDPOINT = 'http://localhost:3001/api/chat';
+const NODE_API_ENDPOINT = `${import.meta.env.VITE_URL_ENVIRONMENT}/api/chat`
 
 // Function to clean up citation markers
 const cleanupResponseText = (text) => {
