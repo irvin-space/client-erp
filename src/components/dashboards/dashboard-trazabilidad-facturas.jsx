@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -554,6 +554,18 @@ const DashboardTrazabilidadFacturas = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Documentos Relacionados');
 
+    // Style header row
+Object.keys(headersMap).forEach((key, colIndex) => {
+  const cell = worksheet[XLSX.utils.encode_cell({ r: 0, c: colIndex })];
+  if (cell) {
+    cell.s = {
+      font: { bold: true },
+      fill: { fgColor: { rgb: 'DDEEFF' } },
+      alignment: { horizontal: 'center' }
+    };
+  }
+});
+
     // Trigger download
     XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${facturaAConsultar}.xlsx`);
   };
@@ -758,7 +770,7 @@ const DashboardTrazabilidadFacturas = () => {
                     />
                     <ReportCard
                       sx={{ backgroundColor: 'red' }}
-                      primary={informacionDeFactura?.uuid ? informacionDeFactura?.uuid : 'N/A'}
+                      primary={informacionDeFactura?.numero_exportado ? informacionDeFactura?.numero_exportado : 'N/A'}
                       secondary="UUID"
                       color="secondary.main"
                       iconPrimary={ProfileOutlined}
