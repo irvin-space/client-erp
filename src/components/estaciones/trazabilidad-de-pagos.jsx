@@ -29,7 +29,7 @@ const TrazabilidadDePagos = () => {
   const { user } = useAuth();
   console.log(user);
 
-  const STORAGE_KEY = 'trazabilidadPagosFiltros';
+  const STORAGE_KEY = 'trazabilidadFacturasFiltros';
   const savedState = JSON.parse(sessionStorage.getItem(STORAGE_KEY)) || {};
 
   const navigate = useNavigate();
