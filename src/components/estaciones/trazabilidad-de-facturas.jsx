@@ -217,7 +217,7 @@ const TrazabilidadDeFacturas = () => {
             { propiedad: 'fecha_factura', encabezadoTitulo: 'Fecha Factura' },
             { propiedad: 'total', encabezadoTitulo: 'Total', formato: 'moneda' },
             { propiedad: 'importe_gasto_tramite', encabezadoTitulo: 'I.Gasto Tramite',formato:'moneda' },
-            { propiedad: 'saldo_actual', encabezadoTitulo: 'Saldo Actual' },
+            { propiedad: 'saldo_actual', encabezadoTitulo: 'Saldo Actual',formato:'moneda' },
             { propiedad: 'moneda', encabezadoTitulo: 'Moneda' },
             { propiedad: 'poliza', encabezadoTitulo: 'Poliza' },
             { propiedad: 'numero_exportada', encabezadoTitulo: 'Num. Exportada' },

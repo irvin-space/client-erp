@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useSQL from '../../hooks/useSQL.js';
 import useDocumentDisplay from '../../hooks/useDocumentDisplay.js';
 
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 //MUI
 import Button from '@mui/material/Button';
@@ -55,7 +55,6 @@ import { mensajes } from '../../utils/mensajes.js';
 import ReactMarkdown from 'react-markdown';
 import TablaColapsableTrazabilidadDashboard from '../componentesBase/TablaColapsableTrazabilidadDashboard.jsx';
 
-
 //Componente
 const DashboardTrazabilidadPagos = () => {
   const { displayDocument, isLoading, error } = useDocumentDisplay();
@@ -77,8 +76,7 @@ const DashboardTrazabilidadPagos = () => {
   const { executeFetch, data, loading } = useSQL();
 
   // ✅ SOLUCIÓN MÁS PROBABLE (Desestructuración)
-  //const { GoogleGenAI } = require("@google/genai"); 
-  
+  //const { GoogleGenAI } = require("@google/genai");
 
   // ... luego en tu código:
   //ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
@@ -306,15 +304,13 @@ const DashboardTrazabilidadPagos = () => {
     }
   }, []);
 
-
-  const handleVerFactura = useCallback((documento)=>{
-     console.log('hello World desde dashboard trazabilidad')
-          console.log(documento.factura)
-          console.log(documento)
-          const rowInfo = {factura:documento.factura}
-          navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
-  },[])
-
+  const handleVerFactura = useCallback((documento) => {
+    console.log('hello World desde dashboard trazabilidad');
+    console.log(documento.factura);
+    console.log(documento);
+    const rowInfo = { factura: documento.factura };
+    navigate('/dashboard-trazabilidad-facturas', { state: { rowInfo } });
+  }, []);
 
   const handleViewXML = useCallback((documento) => {
     // 1. Obtener el contenido del XML
@@ -364,8 +360,6 @@ const DashboardTrazabilidadPagos = () => {
           tipoArchivo: 'pdf'
         });
       };
-
-      
 
       const handleViewPedimentoRefactored = () => {
         // ...
@@ -421,13 +415,13 @@ const DashboardTrazabilidadPagos = () => {
           </Button>
 
           <Button
-            onClick={()=>handleVerFactura(documento)} // ¡Usa la nueva función!
+            onClick={() => handleVerFactura(documento)} // ¡Usa la nueva función!
             variant="text"
             size="small"
             title={`Ver Dashboard de Factura ${documento.factura}`}
             disabled={!(documento.factura > 0 && documento.tipo == 'Factura')}
             style={{
-              color: documento.factura > 0  && documento.tipo == 'Factura'? '#94d400ff' : '#BDBDBD'
+              color: documento.factura > 0 && documento.tipo == 'Factura' ? '#94d400ff' : '#BDBDBD'
             }}
           >
             <EyeOutlined style={{ fontSize: '18px' }} />
@@ -449,8 +443,8 @@ const DashboardTrazabilidadPagos = () => {
 
   const handleShowPDFGXCCIntegrado = useCallback(
     async (rowData) => {
-      console.log('rowdatagxcc',rowData)
-      console.log(rowData.Extensión)
+      console.log('rowdatagxcc', rowData);
+      console.log(rowData.Extensión);
       displayDocument({
         instruccionSQL: 'Trae_PDF_GXCC',
         parametros: {
@@ -473,6 +467,7 @@ const DashboardTrazabilidadPagos = () => {
       { headerName: 'Tipo', field: 'tipo' },
       { headerName: 'Folio', field: 'factura' },
       { headerName: 'Fiscal', field: 'fiscal' },
+      { headerName: 'Poliza', field: 'poliza' },
       { headerName: 'Fecha', field: 'fecha_factura' },
       { headerName: 'UUID', field: 'uuid_funcion' },
       { headerName: 'Total', field: 'total_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_factura} /> },
@@ -518,12 +513,13 @@ const DashboardTrazabilidadPagos = () => {
       tipo: 'Tipo',
       factura: 'Folio',
       fiscal: 'Fiscal',
+      poliza: 'Poliza',
       fecha_factura: 'Fecha',
       uuid_funcion: 'UUID',
       total_factura: 'Total',
       saldo_actual_factura: 'Saldo Actual',
       moneda: 'Moneda',
-      total_movimiento: 'Total Movimiento',
+      total_movimiento: 'Total Movimiento'
       // cntDoctos: 'test1'
       // Acciones no se exporta
     };
@@ -536,7 +532,7 @@ const DashboardTrazabilidadPagos = () => {
       total_movimiento: Number(row.total_movimiento)
     }));
     // Extrae solo las columnas que queremos, mapeadas a nombres amigables
-  
+
     const worksheetData = dataToExport.map((row) => {
       // console.log('Data to export map', row);
       const mapped = {};
@@ -548,9 +544,72 @@ const DashboardTrazabilidadPagos = () => {
 
     // Creacion de hoja y libro
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+
+    // Definir las columnas que se formatean
+    const currencyColumnHeaders = ['Total', 'Saldo Actual', 'Total Movimiento']; // These match headersMap values
+    const currencyFormat = '"$"#,##0.00'; // Regla para formatear
+
+    // Get range to iterate over rows and columns
+    const range = XLSX.utils.decode_range(worksheet['!ref']);
+
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellAddress = { c: C, r: 0 };
+      const cellRef = XLSX.utils.encode_cell(cellAddress);
+
+      if (!worksheet[cellRef]) continue;
+
+      // Aplicar estilos a encabezados
+      worksheet[cellRef].s = {
+        font: { bold: true, color: { rgb: 'FFFFFF' } },
+        fill: { fgColor: { rgb: '4F81BD' } },
+        alignment: { horizontal: 'cente r', vertical: 'center' }
+      };
+    }
+
+    for (let R = 0; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cellAddress = { c: C, r: R };
+        const cellRef = XLSX.utils.encode_cell(cellAddress);
+
+        if (!worksheet[cellRef]) continue;
+
+        const colName = XLSX.utils.encode_col(C);
+        const headerCellRef = XLSX.utils.encode_cell({ c: C, r: 0 });
+        const headerValue = worksheet[headerCellRef]?.v;
+
+        //Verificar si la columna pertenece a las que se les aplicara el formato
+        if (currencyColumnHeaders.includes(headerValue)) {
+          if (R > 0) {
+            worksheet[cellRef].z = currencyFormat; // Aplicar el formato
+          }
+
+          // Opcional: condicionar similarmente
+          if (R === 0) {
+            worksheet[cellRef].s = {
+              font: { bold: true, color: { rgb: 'FFFFFF' } },
+              fill: { fgColor: { rgb: '4F81BD' } },
+              alignment: { horizontal: 'center', vertical: 'center' }
+            };
+          }
+        }
+      }
+    }
+
+    worksheet['!cols'] = [
+      { wch: 30 }, // Tipo
+      { wch: 12 }, // Folio
+      { wch: 12 }, // Póliza
+      { wch: 12 }, // Fiscal
+      { wch: 12 }, // Fecha
+      { wch: 36 }, // UUID
+      { wch: 15 }, // Total → will show currency
+      { wch: 15 }, // Saldo Actual
+      { wch: 10 }, // Moneda
+      { wch: 15 } // Total Movimiento
+    ];
+
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Documentos Relacionados');
-
     // Trigger download
     XLSX.writeFile(workbook, `Documentos_Relacionados_Deposito_${folioDepositoAConsultar}.xlsx`);
   };
@@ -848,7 +907,84 @@ const DashboardTrazabilidadPagos = () => {
                 <Typography>Cargando análisis, por favor espera...</Typography>
               ) : (
                 // <Typography sx={{ whiteSpace: 'pre-wrap' }}>{analisisIA}</Typography>
-                <ReactMarkdown>{analisisIA}</ReactMarkdown>
+                <Box
+                  sx={{
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'dark'
+                        ? 'primary.800' // Dark background from your primary scale
+                        : 'primary.50', // Light blue tint for light mode
+                    borderRadius: '12px',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'primary.600' : 'primary.200'}`,
+                    p: { xs: 2, sm: 3 },
+                    my: 2,
+                    boxShadow: (theme) =>
+                      theme.palette.mode === 'dark' ? '0px 4px 12px rgba(0, 0, 0, 0.5)' : '0px 4px 12px rgba(0, 52, 93, 0.1)', // Soft shadow using your main blue
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '4px',
+                      height: '100%',
+                      backgroundColor: 'primary.main' // Vertical accent bar
+                    },
+                    '& .react-markdown': {
+                      fontSize: '0.95rem',
+                      color: (theme) => (theme.palette.mode === 'dark' ? 'grey.A100' : 'text.primary'),
+                      lineHeight: 1.7
+                    },
+                    '& .react-markdown h1, & .react-markdown h2': {
+                      fontSize: '1.25rem',
+                      fontWeight: 600,
+                      mb: 1,
+                      color: (theme) => theme.palette.primary.main
+                    },
+                    '& .react-markdown p': {
+                      mt: 1,
+                      mb: 1.5
+                    },
+                    '& .react-markdown ul, & .react-markdown ol': {
+                      ml: 2.5,
+                      mt: 1,
+                      mb: 1.5
+                    },
+                    '& .react-markdown code': {
+                      backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.100'),
+                      px: '6px',
+                      py: '2px',
+                      borderRadius: '6px',
+                      fontSize: '0.9em'
+                    },
+                    '& .react-markdown pre': {
+                      backgroundColor: (theme) => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50'),
+                      p: 2,
+                      borderRadius: '8px',
+                      overflowX: 'auto',
+                      my: 2,
+                      fontSize: '0.85rem'
+                    }
+                  }}
+                >
+                  <Box sx={{ pl: 1 }}>
+                    <Typography
+                      variant="h3"
+                      component="div"
+                      sx={{
+                        color: 'primary.main',
+                        fontWeight: 600,
+                        mb: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1
+                      }}
+                    >
+                      📊 Análisis IA
+                    </Typography>
+                    <ReactMarkdown>{analisisIA}</ReactMarkdown>
+                  </Box>
+                </Box>
               )}
             </Box>
           </Box>
