@@ -770,7 +770,7 @@ Object.keys(headersMap).forEach((key, colIndex) => {
                     />
                     <ReportCard
                       sx={{ backgroundColor: 'red' }}
-                      primary={informacionDeFactura?.numero_exportado ? informacionDeFactura?.numero_exportado : 'N/A'}
+                      primary={informacionDeFactura?.uuid ? informacionDeFactura?.uuid : 'N/A'}
                       secondary="UUID"
                       color="secondary.main"
                       iconPrimary={ProfileOutlined}
@@ -782,7 +782,7 @@ Object.keys(headersMap).forEach((key, colIndex) => {
                       iconPrimary={DatabaseOutlined}
                     />
                     <ReportCard
-                      primary={informacionDeFactura?.poliza ? informacionDeFactura?.poliza : 'N/A'}
+                      primary={informacionDeFactura?.numero_exportado ? informacionDeFactura?.numero_exportado : 'N/A'}
                       secondary="Número exportado"
                       color="secondary.main"
                       iconPrimary={DatabaseOutlined}

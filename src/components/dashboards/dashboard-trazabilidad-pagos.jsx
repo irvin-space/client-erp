@@ -467,7 +467,7 @@ const DashboardTrazabilidadPagos = () => {
       { headerName: 'Tipo', field: 'tipo' },
       { headerName: 'Folio', field: 'factura' },
       { headerName: 'Fiscal', field: 'fiscal' },
-      { headerName: 'Poliza', field: 'poliza' },
+      { headerName: 'Póliza', field: 'poliza' },
       { headerName: 'Fecha', field: 'fecha_factura' },
       { headerName: 'UUID', field: 'uuid_funcion' },
       { headerName: 'Total', field: 'total_factura', cellRenderer: (row) => <MonedaFormatoMiles cantidad={row.total_factura} /> },
@@ -513,14 +513,15 @@ const DashboardTrazabilidadPagos = () => {
       tipo: 'Tipo',
       factura: 'Folio',
       fiscal: 'Fiscal',
-      poliza: 'Poliza',
+      poliza: 'Póliza',
       fecha_factura: 'Fecha',
       uuid_funcion: 'UUID',
       total_factura: 'Total',
       saldo_actual_factura: 'Saldo Actual',
       moneda: 'Moneda',
-      total_movimiento: 'Total Movimiento'
-      // cntDoctos: 'test1'
+      total_movimiento: 'Total Movimiento',
+      iva_movimiento: 'IVA',
+      subtotal_movimiento: 'Subtotal'
       // Acciones no se exporta
     };
 
@@ -546,10 +547,10 @@ const DashboardTrazabilidadPagos = () => {
     const worksheet = XLSX.utils.json_to_sheet(worksheetData);
 
     // Definir las columnas que se formatean
-    const currencyColumnHeaders = ['Total', 'Saldo Actual', 'Total Movimiento']; // These match headersMap values
+    const currencyColumnHeaders = ['Total', 'Saldo Actual', 'Total Movimiento', 'Subtotal', 'IVA']; 
     const currencyFormat = '"$"#,##0.00'; // Regla para formatear
 
-    // Get range to iterate over rows and columns
+    // Obtener el rango de filas y columnas
     const range = XLSX.utils.decode_range(worksheet['!ref']);
 
     for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -605,7 +606,9 @@ const DashboardTrazabilidadPagos = () => {
       { wch: 15 }, // Total → will show currency
       { wch: 15 }, // Saldo Actual
       { wch: 10 }, // Moneda
-      { wch: 15 } // Total Movimiento
+      { wch: 15 }, // Total Movimiento
+      { wch: 12 }, // IVA
+      { wch: 12 }, // Subtotal
     ];
 
     const workbook = XLSX.utils.book_new();
