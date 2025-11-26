@@ -219,7 +219,7 @@ const ChatWindow = memo(({ isOpen, onClose }) => { // Envolvemos con memo
                 {/* Initial message */}
                 {messages.length === 0 && (
                   <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
-                    <Typography variant="body2">Soy tu asistente. Puedo ayudarte con consultas sobre facturas, saldos, y procesos internos.</Typography>
+                    <Typography variant="body2">Soy tu asistente. Puedo ayudarte con consultas sobre facturas, pedimentos, y pólizas.</Typography>
                     <Typography variant="body2">¡Pregúntame algo!</Typography>
                   </Box>
                 )}

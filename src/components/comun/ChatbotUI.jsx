@@ -98,7 +98,7 @@ const App = () => {
         <div className="flex-grow p-5 overflow-y-auto space-y-3">
           {messages.length === 0 && (
              <div className="text-center text-gray-400 mt-10 p-4 border-2 border-dashed border-gray-200 rounded-lg">
-                <p>Soy tu asistente. Puedo ayudarte con consultas sobre facturas, saldos, y procesos internos. ¡Pregúntame algo!</p>
+                <p>Soy tu asistente. Puedo ayudarte con consultas sobre facturas, pedimentos, y pólizas. ¡Pregúntame algo!</p>
              </div>
           )}
           {messages.map((msg, index) => (

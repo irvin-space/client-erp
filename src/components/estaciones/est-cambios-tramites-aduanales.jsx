@@ -350,9 +350,9 @@ const EstCambiosTramitesAduanales = () => {
 
     //Si un tramite es seleccionado por medio del componente busqueda-tramites-aduanales
     //se habilita el boton Guardar, se habilita el boton Cancelar, se deshabilita el boton Iniciar
-    setEsHabilitadoGuardar(true);
-    setEsHabilitadoCancelar(true);
-    setEsHabilitadoIniciar(false);
+    // setEsHabilitadoGuardar(true);
+    // setEsHabilitadoCancelar(true);
+    // setEsHabilitadoIniciar(false);
 
     setOpenModal(false); // Cerrar modal
   };
@@ -618,8 +618,8 @@ const handleFileAnalysis = async (fileData) => {
 
                 onChange={handleFolio}
                 onKeyDown={(e) => handleEnterButton(e)}
-                value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
-
+                value={selectedTramite.tramite ? selectedTramite.tramite : folio}
+                //value={folio}
               />
             </Box>
           </Grid>
@@ -1026,10 +1026,9 @@ const handleFileAnalysis = async (fileData) => {
           onRowSelect={handleRowSelectGastos}
         />
       </Box>
-      // Debajo de tus tablas de ingresos y gastos, agrega un nuevo contenedor:
-      <br />
+
       <Divider sx={{ my: 2 }} />
-      <Box sx={{ mt: 2 }}>
+      {/* <Box sx={{ mt: 2 }}>
         <Typography variant="h4">Análisis de IA</Typography>
         <br />
         {cargandoIA ? (
@@ -1040,7 +1039,7 @@ const handleFileAnalysis = async (fileData) => {
             {analisisIA}
           </ReactMarkdown>
         )}
-      </Box>
+      </Box> */}
       <br />
       <Stack direction="row">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
