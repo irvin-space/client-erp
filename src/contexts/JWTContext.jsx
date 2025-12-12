@@ -109,6 +109,10 @@ export const JWTProvider = ({ children }) => {
     });
   };
 
+  const actualizarPasswordDeUsuario = async (usuario,nuevaPassword) => {
+    const response = await axios.post(import.meta.env.VITE_URL_ENVIRONMENT + '/user/actualiza-password', {usuario,nuevaPassword})
+  }
+
   const register = async (email, password, firstName, lastName) => {
     // todo: this flow need to be recode as it not verified
     const id = chance.bb_pin();
@@ -156,7 +160,7 @@ export const JWTProvider = ({ children }) => {
     return <Loader />;
   }
 
-  return <JWTContext value={{ ...state, login, logout, register, resetPassword, updateProfile }}>{children}</JWTContext>;
+  return <JWTContext value={{ ...state, login, logout, register, resetPassword, updateProfile, actualizarPasswordDeUsuario }}>{children}</JWTContext>;
 };
 
 export default JWTContext;

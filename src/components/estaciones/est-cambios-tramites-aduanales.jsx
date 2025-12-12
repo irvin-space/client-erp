@@ -5,7 +5,7 @@ import { MyContext } from '../../context';
 
 import FileUploader from '../componentesBase/FileUploader';
 // Asumiendo que tienes un hook para hacer peticiones al backend
-import useBackendApi from '../../hooks/useBackendApi'; 
+import useBackendApi from '../../hooks/useBackendApi';
 
 import useAuth from 'hooks/useAuth.js';
 
@@ -65,7 +65,7 @@ const EstCambiosTramitesAduanales = () => {
   const [openBusquedaClienteFacturaModal, setOpenBusquedaClienteFacturaModal] = useState(false); // Seguimiento del estado del modal de busqueda de clientes factura
   const [openAltaYCambiosAGastosNoDeduciblesModal, setOpenAltaYCambiosAGastosNoDeduciblesModal] = useState(false); // Seguimiento del estado del modal de alta y cambios a gastos no deducibles
   const [openHistoriaTramitesModal, setOpenHistoriaTramitesModal] = useState(false); // Seguimiento del estado del modal de historia de tramites
-  const [selectedTramite, setSelectedTramite] = useState(null);
+  const [selectedTramite, setSelectedTramite] = useState('');
   const [sucursal, setSucursal] = useState(useAuth().user?.sucursal || '');
   const [ingresos, setIngresos] = useState(null);
   const [gastos, setGastos] = useState(null);
@@ -75,7 +75,7 @@ const EstCambiosTramitesAduanales = () => {
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
   const [gastosRowSelected, setGastosRowSelected] = useState(null);
 
-   const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
+  const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
   const [clienteFolioFacturacion, setClienteFolioFacturacion] = useState('');
 
   const [folio, setFolio] = useState('');
@@ -86,7 +86,7 @@ const EstCambiosTramitesAduanales = () => {
   const [cargandoIA, setCargandoIA] = useState(false);
 
   const [lEditando, setLEditando] = useState(false);
-    // 1. Use el hook useSQL
+  // 1. Use el hook useSQL
   const { loading, error, executeFetch } = useSQL();
 
   const handleAnalisisIA = async (servicio) => {
@@ -94,8 +94,6 @@ const EstCambiosTramitesAduanales = () => {
       mensajes('aviso', 'Debes seleccionar un trámite para analizar.');
       return;
     }
-
-
 
     // setServicioIA(servicio); // Si decides usar los botones de radio, no necesitas esta línea
     setCargandoIA(true);
@@ -108,35 +106,32 @@ const EstCambiosTramitesAduanales = () => {
     // const promptAI =
     //   'Analiza los datos de este trámite aduanal. Revisa los ingresos y gastos. Identifica cualquier inconsistencia, gasto inusualmente alto o bajo, ' +
     //   'y discrepancias en las fechas. Dame un resumen claro de los hallazgos y una recomendación para el siguiente paso en el proceso de auditoría.';
-    const promptAI = '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
-
-                  'Analiza detalladamente los datos de este trámite aduanal. Revisa exhaustivamente los **ingresos y gastos**.' +
-
-                  '**Objetivos del Análisis:**' +
-                  '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
-                  '2.  **Discrepancias:** Señala gastos que sean inusualmente altos o bajos en comparación con la media, o discrepancias en las fechas de registro.' +
-
-                  '**FORMATO DE SALIDA REQUERIDO:**' +
-                  'Tu respuesta debe ser estructurada usando **Markdown** estricto para asegurar un formato profesional y legible.' +
-
-                  '--- '+
-                  '# 📊 [NOMBRE O FOLIO DEL TRÁMITE] - Resumen de Auditoría Aduanal' +
-                  '---' +
-
-                  '## 🔍 Hallazgos Clave'+
-                  '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. '+
-                  '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
-
-                  '## 📈 Análisis Financiero y de Consistencia'+
-                  '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
-                  '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
-
-                  '## ✅ Recomendación y Siguiente Paso'+
-                  '* **Título Principal:** Usa **Markdown** para un título claro.' +
-                  '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
+    const promptAI =
+      '**TAREA DE ANÁLISIS FINANCIERO ADUANAL** ' +
+      'Analiza detalladamente los datos de este trámite aduanal. Revisa exhaustivamente los **ingresos y gastos**.' +
+      '**Objetivos del Análisis:**' +
+      '1.  **Inconsistencias:** Identifica cualquier patrón irregular o datos faltantes.' +
+      '2.  **Discrepancias:** Señala gastos que sean inusualmente altos o bajos en comparación con la media, o discrepancias en las fechas de registro.' +
+      '**FORMATO DE SALIDA REQUERIDO:**' +
+      'Tu respuesta debe ser estructurada usando **Markdown** estricto para asegurar un formato profesional y legible.' +
+      '--- ' +
+      '# 📊 [NOMBRE O FOLIO DEL TRÁMITE] - Resumen de Auditoría Aduanal' +
+      '---' +
+      '## 🔍 Hallazgos Clave' +
+      '* **Identificación de Anomalías:** Usa **negritas** para destacar cualquier monto o fecha crítica. ' +
+      '* **Listado:** Usa una lista con viñetas para presentar los 3-5 hallazgos más importantes. Incluye un **Emoji** relevante (e.g., ⚠️ para advertencia, ✅ para conformidad).' +
+      '## 📈 Análisis Financiero y de Consistencia' +
+      '* **Ingresos/Gastos:** Ofrece una breve comparación y un balance.' +
+      '* **Gastos Atípicos:** Si encuentras gastos inusuales, usa un subtítulo con `### Gasto con Alerta: [NOMBRE DEL GASTO]`.' +
+      '## ✅ Recomendación y Siguiente Paso' +
+      '* **Título Principal:** Usa **Markdown** para un título claro.' +
+      '* **Acción:** Proporciona una **recomendación clara y concisa** para el siguiente paso en el proceso de auditoría o corrección.';
 
     // Elige la URL del endpoint según el servicio que se le pasó como argumento
-    const endpointURL = servicio === 'gemini' ? import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia' : import.meta.env.VITE_URL_ENVIRONMENT+'/analisis-ia-gpt';
+    const endpointURL =
+      servicio === 'gemini'
+        ? import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia'
+        : import.meta.env.VITE_URL_ENVIRONMENT + '/analisis-ia-gpt';
 
     try {
       const response = await fetch(endpointURL, {
@@ -167,7 +162,7 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleFetch = async (parametros) => {
     try {
-      const response = await fetch(import.meta.env.VITE_URL_ENVIRONMENT +'/dinamico/lista', {
+      const response = await fetch(import.meta.env.VITE_URL_ENVIRONMENT + '/dinamico/lista', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -191,9 +186,9 @@ const EstCambiosTramitesAduanales = () => {
 
       const FormaPago = data[0][0].forma_pago.trim();
 
-      if (FormaPago === 'Propio') {  
+      if (FormaPago === 'Propio') {
         setFormaPago('Transferencia de Cuenta');
-      } else if (FormaPago === 'Cheque') {
+      } else if (FormaPago === 'Cliente') {
         setFormaPago('Cheque');
       }
 
@@ -306,7 +301,7 @@ const EstCambiosTramitesAduanales = () => {
     setIngresos([]);
     setGastos([]);
     setFolio('');
-    setClienteFolioPedimento
+    setClienteFolioPedimento;
   };
 
   const handleImprimir = () => {
@@ -342,6 +337,12 @@ const EstCambiosTramitesAduanales = () => {
   const handleRowSelect = (row, o) => {
     console.log('Row selected in parent:', row);
     console.log(row.clave);
+    console.log('find the forma pago', row);
+    if (row.forma_pago === 'Propio') {
+      setFormaPago('Transferencia de Cuenta');
+    } else if (row.forma_pago === 'Cliente') {
+      setFormaPago('Cheque');
+    }
     // console.log(setClave(row.clave))
     setSelectedTramite(row);
     if (row.tramite > 0) {
@@ -411,10 +412,9 @@ const EstCambiosTramitesAduanales = () => {
 
     if (Array.isArray(datosFiltrar)) {
       const registrosFiltrados = datosFiltrar.filter((gasto) => {
-
         return gasto.gasto_no_deducible > 0 && gasto.estado_gasto_nd.trim() === 'Capturado';
       });
-      
+
       const gastosJson = JSON.stringify(registrosFiltrados);
 
       const Params = {
@@ -428,7 +428,6 @@ const EstCambiosTramitesAduanales = () => {
         mensajes('aviso', 'Tramite Guardado');
       }
     }
-        
   };
 
   const handleSucursalSelected = (value, objeto) => {
@@ -506,85 +505,82 @@ const EstCambiosTramitesAduanales = () => {
 
   const handleFormaPago = (value) => {
     console.log('Forma de pago seleccionada:', value);
-  }
+  };
 
   const handleProcesoPrevioBorrarGasto = async () => {
     let pasaValidacion = true;
     let registrosGastos = 0;
     mensajes('aviso', GastosRowSelected);
-  // PRIVATE pnGasto , ;
-  // pnFolio , ;
-  // pnTramite , ;
-  // pnConcepto , ;
-  // pnLinea	
+    // PRIVATE pnGasto , ;
+    // pnFolio , ;
+    // pnTramite , ;
+    // pnConcepto , ;
+    // pnLinea
 
-  // LOCAL lnImporte, ;
-  // lcEstado_Gasto
+    // LOCAL lnImporte, ;
+    // lcEstado_Gasto
 
-  // WITH THISFORM
-  //   pnGasto 	   = Gastos.gasto_no_deducible
-  //   lcEstado_Gasto = Gastos.estado_gasto_nd
+    // WITH THISFORM
+    //   pnGasto 	   = Gastos.gasto_no_deducible
+    //   lcEstado_Gasto = Gastos.estado_gasto_nd
 
-  //   IF pnGasto > 0 AND lcEstado_Gasto = 'Capturado'
-  //     IF THISFORM.Puede_Borrar()  && hd 21316  validamos que este detalle de tramite no tenga una factura asociada
-  //       IF PREGUNTA( '¿ Seguro que desea elimar el Gastos No Deducible ?')
-  //         pnFolio = 0
-          
-  //         XSQL( 'UPDATE Detalles_Tramites_Aduanales SET ' + ;
-  //               'gasto_no_deducible = ?pnFolio ' + ;
-  //             'WHERE  gasto_no_deducible = ?pnGasto ')
+    //   IF pnGasto > 0 AND lcEstado_Gasto = 'Capturado'
+    //     IF THISFORM.Puede_Borrar()  && hd 21316  validamos que este detalle de tramite no tenga una factura asociada
+    //       IF PREGUNTA( '¿ Seguro que desea elimar el Gastos No Deducible ?')
+    //         pnFolio = 0
 
-  //         SELECT Gastos
-  //         REPLACE gasto_no_deducible WITH 0 FOR gasto_no_deducible = pnGasto
-          
-  //         .grdGastos.Refresh()
-  //       ENDIF
+    //         XSQL( 'UPDATE Detalles_Tramites_Aduanales SET ' + ;
+    //               'gasto_no_deducible = ?pnFolio ' + ;
+    //             'WHERE  gasto_no_deducible = ?pnGasto ')
 
-  //     ENDIF
-  //   ELSE
-  //     _ERROR( 'El gasto ya esta pagado')
-  //   ENDIF
+    //         SELECT Gastos
+    //         REPLACE gasto_no_deducible WITH 0 FOR gasto_no_deducible = pnGasto
 
-  // ENDWITH
+    //         .grdGastos.Refresh()
+    //       ENDIF
 
+    //     ENDIF
+    //   ELSE
+    //     _ERROR( 'El gasto ya esta pagado')
+    //   ENDIF
+
+    // ENDWITH
   };
 
-// 💡 ESTA ES LA FUNCIÓN CLAVE 💡
-const handleFileAnalysis = async (fileData) => {
+  // 💡 ESTA ES LA FUNCIÓN CLAVE 💡
+  const handleFileAnalysis = async (fileData) => {
     // Aquí recibimos el objeto: { name, mimeType, base64 }
-    console.log("Paso 1: Archivo recibido para análisis:", fileData);
-    
+    console.log('Paso 1: Archivo recibido para análisis:', fileData);
+
     // Paso 1: AGREGAR VALIDACIÓN INICIAL
     if (!folio) {
-        console.error("El Folio (trámite) no está definido. No se puede enviar a la IA.");
-        mensajes('aviso', 'Debes ingresar o seleccionar un Folio de Trámite para analizar el documento.');
-        return; 
+      console.error('El Folio (trámite) no está definido. No se puede enviar a la IA.');
+      mensajes('aviso', 'Debes ingresar o seleccionar un Folio de Trámite para analizar el documento.');
+      return;
     }
 
     try {
-        console.log("Enviando archivo a backend para análisis...");
-        const response = await postData('/analizar-documento-gemini', {
-            tramite_id: folio,
-            file: fileData // Enviamos el archivo ya en Base64
-        });
+      console.log('Enviando archivo a backend para análisis...');
+      const response = await postData('/analizar-documento-gemini', {
+        tramite_id: folio,
+        file: fileData // Enviamos el archivo ya en Base64
+      });
 
-        // 🚨 CORRECCIÓN CLAVE: El backend devuelve la data en la propiedad 'data'
-        // console.log("Respuesta completa del Backend:", response); // Descomentar para debug
-        
-        if (response.success && response.data) {
-            setAnalisisResultado(response.data); // USAR response.data
-            mensajes('exito', 'Datos extraídos con éxito por la IA.');
-            console.log("Datos para llenar campos (FRONTEND):", response.data);
-        } else {
-            mensajes('error', response.message || 'Error desconocido al extraer datos del documento.');
-        }
+      // 🚨 CORRECCIÓN CLAVE: El backend devuelve la data en la propiedad 'data'
+      // console.log("Respuesta completa del Backend:", response); // Descomentar para debug
 
+      if (response.success && response.data) {
+        setAnalisisResultado(response.data); // USAR response.data
+        mensajes('exito', 'Datos extraídos con éxito por la IA.');
+        console.log('Datos para llenar campos (FRONTEND):', response.data);
+      } else {
+        mensajes('error', response.message || 'Error desconocido al extraer datos del documento.');
+      }
     } catch (error) {
-        console.error("Error en la extracción de datos:", error);
-        mensajes('error', 'Fallo de comunicación con el servidor de análisis.');
+      console.error('Error en la extracción de datos:', error);
+      mensajes('error', 'Fallo de comunicación con el servidor de análisis.');
     }
-};
-
+  };
 
   return (
     <div>
@@ -595,32 +591,35 @@ const handleFileAnalysis = async (fileData) => {
           {/* Tramite, Fecha */}
           <Grid size={4}>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', height: '100%' }}>
-              {/* <TextField
-                id="standard-basic"
-                label="Trámite aduana"
-                variant="standard"
-                onChange={handleFolio}
-                onKeyDown={(e) => handleEnterButton(e)}
-                fullWidth
-                value={selectedTramite?.tramite ? selectedTramite.tramite : folio}
-                disabled={lEditando}
-              /> */}
-
-              <BusquedaTramitesAduanales
-                onSelectRow={handleRowSelect}
-                open={openModal}
-                onClose={() => {
-                  document.activeElement?.blur();
-                  setOpenModal(false);
-                }}
-                onOpen={() => setOpenModal(true)}
-                editando={lEditando}
-
-                onChange={handleFolio}
-                onKeyDown={(e) => handleEnterButton(e)}
-                value={selectedTramite.tramite ? selectedTramite.tramite : folio}
-                //value={folio}
-              />
+              {selectedTramite?.tramite_aduana ? (
+                <BusquedaTramitesAduanales
+                  onSelectRow={handleRowSelect}
+                  open={openModal}
+                  onClose={() => {
+                    document.activeElement?.blur();
+                    setOpenModal(false);
+                  }}
+                  onOpen={() => setOpenModal(true)}
+                  editando={lEditando}
+                  onChange={handleFolio}
+                  onKeyDown={(e) => handleEnterButton(e)}
+                  value={selectedTramite.tramite_aduana ? selectedTramite.tramite_aduana : folio}
+                />
+              ) : (
+                <BusquedaTramitesAduanales
+                  onSelectRow={handleRowSelect}
+                  open={openModal}
+                  onClose={() => {
+                    document.activeElement?.blur();
+                    setOpenModal(false);
+                  }}
+                  onOpen={() => setOpenModal(true)}
+                  editando={lEditando}
+                  onChange={handleFolio}
+                  onKeyDown={(e) => handleEnterButton(e)}
+                  value={selectedTramite?.tramite ? selectedTramite?.tramite : folio}
+                />
+              )}
             </Box>
           </Grid>
           <Grid size={4}>
@@ -795,7 +794,7 @@ const handleFileAnalysis = async (fileData) => {
                                   : clienteFolioPedimento != ''
                                     ? clienteFolioPedimento
                                     : ''
-                            }
+                           selectedTramite }
                             fullWidth
                           /> */}
 
@@ -804,7 +803,8 @@ const handleFileAnalysis = async (fileData) => {
                             onClose={() => setOpenBusquedaClientePedimentoModal(false)}
                             onOpen={() => setOpenBusquedaClientePedimentoModal(true)}
                             onSelectedRow={handleRowSelectClientePedimento}
-                            value={selectedTramite?.ctePedimento
+                            value={
+                              selectedTramite?.ctePedimento
                                 ? `${selectedTramite?.id_cliente_pedimento}-${selectedTramite.ctePedimento}`
                                 : selectedTramite?.nombre_cliente_pedimento
                                   ? `${selectedTramite?.cliente_pedimento} - ${selectedTramite?.nombre_cliente_pedimento}`
@@ -861,7 +861,6 @@ const handleFileAnalysis = async (fileData) => {
                             onClose={() => setOpenBusquedaClienteFacturaModal(false)}
                             onOpen={() => setOpenBusquedaClienteFacturaModal(true)}
                             onSelectedRow={handleRowSelectClienteFacturacion}
-                            
                             value={
                               selectedTramite?.cteFacturacion
                                 ? `${selectedTramite?.id_cliente_factura} - ${selectedTramite.cteFacturacion}`
@@ -924,11 +923,11 @@ const handleFileAnalysis = async (fileData) => {
                           valor2="Anticipo"
                           valor3="Transferencia de Cliente"
                           value={
-                            selectedTramite?.tipo_pago_impuestos.includes('Financiado')
+                            selectedTramite?.tipo_pago_impuestos?.includes('Financiado')
                               ? 'Financiado'
-                              : selectedTramite?.tipo_pago_impuestos.includes('Anticipo')
+                              : selectedTramite?.tipo_pago_impuestos?.includes('Anticipo')
                                 ? 'Anticipo'
-                                : selectedTramite?.tipo_pago_impuestos.includes('Transferencia')
+                                : selectedTramite?.tipo_pago_impuestos?.includes('Transferencia')
                                   ? 'Transferencia de Cliente'
                                   : null
                           }
@@ -939,7 +938,13 @@ const handleFileAnalysis = async (fileData) => {
                   <Grid size={12}>
                     <Grid container spacing={3}>
                       <Grid size={12}>
-                        <RowRadioButtonsGroup titulo="Forma de Pago" valor1="Transferencia de Cuenta" valor2="Cheque" value={formaPago} onChange={handleFormaPago}/>
+                        <RowRadioButtonsGroup
+                          titulo="Forma de Pago"
+                          valor1="Transferencia de Cuenta"
+                          valor2="Cheque"
+                          value={formaPago}
+                          onChange={handleFormaPago}
+                        />
                       </Grid>
                     </Grid>
                   </Grid>
@@ -1070,8 +1075,13 @@ const handleFileAnalysis = async (fileData) => {
             </Button> */}
             <AltaYCambiosAGastosNoDeducibles
               open={openAltaYCambiosAGastosNoDeduciblesModal}
-              onOpen={() => setOpenAltaYCambiosAGastosNoDeduciblesModal(true)}
+              onOpen={() => {
+                //Si el tramite contiene Gastos No Deducibles
+                // handleNuevo()
+                setOpenAltaYCambiosAGastosNoDeduciblesModal(true);
+              }}
               onClose={() => setOpenAltaYCambiosAGastosNoDeduciblesModal(false)}
+              tramiteInfo={selectedTramite ? selectedTramite : {mensaje: "Información faltante"}}
             />
             &nbsp;
             <Button variant="outlined" onClick={handleCambiar} color="warning">
@@ -1155,7 +1165,6 @@ const handleFileAnalysis = async (fileData) => {
             )}
 
           </div> */}
-        
       </Stack>
       <Divider sx={{ my: 2 }} />
       {/* Botones */}
@@ -1186,8 +1195,7 @@ const handleFileAnalysis = async (fileData) => {
               Cancelar
             </Button>
           </Box>
-          <Box>
-          </Box>
+          <Box></Box>
         </Box>
       </Stack>
     </div>

@@ -12,6 +12,8 @@ import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import ComponenteListaDinamica from './ComponenteLIstaDinamica';
+import { Typography } from '@mui/material';
 
 //Idioma para tabla
 import { esES } from '@mui/x-data-grid/locales';
@@ -34,8 +36,8 @@ import {
           seleccionable={true} //Valor puede ser true o false
           encabezadoSeleccionable="Acciones"
           idPropiedad={'ID_DEBE_SER_UNICO_PARA_QUE_LA_TABLA_LO_PUEDA_IDENTIFICAR'}
-          datos={data[1]}
-          filtro=true/false
+          datos={arreglo} 
+          filtro={true} //Valor puede ser true o false
           estructuraEncabezados={[
             { propiedad: 'test1', encabezadoTitulo: 'prueba1abcdefghijklmnopqrstuvwxyz' },
             { propiedad: 'test2', encabezadoTitulo: 'prueba2' },
@@ -44,9 +46,9 @@ import {
             { propiedad: 'test5', encabezadoTitulo: 'prueba5' },
             { propiedad: 'test6', encabezadoTitulo: 'prueba6', formato: 'moneda' }, //Esta columna podria tener numeros que deseo aplicarles un formato, por ejemplo 14698.36797721 --> 14,698.36
             { propiedad: 'test7', encabezadoTitulo: 'prueba7' },
-            { propiedad: 'test8', encabezadoTitulo: 'prueba8' }, //O quiza esta columna tambien podria requerir aplicar un formato a estos numeros que podrian venir
-            { propiedad: 'test9', encabezadoTitulo: 'prueba9' }, //O quiza esta tambien, no se sabe cual de todas
-            { propiedad: 'test10', encabezadoTitulo: 'prueba10'}
+            { propiedad: 'test8', encabezadoTitulo: 'prueba8' }, 
+            { propiedad: 'test9', encabezadoTitulo: 'prueba9' }, 
+            { propiedad: 'test10', encabezadoTitulo: 'prueba10, editable:true'} // Editable true indica que la celda podra editarse al
           ]}
         /> */
 }
@@ -79,15 +81,29 @@ const MuiTablaBase = ({
 
   const navigate = useNavigate();
 
+  if(!estructuraEncabezados){
+    estructuraEncabezados=[]
+    // return <Typography variant={'h6'} >Propiedad faltante</Typography>
+  }
+  
   const encabezados = estructuraEncabezados.map((item) => {
     const calculatedFlex = item.encabezadoTitulo.length > 15 ? 2 : 1;
 
     //Columna base
-    const columnaBase = {
+    let columnaBase = {
       field: item.propiedad,
       headerName: item.encabezadoTitulo,
-      flex: calculatedFlex
+      flex: calculatedFlex,
+      editable: item.editable
     };
+    
+    if(item.renderizarBoton){
+      columnaBase = {
+        ...columnaBase,
+        renderCell: (params) => (
+          <ComponenteListaDinamica label={params.value}/>
+        )}
+    }
 
     // Agrega formato si se especifica
     if (item.formato === 'moneda') {
@@ -202,7 +218,7 @@ const MuiTablaBase = ({
       }
     };
     encabezados.push(columnaSeleccion);
-  } else {
+  } else if(seleccionable) {
     const columnaSeleccion = {
       field: 'seleccion',
       headerName: encabezadoSeleccionable,
