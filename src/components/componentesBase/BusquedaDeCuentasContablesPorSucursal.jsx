@@ -61,7 +61,7 @@ const BusquedaDeCuentasContablesPorSucursal = ({handleSelectedSucursal}) => {
     console.log(fecha);
 
     try {
-      const response = await executeFetch('Carga_Cuentas_Sucursal', { '@cSucursal': sucursal, '@cEjercicio': fecha });
+      const response = await executeFetch('Carga_Cuentas_Sucursal', { '@cSucursal': `'${sucursal}'`, '@cEjercicio': `'${fecha}'` });
       
       if(response.success){
         // console.log(response.data)
