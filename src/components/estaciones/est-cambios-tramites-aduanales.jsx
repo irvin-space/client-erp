@@ -73,7 +73,7 @@ const EstCambiosTramitesAduanales = () => {
   const [chequera, setChequera] = useState('');
 
   const [nivelDeSeguridad, setNivelDeSeguridad] = useState(useAuth().menu);
-  const [gastosRowSelected, setGastosRowSelected] = useState(null);
+  const [gastosRowSelected, setGastosRowSelected] = useState(null); 
 
   const [clienteFolioPedimento, setClienteFolioPedimento] = useState('');
   const [clienteFolioFacturacion, setClienteFolioFacturacion] = useState('');

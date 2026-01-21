@@ -11,6 +11,7 @@ import { SimpleLayoutType } from '../config';
 
 
 //Componentes
+import EstTramitesAduanales from '@/components/estaciones/est_tramites_aduanales';
 import EstCambiosTramitesAduanales from '../components/estaciones/est-cambios-tramites-aduanales'
 import EstDesktop from '../components/estaciones/est-desktop';
 import FileToJson from '@/components/estaciones/file-to-json';
@@ -20,6 +21,7 @@ import TrazabilidadDePagos from '../components/estaciones/trazabilidad-de-pagos'
 import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-trazabilidad-pagos';
 import DashboardTrazabilidadFacturas from '../components/dashboards/dashboard-trazabilidad-facturas';
 import TrazabilidadDeFacturas from '@/components/estaciones/trazabilidad-de-facturas';
+import FacturasDeClientesEntreFechas from '@/components/estaciones/FacturasDeClientesEntreFechas';
 
 //Chatbot UI
 import ChatbotUI from '../components/comun/ChatbotUI'; // Importa el componente ChatbotUI si es necesario
@@ -60,10 +62,13 @@ const MainRoutes = {
         },
         {
           path: 'est-cambios-tramites-aduanales',
+          //element: <EstTramitesAduanales/>
           element: <EstCambiosTramitesAduanales/>
         },
         {
           path: 'trazabilidad-de-pagos',
+          //element:<FacturasDeClientesEntreFechas/>
+          //element: <EstCambiosTramitesAduanales/>
           element: <TrazabilidadDePagos/>
         },
         {
@@ -77,6 +82,14 @@ const MainRoutes = {
         {
           path: 'dashboard-trazabilidad-facturas',
           element: <DashboardTrazabilidadFacturas />
+        },
+        {
+          path: 'facturas-de-clientes-entre-fechas',
+          element: <FacturasDeClientesEntreFechas/>
+        },
+        {
+          path: 'est-tramites-aduanales',
+          element: <EstTramitesAduanales/>
         },
         {
           path: 'file-to-json',

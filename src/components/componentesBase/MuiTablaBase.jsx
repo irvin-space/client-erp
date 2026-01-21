@@ -48,7 +48,7 @@ import {
             { propiedad: 'test7', encabezadoTitulo: 'prueba7' },
             { propiedad: 'test8', encabezadoTitulo: 'prueba8' }, 
             { propiedad: 'test9', encabezadoTitulo: 'prueba9' }, 
-            { propiedad: 'test10', encabezadoTitulo: 'prueba10, editable:true'} // Editable true indica que la celda podra editarse al
+            { propiedad: 'test10', encabezadoTitulo: 'prueba10', editable:true} // Editable true indica que la celda podra editarse al
           ]}
         /> */
 }
