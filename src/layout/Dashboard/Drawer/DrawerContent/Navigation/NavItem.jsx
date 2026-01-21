@@ -33,7 +33,8 @@ import {
   ClusterOutlined,
   CompassOutlined,
   LoadingOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  ContainerOutlined
 } from '@ant-design/icons';
 
 // ... otros imports
@@ -84,7 +85,8 @@ export default function NavItem({ item, level, isParents = false, setSelectedID 
   ShopOutlined,
   DesktopOutlined,
   BranchesOutlined, LineChartOutlined, ProfileOutlined, ClusterOutlined, CompassOutlined,
-  LoadingOutlined, FileTextOutlined
+  LoadingOutlined, FileTextOutlined,
+  ContainerOutlined
 };
 
   const Icon = iconMap[item.icon] ?? LoadingOutlined;
