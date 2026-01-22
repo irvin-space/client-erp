@@ -57,7 +57,8 @@ const BusquedaDeClientes = ({ open, onClose, onOpen, onSelectedRow, editando, la
   const [inputBusquedaDeCliente, setInputBusquedaDeCliente] = useState('');
   const [buscarPor, setBuscarPor] = useState('Nombre');
   const [searchInputConstrain, setSearchInputConstrain] = useState('contiene');
-  const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user?.sucursal || '');
+  // const [busquedaSucursal, setBusquedaSucursal] = useState(useAuth().user?.sucursal || '');
+  const [busquedaSucursal, setBusquedaSucursal] = useState('%');
   const [arregloDeClientes, setArregloDeClientes] = useState([]);
 
   const handleFetch = async (orden, texto, principio, sucursal) => {

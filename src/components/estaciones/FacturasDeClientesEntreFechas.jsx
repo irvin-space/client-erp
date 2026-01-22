@@ -310,8 +310,10 @@ const FacturasDeClientesEntreFechas = () => {
     // console.log('Remisiones', remisiones);
     // console.log('Supervisore de Operaciones', supervisorDeOperaciones);
 
+    console.log(data)
+
     if (success && data[0].length > 0) {
-      setIsLoading(false);
+            setIsLoading(false);
       //generate spreadsheet
       const worksheet = XLSX.utils.json_to_sheet(data[0]);
 
@@ -334,7 +336,29 @@ const FacturasDeClientesEntreFechas = () => {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Facturas');
       XLSX.writeFile(workbook, 'facturas_styled.xlsx');
+    }else{
+      setIsLoading(false)
     }
+
+
+
+
+
+    //-----------------------------------------------------------------------
+    // !!!! CODIGO DE PRUEBA PARA GENERAR ARCHIVO XLSX DESDE BACKEND !!!
+   // Trigger file download 
+    // const blob = await response.blob();
+
+    //   const blob = await data.blob()
+    //   const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = 'facturas_styled.xlsx'; // Same filename as before
+    // document.body.appendChild(a);
+    // a.click();
+    // window.URL.revokeObjectURL(url);
+    // !!!! CODIGO DE PRUEBA PARA GENERAR ARCHIVO XLSX DESDE BACKEND !!!
+    ///-----------------------------------------------------------------------
   };
 
   return (
@@ -456,10 +480,10 @@ const FacturasDeClientesEntreFechas = () => {
               onChange={(e) => handleMostrar(e)}
               label={'Mostrar'}
               values={['Todas', 'Por Aduana', 'Por Patente']}
-              direction={'row'}
+              direction={'column'}
             />
           </Grid>
-          <Grid size={3} alignItems={'center'}>
+          <Grid size={2} alignItems={'center'}>
             <TextField label="Clave" value={claveMostrar} onChange={(e) => handleDato(e)}></TextField>
           </Grid>
         </Grid>
