@@ -94,7 +94,9 @@ const MuiTablaBase = ({
       field: item.propiedad,
       headerName: item.encabezadoTitulo,
       flex: calculatedFlex,
-      editable: item.editable
+      editable: item.editable,
+      align: item.alineamiento ? item.alineamiento : '',
+      headerAlign: item.alineamientoEncabezado ? item.alineamientoEncabezado : ''
     };
     
     if(item.renderizarBoton){
@@ -240,7 +242,7 @@ const MuiTablaBase = ({
           setSelectedRowId(newSelectedId);
 
           // 👉 Log the factura or whatever you want
-          console.log('Selected row factura:', params.row.factura);
+          console.log('Selected row factura:', params.row);
           console.log(onSelectRow); // this onSelectRow logs as undefined , why?
 
           // Optional: Call a callback if provided
@@ -302,6 +304,7 @@ const MuiTablaBase = ({
           columns={encabezados}
           rows={validRows}
           getRowId={(row) => row[idPropiedad]}
+          id={'ad'}
         />
       ) : (
         <DataGrid

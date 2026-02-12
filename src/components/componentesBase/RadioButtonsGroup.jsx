@@ -8,11 +8,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 
 //RadioButtonsGroup component
-const RadioButtonsGroup = ({ label, values, direction, onChange }) => {
-  const [selectedValue, setSelectedValue] = useState(values[0] || '');
-
+const RadioButtonsGroup = ({ label, values, direction, onChange, value }) => {
   const handleChange = (event) => {
-    setSelectedValue(event.target.value);
     if (onChange) {
       onChange(event.target.value); // pass the value back up
     }
@@ -21,7 +18,7 @@ const RadioButtonsGroup = ({ label, values, direction, onChange }) => {
   return (
     <FormControl>
       <FormLabel>{label}</FormLabel>
-      <RadioGroup row={direction === 'row'} value={selectedValue} onChange={handleChange}>
+      <RadioGroup row={direction === 'row'} value={value} onChange={handleChange}>
         {values.map((item, index) => {
           return <FormControlLabel key={index} value={item} control={<Radio />} label={item} />;
         })}

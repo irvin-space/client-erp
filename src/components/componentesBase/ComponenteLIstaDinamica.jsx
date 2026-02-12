@@ -22,7 +22,6 @@ const ComponenteListaDinamica = ({
   lEditando = false,
 }) => {
   const [options, setOptions] = useState([]);
-  // const [value, setValue] = useState('a'); // Estado para el valor seleccionado
   const [loading, setLoading] = useState(true);
  
   //Llamar a el backend al montar el componente
@@ -129,7 +128,10 @@ const ComponenteListaDinamica = ({
           </MenuItem>
         ) : (
           options?.map((item) => {
-            const value = item[valueKey] ?? '';
+            let value = item[valueKey] ?? '';
+            if(typeof value == 'string'){
+              value = value.trim()
+            }
             const label = item[labelKey] ?? '(Sin nombre)';
             const objeto = item;
  

@@ -22,6 +22,9 @@ import DashboardTrazabilidadPagos from '../components/dashboards/dashboard-traza
 import DashboardTrazabilidadFacturas from '../components/dashboards/dashboard-trazabilidad-facturas';
 import TrazabilidadDeFacturas from '@/components/estaciones/trazabilidad-de-facturas';
 import FacturasDeClientesEntreFechas from '@/components/estaciones/FacturasDeClientesEntreFechas';
+import EstFacturacionTramites from '@/components/estaciones/EstFacturacionTramites';
+import EstFacturasDeTramitesAduanales from '@/components/estaciones/EstFacturasDeTramitesAduanales';
+import EstFlujoDeEfectivoWeb from '@/components/estaciones/EstFlujoDeEfectivoWeb';
 
 //Chatbot UI
 import ChatbotUI from '../components/comun/ChatbotUI'; // Importa el componente ChatbotUI si es necesario
@@ -101,7 +104,19 @@ const MainRoutes = {
         },
         {
           path: 'sample-page2', 
-          element: <SamplePage2/> //Ejemplos de componentes para pantalla de Auditoria de Trazabilidad - Deposito # 167957 
+          element: <SamplePage2/>
+        },
+        {
+          path: 'est-flujos-de-efectivo-web',
+          element: <EstFlujoDeEfectivoWeb />
+        },
+        {
+          path: 'est-facturas-de-tramites-aduanales',
+          element: <EstFacturasDeTramitesAduanales />
+        },
+        {
+          path: 'est-facturacion-tramites',
+          element: <EstFacturacionTramites />
         },
         {
           path: 'under-construction',
@@ -110,6 +125,9 @@ const MainRoutes = {
         {
           path: 'coming-soon',
           element: <MaintenanceComingSoon />
+          //element: <EstFacturacionTramites />
+          //element: <EstFacturasDeTramitesAduanales />
+          //element: <EstFlujoDeEfectivoWeb />
         }
       ]
     },
