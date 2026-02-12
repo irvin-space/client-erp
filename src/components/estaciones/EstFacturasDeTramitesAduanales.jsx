@@ -42,7 +42,7 @@ const EstFacturasDeTramitesAduanales = () => {
   const [clienteFacturaTodos, setClienteFacturaTodos] = useState(0);
   const [clientePedimento, setClientePedimento] = useState('');
   const [clientePedimentoFolio, setClientePedimentoFolio] = useState(0);
-  const [clientePedimentosTodos, setClientePedimentosTodos] = useState(0);
+  const [clientePedimentosTodos, setClientePedimentosTodos] = useState(1);
   // const [fechaDesdeInicial, setFechaDesdeInicial] = useState(dayjs().subtract(1, 'year'));
   const [fechaDesde, setFechaDesde] = useState(dayjs().subtract(1, 'month'));
   const [fechaHasta, setFechaHasta] = useState(dayjs());
@@ -103,6 +103,9 @@ const EstFacturasDeTramitesAduanales = () => {
     // setIngresos([]);
     setClientePedimento(folioYNombre);
     console.log(row.folio);
+    console.log(clientePedimentosTodos)
+    setClientePedimentosTodos(0)
+    console.log(clientePedimentosTodos)
     setClientePedimentoFolio(row.folio);
   };
 
@@ -226,6 +229,7 @@ const EstFacturasDeTramitesAduanales = () => {
   };
 
   const handleExportar = async () => {
+    console.log("Consultando...")
     setIsLoading(true);
     // console.log(
     //   executeFetch('Rep_Facturas_Tramites_SPACE7', {
@@ -270,6 +274,8 @@ const EstFacturasDeTramitesAduanales = () => {
     // });
 
     if (opcionDeDesgloze == 'Pedimento') {
+      console.log('consultara con opcion pedmento')
+      //console.log(`SP - ${sucursal} ${clienteFacturaFolio} ${clienteFacturaTodos} ${fechaDesde.format('YYYYMMDD')} ${fechaHasta.format('YYYYMMDD')} ${resumenPorCliente} ${soloClientesNuevos} ${soloFacturasConSaldo} ${sinOrdenarPorSucursal} ${expresarEn} ${mostrarDistribucionProyectos} ${clientePedimentoFolio} ${clientePedimentosTodos} ${mostrar} ${claveMostrar.padStart(4, '0')} ${remisiones} `)
       const { success, data } = await executeFetch('Rep_Facturas_Tramites_SPACE7', {
         sucursal: `"${sucursal}"`,
         cliente: `"${clienteFacturaFolio}"`,
@@ -362,9 +368,11 @@ const EstFacturasDeTramitesAduanales = () => {
       ///-----------------------------------------------------------------------
     }
 
-    if (opcionDeDesgloze == 'Fáctura') {
+    if (opcionDeDesgloze == 'Factura') {
+      console.log('consultara con opcion factura')
+      //console.log(`SP - ${sucursal} ${clienteFacturaFolio} ${clienteFacturaTodos} ${fechaDesde.format('YYYYMMDD')} ${fechaHasta.format('YYYYMMDD')} ${resumenPorCliente} ${soloClientesNuevos} ${soloFacturasConSaldo} ${sinOrdenarPorSucursal} ${expresarEn} ${mostrarDistribucionProyectos} ${clientePedimentoFolio} ${clientePedimentosTodos} ${mostrar} ${claveMostrar.padStart(4, '0')} ${remisiones} `)
       const { success, data } = await executeFetch('Rep_Facturas_Tramites_Space4_Web', {
-        sucursal: `"${sucursal}"`,
+        sucursal: `' ${sucursal.padStart(6,' ')}'`,
         cliente: `"${clienteFacturaFolio}"`,
         todos: `"${clienteFacturaTodos}"`,
         desde: `"${fechaDesde.format('YYYYMMDD')}"`,
@@ -382,6 +390,8 @@ const EstFacturasDeTramitesAduanales = () => {
         remisiones: `"${remisiones}"`
         // supervisor: `"${supervisorDeOperaciones}"`
       });
+
+      console.log(data)
 
       // console.log(success);
       // console.log(data);
@@ -614,8 +624,8 @@ const EstFacturasDeTramitesAduanales = () => {
         <Grid>
           <RadioButtonsGroup
             onChange={(e) => handleDesglozar(e)}
-            label={'Desglozar'}
-            values={['Pedimento', 'Fáctura']}
+            label={'Desglosar'}
+            values={['Pedimento', 'Factura']}
             direction={'column'}
           />
         </Grid>

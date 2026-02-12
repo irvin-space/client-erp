@@ -124,7 +124,7 @@ const MainRoutes = {
         },
         {
           path: 'coming-soon',
-          element: <MaintenanceComingSoon />
+          //element: <MaintenanceComingSoon />
           //element: <EstFacturacionTramites />
           //element: <EstFacturasDeTramitesAduanales />
           //element: <EstFlujoDeEfectivoWeb />
